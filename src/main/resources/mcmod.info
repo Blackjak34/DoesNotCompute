@@ -1,0 +1,16 @@
+[
+{
+  "modid": "doesnotcompute",
+  "name": "Does Not Compute",
+  "description": "A simple computer mod.",
+  "version": "${version}",
+  "mcversion": "${mcversion}",
+  "url": "https://github.com/blackjak34/DoesNotCompute",
+  "updateUrl": "",
+  "authorList": ["Blackjak34"],
+  "credits": "",
+  "logoFile": "",
+  "screenshots": [],
+  "dependencies": []
+}
+]
