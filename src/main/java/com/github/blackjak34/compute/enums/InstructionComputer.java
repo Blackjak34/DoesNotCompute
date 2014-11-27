@@ -8,170 +8,170 @@ import java.util.HashMap;
  * Helper functions are also included to retrieve the hex
  * value from the instruction enum and vice versa.
  * 
- * @author Sam
+ * @author Blackjak34
  * @since 1.0
  */
 public enum InstructionComputer {
-	BRK			(0x00),
-	ORA_IND_X	(0x01),
-	ORA_ZP		(0x05),
-	ASL_ZP		(0x06),
-	PHP			(0x08),
-	ORA_IMM		(0x09),
-	ASL_A		(0x0A),
-	ORA_ABS		(0x0D),
-	ASL_ABS		(0x0E),
-	BPL_REL		(0x10),
-	ORA_IND_Y	(0x11),
-	ORA_ZP_X	(0x15),
-	ASL_ZP_X	(0x16),
-	CLC			(0x18),
-	ORA_ABS_Y	(0x19),
-	ORA_ABS_X	(0x1D),
-	ASL_ABS_X	(0x1E),
-	JSR_ABS		(0x20),
-	AND_IND_X	(0x21),
-	BIT_ZP		(0x24),
-	AND_ZP		(0x25),
-	ROL_ZP		(0x26),
-	PLP			(0x28),
-	AND_IMM		(0x29),
-	ROL_A		(0x2A),
-	BIT_ABS		(0x2C),
-	AND_ABS		(0x2D),
-	ROL_ABS		(0x2E),
-	BMI_REL		(0x30),
-	AND_IND_Y	(0x31),
-	AND_ZP_X	(0x35),
-	ROL_ZP_X	(0x36),
-	SEC			(0x38),
-	AND_ABS_Y	(0x39),
-	AND_ABS_X	(0x3D),
-	ROL_ABS_X	(0x3E),
-	RTI			(0x40),
-	EOR_IND_X	(0x41),
-	EOR_ZP		(0x45),
-	LSR_ZP		(0x46),
-	PHA			(0x48),
-	EOR_IMM		(0x49),
-	LSR_A		(0x4A),
-	JMP_ABS		(0x4C),
-	EOR_ABS		(0x4D),
-	LSR_ABS		(0x4E),
-	BVC_REL		(0x50),
-	EOR_IND_Y	(0x51),
-	EOR_ZP_X	(0x55),
-	LSR_ZP_X	(0x56),
-	CLI			(0x58),
-	EOR_ABS_Y	(0x59),
-	EOR_ABS_X	(0x5D),
-	LSR_ABS_X	(0x5E),
-	RTS			(0x60),
-	ADC_IND_X	(0x61),
-	ADC_ZP		(0x65),
-	ROR_ZP		(0x66),
-	PLA			(0x68),
-	ADC_IMM		(0x69),
-	ROR_A		(0x6A),
-	JMP_IND		(0x6C),
-	ADC_ABS		(0x6D),
-	ROR_ABS		(0x6E),
-	BVS_REL		(0x70),
-	ADC_IND_Y	(0x71),
-	ADC_ZP_X	(0x75),
-	ROR_ZP_X	(0x76),
-	SEI			(0x78),
-	ADC_ABS_Y	(0x79),
-	ADC_ABS_X	(0x7D),
-	ROR_ABS_X	(0x7E),
-	STA_IND_X	(0x81),
-	STY_ZP		(0x84),
-	STA_ZP		(0x85),
-	STX_ZP		(0x86),
-	DEY			(0x88),
-	TXA			(0x8A),
-	STY_ABS		(0x8C),
-	STA_ABS		(0x8D),
-	STX_ABS		(0x8E),
-	BCC_REL		(0x90),
-	STA_IND_Y	(0x91),
-	STY_ZP_X	(0x94),
-	STA_ZP_X	(0x95),
-	STX_ZP_Y	(0x96),
-	TYA			(0x98),
-	STA_ABS_Y	(0x99),
-	TXS			(0x9A),
-	STA_ABS_X	(0x9D),
-	LDY_IMM		(0xA0),
-	LDA_IND_X	(0xA1),
-	LDX_IMM		(0xA2),
-	LDY_ZP		(0xA4),
-	LDA_ZP		(0xA5),
-	LDX_ZP		(0xA6),
-	TAY			(0xA8),
-	LDA_IMM		(0xA9),
-	TAX			(0xAA),
-	LDY_ABS		(0xAC),
-	LDA_ABS		(0xAD),
-	LDX_ABS		(0xAE),
-	BCS_REL		(0xB0),
-	LDA_IND_Y	(0xB1),
-	LDY_ZP_X	(0xB4),
-	LDA_ZP_X	(0xB5),
-	LDX_ZP_Y	(0xB6),
-	CLV			(0xB8),
-	LDA_ABS_Y	(0xB9),
-	TSX			(0xBA),
-	LDY_ABS_X	(0xBC),
-	LDA_ABS_X	(0xBD),
-	LDX_ABS_Y	(0xBE),
-	CPY_IMM		(0xC0),
-	CMP_IND_X	(0xC1),
-	CPY_ZP		(0xC4),
-	CMP_ZP		(0xC5),
-	DEC_ZP		(0xC6),
-	INY			(0xC8),
-	CMP_IMM		(0xC9),
-	DEX			(0xCA),
-	CPY_ABS		(0xCC),
-	CMP_ABS		(0xCD),
-	DEC_ABS		(0xCE),
-	BNE_REL		(0xD0),
-	CMP_IND_Y	(0xD2),
-	CMP_ZP_X	(0xD5),
-	DEC_ZP_X	(0xD6),
-	CLD			(0xD8),
-	CMP_ABS_Y	(0xD9),
-	STP			(0xDB),
-	CMP_ABS_X	(0xDD),
-	DEC_ABS_X	(0xDE),
-	CPX_IMM		(0xE0),
-	SBC_IND_X	(0xE1),
-	CPX_ZP		(0xE4),
-	SBC_ZP		(0xE5),
-	INC_ZP		(0xE6),
-	INX			(0xE8),
-	SBC_IMM		(0xE9),
-	NOP			(0xEA),
-	CPX_ABS		(0xEC),
-	SBC_ABS		(0xED),
-	INC_ABS		(0xEE),
-	BEQ_REL		(0xF0),
-	SBC_IND_Y	(0xF1),
-	SBC_ZP_X	(0xF5),
-	INC_ZP_X	(0xF6),
-	SED			(0xF8),
-	SBC_ABS_Y	(0xF9),
-	SBC_ABS_X	(0xFD),
-	INC_ABS_X	(0xFE),
-	UNUSED		(0xFF);
+	BRK			((byte) 0x00, 1),
+	ORA_IND_X	((byte) 0x01, 2),
+	ORA_ZP		((byte) 0x05, 2),
+	ASL_ZP		((byte) 0x06, 2),
+	PHP			((byte) 0x08, 1),
+	ORA_IMM		((byte) 0x09, 2),
+	ASL_A		((byte) 0x0A, 1),
+	ORA_ABS		((byte) 0x0D, 3),
+	ASL_ABS		((byte) 0x0E, 3),
+	BPL_REL		((byte) 0x10, 2),
+	ORA_IND_Y	((byte) 0x11, 2),
+	ORA_ZP_X	((byte) 0x15, 2),
+	ASL_ZP_X	((byte) 0x16, 2),
+	CLC			((byte) 0x18, 1),
+	ORA_ABS_Y	((byte) 0x19, 3),
+	ORA_ABS_X	((byte) 0x1D, 3),
+	ASL_ABS_X	((byte) 0x1E, 3),
+	JSR_ABS		((byte) 0x20, 3),
+	AND_IND_X	((byte) 0x21, 2),
+	BIT_ZP		((byte) 0x24, 2),
+	AND_ZP		((byte) 0x25, 2),
+	ROL_ZP		((byte) 0x26, 2),
+	PLP			((byte) 0x28, 1),
+	AND_IMM		((byte) 0x29, 2),
+	ROL_A		((byte) 0x2A, 1),
+	BIT_ABS		((byte) 0x2C, 3),
+	AND_ABS		((byte) 0x2D, 3),
+	ROL_ABS		((byte) 0x2E, 3),
+	BMI_REL		((byte) 0x30, 2),
+	AND_IND_Y	((byte) 0x31, 2),
+	AND_ZP_X	((byte) 0x35, 2),
+	ROL_ZP_X	((byte) 0x36, 2),
+	SEC			((byte) 0x38, 1),
+	AND_ABS_Y	((byte) 0x39, 3),
+	AND_ABS_X	((byte) 0x3D, 3),
+	ROL_ABS_X	((byte) 0x3E, 3),
+	RTI			((byte) 0x40, 1),
+	EOR_IND_X	((byte) 0x41, 2),
+	EOR_ZP		((byte) 0x45, 2),
+	LSR_ZP		((byte) 0x46, 2),
+	PHA			((byte) 0x48, 1),
+	EOR_IMM		((byte) 0x49, 2),
+	LSR_A		((byte) 0x4A, 1),
+	JMP_ABS		((byte) 0x4C, 3),
+	EOR_ABS		((byte) 0x4D, 3),
+	LSR_ABS		((byte) 0x4E, 3),
+	BVC_REL		((byte) 0x50, 2),
+	EOR_IND_Y	((byte) 0x51, 2),
+	EOR_ZP_X	((byte) 0x55, 2),
+	LSR_ZP_X	((byte) 0x56, 2),
+	CLI			((byte) 0x58, 1),
+	EOR_ABS_Y	((byte) 0x59, 3),
+	EOR_ABS_X	((byte) 0x5D, 3),
+	LSR_ABS_X	((byte) 0x5E, 3),
+	RTS			((byte) 0x60, 1),
+	ADC_IND_X	((byte) 0x61, 2),
+	ADC_ZP		((byte) 0x65, 2),
+	ROR_ZP		((byte) 0x66, 2),
+	PLA			((byte) 0x68, 1),
+	ADC_IMM		((byte) 0x69, 2),
+	ROR_A		((byte) 0x6A, 1),
+	JMP_IND		((byte) 0x6C, 3),
+	ADC_ABS		((byte) 0x6D, 3),
+	ROR_ABS		((byte) 0x6E, 3),
+	BVS_REL		((byte) 0x70, 2),
+	ADC_IND_Y	((byte) 0x71, 2),
+	ADC_ZP_X	((byte) 0x75, 2),
+	ROR_ZP_X	((byte) 0x76, 2),
+	SEI			((byte) 0x78, 1),
+	ADC_ABS_Y	((byte) 0x79, 3),
+	ADC_ABS_X	((byte) 0x7D, 3),
+	ROR_ABS_X	((byte) 0x7E, 3),
+	STA_IND_X	((byte) 0x81, 2),
+	STY_ZP		((byte) 0x84, 2),
+	STA_ZP		((byte) 0x85, 2),
+	STX_ZP		((byte) 0x86, 2),
+	DEY			((byte) 0x88, 1),
+	TXA			((byte) 0x8A, 1),
+	STY_ABS		((byte) 0x8C, 3),
+	STA_ABS		((byte) 0x8D, 3),
+	STX_ABS		((byte) 0x8E, 3),
+	BCC_REL		((byte) 0x90, 2),
+	STA_IND_Y	((byte) 0x91, 2),
+	STY_ZP_X	((byte) 0x94, 2),
+	STA_ZP_X	((byte) 0x95, 2),
+	STX_ZP_Y	((byte) 0x96, 2),
+	TYA			((byte) 0x98, 1),
+	STA_ABS_Y	((byte) 0x99, 3),
+	TXS			((byte) 0x9A, 1),
+	STA_ABS_X	((byte) 0x9D, 3),
+	LDY_IMM		((byte) 0xA0, 2),
+	LDA_IND_X	((byte) 0xA1, 2),
+	LDX_IMM		((byte) 0xA2, 2),
+	LDY_ZP		((byte) 0xA4, 2),
+	LDA_ZP		((byte) 0xA5, 2),
+	LDX_ZP		((byte) 0xA6, 2),
+	TAY			((byte) 0xA8, 1),
+	LDA_IMM		((byte) 0xA9, 2),
+	TAX			((byte) 0xAA, 1),
+	LDY_ABS		((byte) 0xAC, 3),
+	LDA_ABS		((byte) 0xAD, 3),
+	LDX_ABS		((byte) 0xAE, 3),
+	BCS_REL		((byte) 0xB0, 2),
+	LDA_IND_Y	((byte) 0xB1, 2),
+	LDY_ZP_X	((byte) 0xB4, 2),
+	LDA_ZP_X	((byte) 0xB5, 2),
+	LDX_ZP_Y	((byte) 0xB6, 2),
+	CLV			((byte) 0xB8, 1),
+	LDA_ABS_Y	((byte) 0xB9, 3),
+	TSX			((byte) 0xBA, 1),
+	LDY_ABS_X	((byte) 0xBC, 3),
+	LDA_ABS_X	((byte) 0xBD, 3),
+	LDX_ABS_Y	((byte) 0xBE, 3),
+	CPY_IMM		((byte) 0xC0, 2),
+	CMP_IND_X	((byte) 0xC1, 2),
+	CPY_ZP		((byte) 0xC4, 2),
+	CMP_ZP		((byte) 0xC5, 2),
+	DEC_ZP		((byte) 0xC6, 2),
+	INY			((byte) 0xC8, 1),
+	CMP_IMM		((byte) 0xC9, 2),
+	DEX			((byte) 0xCA, 1),
+	CPY_ABS		((byte) 0xCC, 3),
+	CMP_ABS		((byte) 0xCD, 3),
+	DEC_ABS		((byte) 0xCE, 3),
+	BNE_REL		((byte) 0xD0, 2),
+	CMP_IND_Y	((byte) 0xD2, 2),
+	CMP_ZP_X	((byte) 0xD5, 2),
+	DEC_ZP_X	((byte) 0xD6, 2),
+	CLD			((byte) 0xD8, 1),
+	CMP_ABS_Y	((byte) 0xD9, 3),
+	STP			((byte) 0xDB, 1),
+	CMP_ABS_X	((byte) 0xDD, 3),
+	DEC_ABS_X	((byte) 0xDE, 3),
+	CPX_IMM		((byte) 0xE0, 2),
+	SBC_IND_X	((byte) 0xE1, 2),
+	CPX_ZP		((byte) 0xE4, 2),
+	SBC_ZP		((byte) 0xE5, 2),
+	INC_ZP		((byte) 0xE6, 2),
+	INX			((byte) 0xE8, 1),
+	SBC_IMM		((byte) 0xE9, 2),
+	NOP			((byte) 0xEA, 1),
+	CPX_ABS		((byte) 0xEC, 3),
+	SBC_ABS		((byte) 0xED, 3),
+	INC_ABS		((byte) 0xEE, 3),
+	BEQ_REL		((byte) 0xF0, 2),
+	SBC_IND_Y	((byte) 0xF1, 2),
+	SBC_ZP_X	((byte) 0xF5, 2),
+	INC_ZP_X	((byte) 0xF6, 2),
+	SED			((byte) 0xF8, 1),
+	SBC_ABS_Y	((byte) 0xF9, 3),
+	SBC_ABS_X	((byte) 0xFD, 3),
+	INC_ABS_X	((byte) 0xFE, 3),
+	UNUSED		((byte) 0xFF, 1);
 	
 	/**
 	 * A HashMap containing the hex value for each
 	 * instruction and its corresponding enum. Used for the
 	 * getInstruction helper function.
 	 */
-	private final static HashMap<Integer, InstructionComputer> instructions = new HashMap<Integer, InstructionComputer>();
+	private static final HashMap<Byte, InstructionComputer> instructions = new HashMap<Byte, InstructionComputer>();
 	
 	static {
 		for(InstructionComputer instruction : InstructionComputer.values()) {
@@ -182,16 +182,23 @@ public enum InstructionComputer {
 	/**
 	 * The corresponding hex value for this instruction.
 	 */
-	private int hexValue;
+	private final byte hexValue;
 	
 	/**
-	 * This constructior only serves to assign the hex
+	 * How many bytes long this instruction is, including
+	 * the identifier itself.
+	 */
+	private final int length;
+	
+	/**
+	 * This constructor only serves to assign the hex
 	 * values to the enums at initialization.
 	 * 
 	 * @param hexValue The hex value for this instruction
 	 */
-	private InstructionComputer(int hexValue) {
+	private InstructionComputer(byte hexValue, int length) {
 		this.hexValue = hexValue;
+		this.length = length;
 	}
 	
 	/**
@@ -199,8 +206,17 @@ public enum InstructionComputer {
 	 * 
 	 * @return The hex value of this instruction
 	 */
-	public int getHexValue() {
+	public byte getHexValue() {
 		return hexValue;
+	}
+	
+	/**
+	 * Returns how many bytes long this instruction is,
+	 * including the identifier itself.
+	 * @return How many bytes long this instruction is
+	 */
+	public int getLength() {
+		return length;
 	}
 	
 	/**
@@ -211,9 +227,10 @@ public enum InstructionComputer {
 	 * @param hexValue A hex value to get the enum for
 	 * @return The enum corresponding to the given hex value
 	 */
-	public static InstructionComputer getInstruction(int hexValue) {
+	public static InstructionComputer getInstruction(byte hexValue) {
 		InstructionComputer instruction = instructions.get(hexValue);
 		if(instruction == null) {return UNUSED;}
 		return instruction;
 	}
+	
 }

@@ -7,17 +7,11 @@ import net.minecraft.client.renderer.texture.IIconRegister;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.ChatComponentText;
 import net.minecraft.util.IIcon;
 import net.minecraft.world.World;
-import net.minecraftforge.common.MinecraftForge;
 
 import com.github.blackjak34.compute.Compute;
 import com.github.blackjak34.compute.entity.tile.TileEntityComputer;
-import com.github.blackjak34.compute.enums.StateComputer;
-
-import cpw.mods.fml.relauncher.Side;
-import cpw.mods.fml.relauncher.SideOnly;
 
 /**
  * The Computer block. Serves as the physical world
@@ -97,14 +91,15 @@ public class BlockComputer extends Block implements ITileEntityProvider {
 	 * this block. The return value is whether or not the
 	 * default action for the item in the player's hand
 	 * should be performed (for example, placing a bucket
-	 * of water). This is used to provide a GUI interface
-	 * for providing input to the emulator.
+	 * of water). This is used to open a GUI interface
+	 * that provides input to the emulator.
 	 * 
 	 * @return Whether or not to perform the item action
 	 */
 	@Override
 	public boolean onBlockActivated(World world, int blockX, int blockY, int blockZ,
 			EntityPlayer player, int par6, float playerX, float playerY, float playerZ) {
+		player.openGui(Compute.instance, 42, world, blockX, blockY, blockZ);
 		return true;
 	}
 	
@@ -129,20 +124,7 @@ public class BlockComputer extends Block implements ITileEntityProvider {
 	 */
 	@Override
 	public void onBlockPreDestroy(World world, int blockX, int blockY, int blockZ, int metadataOld) {
-		TileEntityComputer tiledata = (TileEntityComputer) world.getTileEntity(blockX, blockY, blockZ);
 		world.removeTileEntity(blockX, blockY, blockZ);
-	}
-	
-	/**
-	 * This function performs some post-initialization for
-	 * the TileEntity associated with this block. Currently
-	 * the only thing that this function does is set the
-	 * initial state ({@link StateComputer}) of the block.
-	 */
-	@Override
-	public void onPostBlockPlaced(World world, int blockX, int blockY, int blockZ, int metadata) {
-		TileEntityComputer tiledata = (TileEntityComputer) world.getTileEntity(blockX, blockY, blockZ);
-		tiledata.setState(StateComputer.RESET);
 	}
 
 }

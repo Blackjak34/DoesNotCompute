@@ -1,11 +1,11 @@
 package com.github.blackjak34.compute;
 
 import net.minecraft.block.material.Material;
-import net.minecraftforge.common.MinecraftForge;
 
 import com.github.blackjak34.compute.block.BlockComputer;
 import com.github.blackjak34.compute.entity.tile.TileEntityComputer;
 import com.github.blackjak34.compute.proxy.CommonProxy;
+import com.github.blackjak34.compute.proxy.client.ClientProxy;
 
 import cpw.mods.fml.common.Mod;
 import cpw.mods.fml.common.Mod.EventHandler;
@@ -14,13 +14,14 @@ import cpw.mods.fml.common.SidedProxy;
 import cpw.mods.fml.common.event.FMLInitializationEvent;
 import cpw.mods.fml.common.event.FMLPostInitializationEvent;
 import cpw.mods.fml.common.event.FMLPreInitializationEvent;
+import cpw.mods.fml.common.network.NetworkRegistry;
 import cpw.mods.fml.common.registry.GameRegistry;
 
 /**
  * The base class for the mod. Performs general setup,
  * cleanup, and registration.
  * 
- * @author Sam
+ * @author Blackjak34
  * @since 1.0
  */
 @Mod(modid = Compute.MODID, name = Compute.NAME, version = Compute.VERSION)
@@ -55,7 +56,8 @@ public class Compute {
      * on the client-side, and {@link CommonProxy} on the
      * server-side.
      */
-    @SidedProxy(clientSide="com.github.blackjak34.compute.proxy.client.ClientProxy", serverSide="com.github.blackjak34.compute.proxy.CommonProxy")
+    @SidedProxy(clientSide="com.github.blackjak34.compute.proxy.client.ClientProxy",
+    		serverSide="com.github.blackjak34.compute.proxy.CommonProxy")
     public static CommonProxy proxy;
     
     /**
@@ -65,7 +67,8 @@ public class Compute {
      * 
      * @param event The Forge event for pre-initialization
      */
-    @EventHandler
+    @SuppressWarnings("unused")
+	@EventHandler
     public void preInit(FMLPreInitializationEvent event) {
     	computer = new BlockComputer(Material.iron);
     	
@@ -81,9 +84,11 @@ public class Compute {
      * 
      * @param event The Forge event for initialization
      */
-    @EventHandler
+    @SuppressWarnings("unused")
+	@EventHandler
     public void load(FMLInitializationEvent event) {
             proxy.registerRenderers();
+            NetworkRegistry.INSTANCE.registerGuiHandler(instance, proxy);
     }
     
     /**
@@ -93,7 +98,8 @@ public class Compute {
      * 
      * @param event The Forge event for post-initialization
      */
-    @EventHandler
+    @SuppressWarnings("unused")
+	@EventHandler
     public void postInit(FMLPostInitializationEvent event) {}
     
 }

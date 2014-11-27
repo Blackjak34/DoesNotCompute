@@ -2,16 +2,14 @@ package com.github.blackjak34.compute.entity.tile;
 
 import java.util.Arrays;
 
-import com.github.blackjak34.compute.enums.InstructionComputer;
-import com.github.blackjak34.compute.enums.StateComputer;
-
-import cpw.mods.fml.relauncher.Side;
-import cpw.mods.fml.relauncher.SideOnly;
 import net.minecraft.init.Blocks;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.world.World;
-import net.minecraftforge.common.MinecraftForge;
+
+import com.github.blackjak34.compute.block.BlockComputer;
+import com.github.blackjak34.compute.enums.InstructionComputer;
+import com.github.blackjak34.compute.enums.StateComputer;
 
 /**
  * The emulator component of the Computer block. Fully
@@ -19,17 +17,31 @@ import net.minecraftforge.common.MinecraftForge;
  * can feed information into the computer through the GUI
  * made available by {@link BlockComputer}.
  * 
- * @author Sam
+ * @author Blackjak34
  * @since 1.0
  */
 public class TileEntityComputer extends TileEntity {
+	
+	/**
+	 * The current column on the screen that the cursor
+	 * is occupying. Used for rendering and putting data
+	 * into the screen buffer.
+	 */
+	public int cursorX = 0;
+	
+	/**
+	 * The current row on the screen that the cursor
+	 * is occupying. Used for rendering and putting data
+	 * into the screen buffer.
+	 */
+	public int cursorY = 0;
 	
 	/**
 	 * The screen buffer, for an 80x50 character screen
 	 * size. Writing a byte into this buffer will display
 	 * a character on the screen accordingly.
 	 */
-	private byte[][] screenBuffer = new byte[50][80];
+	public byte[][] screenBuffer = new byte[80][50];
 	
 	/**
 	 * The registers within the 6502. Register A acts as
@@ -103,13 +115,13 @@ public class TileEntityComputer extends TileEntity {
 	 * byte. Mainly used for setting/unsetting the
 	 * processor flags.
 	 * 
-	 * @param target The byte value to be modified
-	 * @param offset Which bit to set
+	 * @param originalByte The byte value to be modified
+	 * @param bitIndex Which bit to set
 	 * @param value The value to set the bit to
 	 * @return The modified byte
 	 */
-	private static byte setBit(byte target, int offset, boolean value) {
-		return value ? (target&=(1<<offset)) : (target|=~(1<<offset));
+	private static byte setBit(byte originalByte, int bitIndex, boolean value) {
+		return (byte) (value ? (originalByte|(1<<bitIndex)) : (originalByte&~(1<<bitIndex)));
 	}
 	
 	/**
@@ -134,7 +146,7 @@ public class TileEntityComputer extends TileEntity {
 	 * @param index The memory location to be read
 	 * @return The byte at that location
 	 */
-	private byte readMemory(short index) {
+	public byte readMemory(short index) {
 		return memory[index + 32768];
 	}
 	
@@ -183,7 +195,7 @@ public class TileEntityComputer extends TileEntity {
 	
 	/**
 	 * The constructor for an emulator instance. Fills the
-	 * memory with #$FF and sets the unused flag to logical
+	 * memory with #$FF and sets the unused flag to a logical
 	 * 1.
 	 */
 	public TileEntityComputer() {
@@ -264,8 +276,8 @@ public class TileEntityComputer extends TileEntity {
 	 */
 	@Override
 	public void writeToNBT(NBTTagCompound data) {
-		for(int i=0;i<50;i++) {
-			data.setByteArray(("screenBuffer_row" + i), screenBuffer[i]);
+		for(int column=0;column<80;column++) {
+			data.setByteArray(("screenBuffer_column" + column), screenBuffer[column]);
 		}
 		data.setByte("registerA", registerA);
 		data.setByte("registerX", registerX);
@@ -295,8 +307,8 @@ public class TileEntityComputer extends TileEntity {
 	 */
 	@Override
 	public void readFromNBT(NBTTagCompound data) {
-		for(int i=0;i<50;i++) {
-			screenBuffer[i] = data.getByteArray("screenBuffer_row" + i);
+		for(int column=0;column<80;column++) {
+			screenBuffer[column] = data.getByteArray("screenBuffer_column" + column);
 		}
 		registerA = data.getByte("registerA");
 		registerX = data.getByte("registerX");
@@ -324,6 +336,7 @@ public class TileEntityComputer extends TileEntity {
 	 */
 	@Override
 	public void updateEntity() {
+		markDirty();
 		time++;
 		
 		if(state != StateComputer.RUN) {return;}
@@ -395,7 +408,7 @@ public class TileEntityComputer extends TileEntity {
 			break;
 		case BRK:
 			flags = setBit(flags, 4, true);
-			programCounter++;
+			++programCounter;
 			break;
 		case BVC_REL:
 			break;
@@ -506,7 +519,7 @@ public class TileEntityComputer extends TileEntity {
 		case LDA_ABS_Y:
 			break;
 		case LDA_IMM:
-			registerA = readMemory(programCounter++);
+			registerA = readMemory(++programCounter);
 			flags = setBit(flags, 7, registerA<0);
 			flags = setBit(flags, 1, registerA==0);
 			break;
@@ -515,7 +528,7 @@ public class TileEntityComputer extends TileEntity {
 		case LDA_IND_Y:
 			break;
 		case LDA_ZP:
-			registerA = memory[readMemory(programCounter++)];
+			registerA = memory[readMemory(++programCounter)];
 			flags = setBit(flags, 7, registerA<0);
 			flags = setBit(flags, 1, registerA==0);
 			break;
@@ -526,12 +539,12 @@ public class TileEntityComputer extends TileEntity {
 		case LDX_ABS_Y:
 			break;
 		case LDX_IMM:
-			registerX = readMemory(programCounter++);
+			registerX = readMemory(++programCounter);
 			flags = setBit(flags, 7, registerX<0);
 			flags = setBit(flags, 1, registerX==0);
 			break;
 		case LDX_ZP:
-			registerX = memory[readMemory(programCounter++)];
+			registerX = memory[readMemory(++programCounter)];
 			flags = setBit(flags, 7, registerX<0);
 			flags = setBit(flags, 1, registerX==0);
 			break;
@@ -542,12 +555,12 @@ public class TileEntityComputer extends TileEntity {
 		case LDY_ABS_X:
 			break;
 		case LDY_IMM:
-			registerY = readMemory(programCounter++);
+			registerY = readMemory(++programCounter);
 			flags = setBit(flags, 7, registerY<0);
 			flags = setBit(flags, 1, registerY==0);
 			break;
 		case LDY_ZP:
-			registerY = memory[readMemory(programCounter++)];
+			registerY = memory[readMemory(++programCounter)];
 			flags = setBit(flags, 7, registerY<0);
 			flags = setBit(flags, 1, registerY==0);
 			break;
@@ -628,7 +641,7 @@ public class TileEntityComputer extends TileEntity {
 			byte low2 = pullStack();
 			byte high2 = pullStack();
 			programCounter = (short) ((high2 << 8) + low2);
-			programCounter++;
+			++programCounter;
 			break;
 		case SBC_ABS:
 			break;
@@ -637,7 +650,7 @@ public class TileEntityComputer extends TileEntity {
 		case SBC_ABS_Y:
 			break;
 		case SBC_IMM:
-			byte value = readMemory(programCounter++);
+			byte value = readMemory(++programCounter);
 			short result = (short) (((setBit((byte) 0x00, 7, testBit(flags, 0)) << 1) + registerA) - value);
 			registerA = (byte) (result & 0xFF);
 			
@@ -664,8 +677,8 @@ public class TileEntityComputer extends TileEntity {
 			flags = setBit(flags, 2, true);
 			break;
 		case STA_ABS:
-			byte low5 = readMemory(programCounter++);
-			byte high5 = readMemory(programCounter++);
+			byte low5 = readMemory(++programCounter);
+			byte high5 = readMemory(++programCounter);
 			short address = (short) ((high5 << 8) | low5);
 			
 			writeMemory(address, registerA);
@@ -679,7 +692,7 @@ public class TileEntityComputer extends TileEntity {
 		case STA_IND_Y:
 			break;
 		case STA_ZP:
-			memory[readMemory(programCounter++)] = registerA;
+			memory[readMemory(++programCounter)] = registerA;
 			break;
 		case STA_ZP_X:
 			break;
@@ -692,26 +705,26 @@ public class TileEntityComputer extends TileEntity {
 			}
 			break;
 		case STX_ABS:
-			byte low4 = readMemory(programCounter++);
-			byte high4 = readMemory(programCounter++);
+			byte low4 = readMemory(++programCounter);
+			byte high4 = readMemory(++programCounter);
 			short address2 = (short) ((high4 << 8) | low4);
 			
 			writeMemory(address2, registerX);
 			break;
 		case STX_ZP:
-			memory[readMemory(programCounter++)] = registerX;
+			memory[readMemory(++programCounter)] = registerX;
 			break;
 		case STX_ZP_Y:
 			break;
 		case STY_ABS:
-			byte low3 = readMemory(programCounter++);
-			byte high3 = readMemory(programCounter++);
+			byte low3 = readMemory(++programCounter);
+			byte high3 = readMemory(++programCounter);
 			short address3 = (short) ((high3 << 8) | low3);
 			
 			writeMemory(address3, registerY);
 			break;
 		case STY_ZP:
-			memory[readMemory(programCounter++)] = registerY;
+			memory[readMemory(++programCounter)] = registerY;
 			break;
 		case STY_ZP_X:
 			break;
