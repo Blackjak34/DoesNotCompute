@@ -156,16 +156,17 @@ public class GuiComputer extends GuiScreen {
 	 * GUI. Special keys are escape to leave the GUI, backspace
 	 * to delete a character, and enter to plug in a command.
 	 * Because this function is messy and leaves the computer
-	 * as a hardcoded half-chat based assembler, this will
+	 * as a hardcoded halfway chat based interpreter, this will
 	 * certainly be recoded in the near future.
 	 */
 	@Override
 	public void keyTyped(char charTyped, int lwjglCode) {
 		// Closes the GUI if escape is pressed
-		if(lwjglCode == 1) {mc.thePlayer.closeScreen();} else
-		
+		if(lwjglCode == 1) {
+			mc.thePlayer.closeScreen();
+			mc.theWorld.markBlockForUpdate(tiledata.xCoord, tiledata.yCoord, tiledata.zCoord);
 		// If the key typed is in the charset
-		if(CharacterComputer.getCharacter(charTyped) != CharacterComputer.INVALID) {
+		} else if(CharacterComputer.getCharacter(charTyped) != CharacterComputer.INVALID) {
 			// Put the ascii code for the char that was typed into the screen buffer at the cursor
 			tiledata.screenBuffer[tiledata.cursorX][tiledata.cursorY] = (byte) charTyped;
 			
@@ -218,7 +219,7 @@ public class GuiComputer extends GuiScreen {
 						mc.thePlayer.addChatMessage(new ChatComponentText("The second argument isn't a valid number."));
 						return;
 					}
-					tiledata.writeMemory((short) 2, (byte) arg3);
+					tiledata.writeMemory(2, (byte) arg3);
 				//$FALL-THROUGH$
 				case 2:
 					int arg2;
@@ -228,14 +229,14 @@ public class GuiComputer extends GuiScreen {
 						mc.thePlayer.addChatMessage(new ChatComponentText("The first argument isn't a valid number."));
 						return;
 					}
-					tiledata.writeMemory((short) 1, (byte) arg2);
+					tiledata.writeMemory(1, (byte) arg2);
 				//$FALL-THROUGH$
 				case 1:
-					tiledata.writeMemory((short) 0, instruction.getHexValue());
+					tiledata.writeMemory(0, (byte) instruction.getHexValue());
 			}
 			
 			// Set the program counter to the instruction just written
-			tiledata.setProgramCounter((short) 0);
+			tiledata.setProgramCounter(0);
 			
 			// Start up the computer
 			tiledata.setState(StateComputer.RUN);

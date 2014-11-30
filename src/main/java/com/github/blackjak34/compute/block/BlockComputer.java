@@ -3,6 +3,7 @@ package com.github.blackjak34.compute.block;
 import net.minecraft.block.Block;
 import net.minecraft.block.ITileEntityProvider;
 import net.minecraft.block.material.Material;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.texture.IIconRegister;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.entity.player.EntityPlayer;
@@ -12,6 +13,7 @@ import net.minecraft.world.World;
 
 import com.github.blackjak34.compute.Compute;
 import com.github.blackjak34.compute.entity.tile.TileEntityComputer;
+import com.github.blackjak34.compute.enums.StateComputer;
 
 /**
  * The Computer block. Serves as the physical world
@@ -22,6 +24,8 @@ import com.github.blackjak34.compute.entity.tile.TileEntityComputer;
  * @since	1.0
  */
 public class BlockComputer extends Block implements ITileEntityProvider {
+	
+	private int rotation;
 	
 	/**
 	 * An array of icons containing the various sprites
@@ -70,19 +74,52 @@ public class BlockComputer extends Block implements ITileEntityProvider {
 	 * Automatically called by Forge to fetch the face
 	 * textures of the block whenever its metadata changes.
 	 * This function sets the front face accordingly, while
-	 * keeping the other faces constant.
+	 * keeping the other faces constant and accounting for
+	 * rotation.
 	 * 
 	 * @return The texture associated with the specified side
 	 */
 	@Override
 	public IIcon getIcon(int side, int metadata) {
-		switch(side) {
-		case 2:
-			return icons[metadata];
-		case 3:
-			return icons[8];
-		default:
-			return icons[9];
+		switch(rotation) {
+			case 0:
+				switch(side) {
+					case 2:
+						return icons[metadata];
+					case 3:
+						return icons[8];
+					default:
+						return icons[9];
+				}
+			case 1:
+				switch(side) {
+					case 5:
+						return icons[metadata];
+					case 4:
+						return icons[8];
+					default:
+						return icons[9];
+				}
+			case 2:
+				switch(side) {
+					case 3:
+						return icons[metadata];
+					case 2:
+						return icons[8];
+					default:
+						return icons[9];
+				}
+			case 3:
+				switch(side) {
+					case 4:
+						return icons[metadata];
+					case 5:
+						return icons[8];
+					default:
+						return icons[9];
+				}
+			default:
+				return icons[9];
 		}
 	}
 	
@@ -126,5 +163,29 @@ public class BlockComputer extends Block implements ITileEntityProvider {
 	public void onBlockPreDestroy(World world, int blockX, int blockY, int blockZ, int metadataOld) {
 		world.removeTileEntity(blockX, blockY, blockZ);
 	}
-
+	
+	/**
+	 * Forge calls this function whenever a block of this type
+	 * is placed into the world by a player. The only purpose
+	 * that this function serves is to calculate the rotation
+	 * of the block based on the player's head yaw.
+	 */
+	@Override
+	public int onBlockPlaced(World world, int blockX, int blockY, int blockZ, int side, float hitX, float hitY, float hitZ, int metadata) {
+		rotation = (((int) Minecraft.getMinecraft().thePlayer.getRotationYawHead() + 45) / 90) % 4;
+		
+		return metadata;
+	}
+	
+	/**
+	 * This function performs some post-initialization for
+	 * the TileEntity associated with this block. Currently
+	 * the only thing that this function does is set the
+	 * initial state ({@link StateComputer}) of the block.
+	 */
+	@Override
+    public void onPostBlockPlaced(World world, int blockX, int blockY, int blockZ, int metadata) {
+		((TileEntityComputer) world.getTileEntity(blockX, blockY, blockZ)).setState(StateComputer.RESET);
+	}
+	
 }
