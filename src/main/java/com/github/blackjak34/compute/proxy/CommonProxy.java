@@ -3,6 +3,7 @@ package com.github.blackjak34.compute.proxy;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.world.World;
 
+import com.github.blackjak34.compute.container.ContainerComputer;
 import com.github.blackjak34.compute.entity.tile.TileEntityComputer;
 import com.github.blackjak34.compute.gui.GuiComputer;
 
@@ -22,14 +23,19 @@ public class CommonProxy implements IGuiHandler {
     public void registerRenderers() {}
 
 	@Override
-	public Object getServerGuiElement(int ID, EntityPlayer player, World world, int x, int y, int z) {
+	public Object getServerGuiElement(int ID, EntityPlayer player, World world, int blockX, int blockY, int blockZ) {
+		switch(ID) {
+			case GuiComputer.GUIID:
+				return new ContainerComputer((TileEntityComputer) world.getTileEntity(blockX, blockY, blockZ));
+		}
+		
 		return null;
 	}
 
 	@Override
 	public Object getClientGuiElement(int ID, EntityPlayer player, World world, int blockX, int blockY, int blockZ) {
 		switch(ID) {
-			case GuiComputer.GUI_ID:
+			case GuiComputer.GUIID:
 				return new GuiComputer((TileEntityComputer) world.getTileEntity(blockX, blockY, blockZ));
 		}
 		

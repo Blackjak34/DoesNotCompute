@@ -2,11 +2,16 @@ package com.github.blackjak34.compute.entity.tile;
 
 import java.util.Arrays;
 
+import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.network.NetworkManager;
 import net.minecraft.network.Packet;
 import net.minecraft.network.play.server.S35PacketUpdateTileEntity;
 import net.minecraft.tileentity.TileEntity;
+import net.minecraft.util.ChatComponentText;
+
 import com.github.blackjak34.compute.block.BlockComputer;
+import com.github.blackjak34.compute.enums.CharacterComputer;
 import com.github.blackjak34.compute.enums.InstructionComputer;
 import com.github.blackjak34.compute.enums.StateComputer;
 
@@ -95,7 +100,7 @@ public class TileEntityComputer extends TileEntity {
 	 * computer block. (see {@link BlockComputer} and
 	 * {@link StateComputer})
 	 */
-	private StateComputer state;
+	private StateComputer state = StateComputer.RESET;
 	
 	/**
 	 * The world time when this tile entity was created.
@@ -105,12 +110,33 @@ public class TileEntityComputer extends TileEntity {
 	 */
 	private long creationTime;
 	
+	/**
+	 * Retrieves a Packet to send over the network to the
+	 * client to sync the serverside TileEntity to the
+	 * clientside TileEntity. This is extremely inefficient
+	 * as it sends all of the data about this TileEntity
+	 * every time a key is pressed in the GUI, but this
+	 * also needs to send all of the data as it is called
+	 * to initialize the data in the clientside version.
+	 * Most likely a custom packet implementation to avoid
+	 * this will come in the near future.
+	 */
 	@Override
 	public Packet getDescriptionPacket() {
 		NBTTagCompound data = new NBTTagCompound();
 		writeToNBT(data);
 		
 		return new S35PacketUpdateTileEntity(xCoord, yCoord, zCoord, 1, data);
+	}
+	
+	/**
+	 * Handles what to do on the clientside after the
+	 * description packet is recieved. All this function
+	 * does is load the data out of the packet.
+	 */
+	@Override
+	public void onDataPacket(NetworkManager networkManager, S35PacketUpdateTileEntity packet) {
+		readFromNBT(packet.func_148857_g());
 	}
 	
 	/**
@@ -185,13 +211,20 @@ public class TileEntityComputer extends TileEntity {
 	}
 	
 	/**
+	 * An empty constructor that Forge can use to do some
+	 * fancy reflection jazz on this TileEntity. Don't
+	 * delete this or use it in actual code.
+	 */
+	public TileEntityComputer() {}
+	
+	/**
 	 * The constructor for an emulator instance. Fills the
 	 * memory with #$FF and saves the current time as the
 	 * time that this computer was created.
 	 */
-	public TileEntityComputer() {
+	public TileEntityComputer(long creationTime) {
 		Arrays.fill(memory, (byte) 0xFF);
-		creationTime = getWorldObj().getTotalWorldTime();
+		this.creationTime = creationTime;
 	}
 	
 	/**
@@ -219,15 +252,25 @@ public class TileEntityComputer extends TileEntity {
 		this.state = state;
 		switch(state) {
 		case HALT:
-			getWorldObj().setBlockMetadataWithNotify(xCoord, yCoord, zCoord, 4, 2);
-			break;
-		case RESET:
-			getWorldObj().setBlockMetadataWithNotify(xCoord, yCoord, zCoord, 2, 2);
+			getWorldObj().setBlockMetadataWithNotify(xCoord, yCoord, zCoord, 1, 2);
 			break;
 		case RUN:
-			getWorldObj().setBlockMetadataWithNotify(xCoord, yCoord, zCoord, 6, 2);
+			getWorldObj().setBlockMetadataWithNotify(xCoord, yCoord, zCoord, 2, 2);
+			break;
+		case RESET:
+			getWorldObj().setBlockMetadataWithNotify(xCoord, yCoord, zCoord, 3, 2);
 			break;
 		}
+	}
+	
+	/**
+	 * Returns the current state of this computer, used to
+	 * update the lights in the GUI.
+	 * 
+	 * @return The current state of this emulator
+	 */
+	public StateComputer getState() {
+		return state;
 	}
 	
 	/**
@@ -287,6 +330,9 @@ public class TileEntityComputer extends TileEntity {
 		
 		data.setByteArray("memory", memory);
 		
+		data.setInteger("cursorX", cursorX);
+		data.setInteger("cursorY", cursorY);
+		
 		data.setString("state", state.toString());
 		data.setLong("creationTime", creationTime);
 		
@@ -307,26 +353,31 @@ public class TileEntityComputer extends TileEntity {
 	@Override
 	public void readFromNBT(NBTTagCompound data) {
 		for(int column=0;column<80;column++) {
-			screenBuffer[column] = data.getByteArray("screenBuffer_column" + column);
+			String key = "screenBuffer_column" + column;
+			if(data.hasKey(key)) {screenBuffer[column] = data.getByteArray(key);}
 		}
-		registerA = data.getByte("registerA");
-		registerX = data.getByte("registerX");
-		registerY = data.getByte("registerY");
-		stackPointer = data.getByte("stackPointer");
-		programCounter = data.getInteger("programCounter");
 		
-		flagCarry = data.getBoolean("flagCarry");
-		flagZero = data.getBoolean("flagZero");
-		flagInterrupt = data.getBoolean("flagInterrupt");
-		flagDecimal = data.getBoolean("flagDecimal");
-		flagBreak = data.getBoolean("flagBreak");
-		flagOverflow = data.getBoolean("flagOverflow");
-		flagSign = data.getBoolean("flagSign");
+		if(data.hasKey("registerA")) {registerA = data.getByte("registerA");}
+		if(data.hasKey("registerX")) {registerX = data.getByte("registerX");}
+		if(data.hasKey("registerY")) {registerY = data.getByte("registerY");}
+		if(data.hasKey("stackPointer")) {stackPointer = data.getByte("stackPointer");}
+		if(data.hasKey("programCounter")) {programCounter = data.getInteger("programCounter");}
 		
-		memory = data.getByteArray("memory");
+		if(data.hasKey("flagCarry")) {flagCarry = data.getBoolean("flagCarry");}
+		if(data.hasKey("flagZero")) {flagZero = data.getBoolean("flagZero");}
+		if(data.hasKey("flagInterrupt")) {flagInterrupt = data.getBoolean("flagInterrupt");}
+		if(data.hasKey("flagDecimal")) {flagDecimal = data.getBoolean("flagDecimal");}
+		if(data.hasKey("flagBreak")) {flagBreak = data.getBoolean("flagBreak");}
+		if(data.hasKey("flagOverflow")) {flagOverflow = data.getBoolean("flagOverflow");}
+		if(data.hasKey("flagSign")) {flagSign = data.getBoolean("flagSign");}
 		
-		state = StateComputer.valueOf(data.getString("state"));
-		creationTime = data.getLong("creationTime");
+		if(data.hasKey("memory")) {memory = data.getByteArray("memory");}
+		
+		if(data.hasKey("cursorX")) {cursorX = data.getInteger("cursorX");}
+		if(data.hasKey("cursorY")) {cursorY = data.getInteger("cursorY");}
+		
+		if(data.hasKey("state")) {state = StateComputer.valueOf(data.getString("state"));}
+		if(data.hasKey("creationTime")) {creationTime = data.getLong("creationTime");}
 		
 		super.readFromNBT(data);
 	}
@@ -1193,6 +1244,110 @@ public class TileEntityComputer extends TileEntity {
 	 */
 	private long getComputerTime() {
 		return getWorldObj().getTotalWorldTime() - creationTime;
+	}
+	
+	/**
+	 * A big function that handles keypresses from clients
+	 * once they reach the serverside. This has a shoddy
+	 * pseudo-assembler built into it for testing purposes
+	 * and will certainly not be in the release version of
+	 * the mod.
+	 * 
+	 * @param charTyped The key pressed by the client
+	 * @param player The player who pressed the key; used for sending chat
+	 */
+	public void writeChar(char charTyped, EntityPlayerMP player) {
+		if(CharacterComputer.getCharacter(charTyped) != CharacterComputer.INVALID) {
+			// Put the ascii code for the char that was typed into the screen buffer at the cursor
+			screenBuffer[cursorX][cursorY] = (byte) charTyped;
+			
+			// Move the cursor to the right, wrap if needed
+			cursorX++;
+			cursorX %= 80;
+		// If the enter key was pressed
+		} else if(charTyped == 13) {
+			// Initialize the StringBuilder (efficient way to concentate lots of Strings)
+			StringBuilder lineText = new StringBuilder();
+			
+			// Read all of the data from the left side of the current row up to the cursor
+			for(int screenColumn = 0;screenColumn<cursorX;screenColumn++) {
+				// Get the data at the position, convert from charset data into ascii, and add onto the StringBuilder
+				lineText.append((char) CharacterComputer.getCharacter(screenBuffer[screenColumn][cursorY]).getCharCode());
+			}
+			// Move the cursor down and all the way to the left, wrap if needed
+			cursorY++;
+			cursorY %= 50;
+			cursorX = 0;
+			
+			// Break up the built string to analyze it for a typed instruction
+			String[] split = lineText.toString().split(" ", 4);
+			
+			// Figure out what instruction was typed, print error message if it was invalid
+			InstructionComputer instruction = InstructionComputer.UNUSED;
+			try {
+				instruction = InstructionComputer.valueOf(split[0]);
+			} catch(IllegalArgumentException e) {
+				player.addChatMessage(new ChatComponentText("That isn't a valid instruction."));
+				return;
+			}
+			
+			// Make sure enough args were added after the instruction for it to work
+			if(split.length < instruction.getLength()) {
+				player.addChatMessage(new ChatComponentText("Not enough arguments."));
+				return;
+			}
+			
+			// Stop the computer
+			setState(StateComputer.RESET);
+			
+			// Write the instruction and its args into computer memory accordingly
+			switch(instruction.getLength()) {
+				case 3:
+					int arg3;
+					try {
+						arg3 = Integer.parseInt(split[2]);
+					} catch(NumberFormatException e) {
+						player.addChatMessage(new ChatComponentText("The second argument isn't a valid number."));
+						return;
+					}
+					writeMemory(2, (byte) arg3);
+				//$FALL-THROUGH$
+				case 2:
+					int arg2;
+					try {
+						arg2 = Integer.parseInt(split[1]);
+					} catch(NumberFormatException e) {
+						player.addChatMessage(new ChatComponentText("The first argument isn't a valid number."));
+						return;
+					}
+					writeMemory(1, (byte) arg2);
+				//$FALL-THROUGH$
+				case 1:
+					writeMemory(0, (byte) instruction.getHexValue());
+			}
+			
+			// Set the program counter to the instruction just written
+			setProgramCounter(0);
+			
+			// Start up the computer
+			setState(StateComputer.RUN);
+			
+			// Tick the computer once to make it run the instruction
+			updateEntity();
+			
+			// Stop the computer again
+			setState(StateComputer.HALT);
+			
+			// Send back a String representation of the computer in the chat
+			player.addChatMessage(new ChatComponentText(toString()));
+		// If backspace was pressed and the cursor isn't all the way back already
+		} else if(charTyped == 8 && cursorX > 0) {
+			// Move the cursor back one space if it isn't already all the way back
+			cursorX--;
+			
+			// Erase the data in the screen buffer at the new cursor location
+			screenBuffer[cursorX][cursorY] = ' ';
+		}
 	}
 	
 }

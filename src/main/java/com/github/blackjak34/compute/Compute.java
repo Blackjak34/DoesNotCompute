@@ -4,6 +4,9 @@ import net.minecraft.block.material.Material;
 
 import com.github.blackjak34.compute.block.BlockComputer;
 import com.github.blackjak34.compute.entity.tile.TileEntityComputer;
+import com.github.blackjak34.compute.item.ItemFloppy;
+import com.github.blackjak34.compute.packet.MessageKeyPressed;
+import com.github.blackjak34.compute.packet.handler.HandlerKeyPressed;
 import com.github.blackjak34.compute.proxy.CommonProxy;
 import com.github.blackjak34.compute.proxy.client.ClientProxy;
 
@@ -15,7 +18,9 @@ import cpw.mods.fml.common.event.FMLInitializationEvent;
 import cpw.mods.fml.common.event.FMLPostInitializationEvent;
 import cpw.mods.fml.common.event.FMLPreInitializationEvent;
 import cpw.mods.fml.common.network.NetworkRegistry;
+import cpw.mods.fml.common.network.simpleimpl.SimpleNetworkWrapper;
 import cpw.mods.fml.common.registry.GameRegistry;
+import cpw.mods.fml.relauncher.Side;
 
 /**
  * The base class for the mod. Performs general setup,
@@ -42,7 +47,11 @@ public class Compute {
      */
     public static final String VERSION = "1.0.1";
     
+    public static SimpleNetworkWrapper networkWrapper;
+    
     public static BlockComputer computer;
+    
+    public static ItemFloppy floppy;
     
     /**
      * The instance of this class that Forge uses. This is
@@ -62,8 +71,9 @@ public class Compute {
     
     /**
      * This function is called by Forge before Minecraft is
-     * initialized. Instantiates blocks/items and registers
-     * them with Forge.
+     * initialized. Instantiates blocks/items, registers them
+     * with Forge, and sets up packet channels for client/server
+     * synchronization.
      * 
      * @param event The Forge event for pre-initialization
      */
@@ -74,6 +84,15 @@ public class Compute {
     	
     	GameRegistry.registerBlock(computer, "blockComputer");
     	GameRegistry.registerTileEntity(TileEntityComputer.class, "tileEntityComputer");
+    	
+    	
+    	floppy = new ItemFloppy();
+    	
+    	GameRegistry.registerItem(floppy, "itemFloppy");
+    	
+    	
+    	networkWrapper = NetworkRegistry.INSTANCE.newSimpleChannel(Compute.MODID);
+    	networkWrapper.registerMessage(HandlerKeyPressed.class, MessageKeyPressed.class, 1, Side.SERVER);
     }
     
     /**

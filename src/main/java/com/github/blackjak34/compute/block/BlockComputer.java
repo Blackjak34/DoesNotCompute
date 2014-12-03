@@ -14,6 +14,10 @@ import net.minecraft.world.World;
 import com.github.blackjak34.compute.Compute;
 import com.github.blackjak34.compute.entity.tile.TileEntityComputer;
 import com.github.blackjak34.compute.enums.StateComputer;
+import com.github.blackjak34.compute.gui.GuiComputer;
+
+import cpw.mods.fml.relauncher.Side;
+import cpw.mods.fml.relauncher.SideOnly;
 
 /**
  * The Computer block. Serves as the physical world
@@ -25,6 +29,12 @@ import com.github.blackjak34.compute.enums.StateComputer;
  */
 public class BlockComputer extends Block implements ITileEntityProvider {
 	
+	/**
+	 * The rotation of this computer block. This is
+	 * derived from the head yaw of the player who
+	 * placed it, so the values are zero for south,
+	 * one for west, two for north, and three for east.
+	 */
 	private int rotation;
 	
 	/**
@@ -57,13 +67,13 @@ public class BlockComputer extends Block implements ITileEntityProvider {
 	@Override
 	public void registerBlockIcons(IIconRegister iconRegister) {
 		icons[0] = iconRegister.registerIcon("doesnotcompute:Computer_Front4");
-		icons[1] = iconRegister.registerIcon("doesnotcompute:Computer_Front4_Disk");
-		icons[2] = iconRegister.registerIcon("doesnotcompute:Computer_Front4_Reset");
-		icons[3] = iconRegister.registerIcon("doesnotcompute:Computer_Front4_Reset_Disk");
-		icons[4] = iconRegister.registerIcon("doesnotcompute:Computer_Front4_Halt");
+		icons[1] = iconRegister.registerIcon("doesnotcompute:Computer_Front4_Halt");
+		icons[2] = iconRegister.registerIcon("doesnotcompute:Computer_Front4_Run");
+		icons[3] = iconRegister.registerIcon("doesnotcompute:Computer_Front4_Reset");
+		icons[4] = iconRegister.registerIcon("doesnotcompute:Computer_Front4_Disk");
 		icons[5] = iconRegister.registerIcon("doesnotcompute:Computer_Front4_Halt_Disk");
-		icons[6] = iconRegister.registerIcon("doesnotcompute:Computer_Front4_Run");
-		icons[7] = iconRegister.registerIcon("doesnotcompute:Computer_Front4_Run_Disk");
+		icons[6] = iconRegister.registerIcon("doesnotcompute:Computer_Front4_Run_Disk");
+		icons[7] = iconRegister.registerIcon("doesnotcompute:Computer_Front4_Reset_Disk");
 		icons[8] = iconRegister.registerIcon("doesnotcompute:Computer_Back");
 		icons[9] = iconRegister.registerIcon("doesnotcompute:Computer_Side");
 		
@@ -134,9 +144,10 @@ public class BlockComputer extends Block implements ITileEntityProvider {
 	 * @return Whether or not to perform the item action
 	 */
 	@Override
+	@SideOnly(Side.CLIENT)
 	public boolean onBlockActivated(World world, int blockX, int blockY, int blockZ,
 			EntityPlayer player, int par6, float playerX, float playerY, float playerZ) {
-		player.openGui(Compute.instance, 42, world, blockX, blockY, blockZ);
+		player.openGui(Compute.instance, GuiComputer.GUIID, world, blockX, blockY, blockZ);
 		return true;
 	}
 	
@@ -149,7 +160,7 @@ public class BlockComputer extends Block implements ITileEntityProvider {
 	 */
 	@Override
 	public TileEntity createNewTileEntity(World world, int par2) {
-		return new TileEntityComputer();
+		return new TileEntityComputer(world.getTotalWorldTime());
 	}
 	
 	/**
@@ -185,7 +196,9 @@ public class BlockComputer extends Block implements ITileEntityProvider {
 	 */
 	@Override
     public void onPostBlockPlaced(World world, int blockX, int blockY, int blockZ, int metadata) {
-		((TileEntityComputer) world.getTileEntity(blockX, blockY, blockZ)).setState(StateComputer.RESET);
+		TileEntityComputer computer = (TileEntityComputer) world.getTileEntity(blockX, blockY, blockZ);
+		
+		computer.setState(StateComputer.RESET);
 	}
 	
 }

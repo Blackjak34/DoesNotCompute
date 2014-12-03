@@ -2,15 +2,18 @@ package com.github.blackjak34.compute.gui;
 
 import org.lwjgl.opengl.GL11;
 
-import net.minecraft.client.gui.GuiScreen;
+import net.minecraft.client.gui.inventory.GuiContainer;
 import net.minecraft.client.renderer.Tessellator;
-import net.minecraft.util.ChatComponentText;
+import net.minecraft.inventory.Slot;
 import net.minecraft.util.ResourceLocation;
 
+import com.github.blackjak34.compute.Compute;
+import com.github.blackjak34.compute.container.ContainerComputer;
 import com.github.blackjak34.compute.entity.tile.TileEntityComputer;
 import com.github.blackjak34.compute.enums.CharacterComputer;
-import com.github.blackjak34.compute.enums.InstructionComputer;
-import com.github.blackjak34.compute.enums.StateComputer;
+import com.github.blackjak34.compute.packet.MessageKeyPressed;
+
+import static com.github.blackjak34.compute.enums.GuiConstantComputer.*;
 
 /**
  * The GUI interface to the {@link BlockComputer} and
@@ -21,24 +24,15 @@ import com.github.blackjak34.compute.enums.StateComputer;
  * @author Blackjak34
  * @since 1.0.1
  */
-public class GuiComputer extends GuiScreen {
+public class GuiComputer extends GuiContainer {
 	
 	/**
 	 * The mod-specific identifier for this GUI. Only used
 	 * to differentiate between different GUIs when selecting
-	 * one to be opened.
+	 * one to be opened. See {@link GuiConstantComputer} for
+	 * all other constants.
 	 */
-	public static final int GUI_ID = 42;
-	
-	/**
-	 * The width of the texture that this gui uses, in pixels.
-	 */
-	private static final int GUI_WIDTH = 256;
-	
-	/**
-	 * The height of the texture that this gui uses, in pixels.
-	 */
-	private static final int GUI_HEIGHT = 166;
+	public static final int GUIID = 42;
 	
 	/**
 	 * A special constant equal to 1/256. When the gui texture
@@ -57,7 +51,7 @@ public class GuiComputer extends GuiScreen {
 	/**
 	 * The file path to where the main GUI texture is located.
 	 */
-	private static final ResourceLocation guiTextureLoc = new ResourceLocation("doesnotcompute:textures/gui/Computer_Gui2.png");
+	private static final ResourceLocation guiTextureLoc = new ResourceLocation("doesnotcompute:textures/gui/Computer_Gui3.png");
 	
 	/**
 	 * The file path to where the Computer's charset is located.
@@ -76,7 +70,11 @@ public class GuiComputer extends GuiScreen {
 	 * @param tiledata The TileEntityComputer that this GUI represents
 	 */
 	public GuiComputer(TileEntityComputer tiledata) {
+		super(new ContainerComputer(tiledata));
+		
 		this.tiledata = tiledata;
+		xSize = 256;
+		ySize = 198;
 	}
 	
 	/**
@@ -87,6 +85,18 @@ public class GuiComputer extends GuiScreen {
 	public boolean doesGuiPauseGame() {return false;}
 	
 	/**
+	 * Draws the screen of this GUI. This is overrided to
+	 * avoid all of the fancy logic in the default method
+	 * because we aren't actually rendering any ItemStacks,
+	 * just normal GUI stuff.
+	 */
+	@Override
+	public void drawScreen(int mouseX, int mouseY, float partialTicks) {
+		drawDefaultBackground();
+		drawGuiContainerBackgroundLayer(partialTicks, mouseX, mouseY);
+	}
+	
+	/**
 	 * The meat of the GUI code. Draws in the GUI background
 	 * using the tessellator and then individually draws in
 	 * each character on the screen from the charset depending
@@ -94,17 +104,17 @@ public class GuiComputer extends GuiScreen {
 	 * screen buffer.
 	 */
 	@Override
-	public void drawScreen(int mouseX, int mouseY, float partialTicks) {
+	protected void drawGuiContainerBackgroundLayer(float partialTicks, int mouseX, int mouseY) {
 		// Switches the color to default and binds the texture to prepare for rendering
 		GL11.glColor4d(1.0, 1.0, 1.0, 1.0);
 		mc.renderEngine.bindTexture(guiTextureLoc);
 		
 		// Finds the corner on the screen to start drawing the GUI from as to center it
-		int coordX = (width - GUI_WIDTH) / 2;
-		int coordY = (height - GUI_HEIGHT) / 2;
+		int coordX = (width - xSize) / 2;
+		int coordY = (height - ySize) / 2;
 		
 		// Draws in the GUI background
-		drawTexturedModalRect(coordX, coordY, 0, 0, GUI_WIDTH, GUI_HEIGHT);
+		drawTexturedModalRect(coordX, coordY, 0, 0, xSize, ySize);
 		
 		// Switches to a nice green color for the text and binds the charset texture
 		GL11.glColor4d(0.10196078, 0.31372549, 0.0, 1.0);
@@ -137,7 +147,7 @@ public class GuiComputer extends GuiScreen {
 				tessellator.draw();
 				
 				// Draws in the cursor on the screen as a solid blinking block of green
-				if(screenColumn == tiledata.cursorX && screenRow == tiledata.cursorY && ((time >> 2) & 1L) > 0L) {
+				if(screenRow == tiledata.cursorY && screenColumn == tiledata.cursorX && ((time >> 2) & 1L) > 0L) {
 					GL11.glDisable(GL11.GL_TEXTURE_2D);
 					tessellator.startDrawingQuads();
 					tessellator.addVertex(screenPositionX, screenPositionY, zLevel);
@@ -149,114 +159,73 @@ public class GuiComputer extends GuiScreen {
 				}
 			}
 		}
+		
+		GL11.glColor4d(1.0, 1.0, 1.0, 1.0);
+		mc.renderEngine.bindTexture(guiTextureLoc);
+		
+		switch(tiledata.getState()) {
+			case HALT:
+				drawTexturedModalRect(coordX + IMG_BUTTON_STP_X.getValue(), coordY + IMG_BUTTON_STP_Y.getValue(),
+						0, ySize,
+						IMG_BUTTON_WIDTH.getValue(), IMG_BUTTON_HEIGHT.getValue());
+				break;
+			case RUN:
+				drawTexturedModalRect(coordX + IMG_BUTTON_RUN_X.getValue(), coordY + IMG_BUTTON_RUN_Y.getValue(),
+						0, ySize,
+						IMG_BUTTON_WIDTH.getValue(), IMG_BUTTON_HEIGHT.getValue());
+				break;
+			case RESET:
+				drawTexturedModalRect(coordX + IMG_BUTTON_RST_X.getValue(), coordY + IMG_BUTTON_RST_Y.getValue(),
+						0, ySize,
+						IMG_BUTTON_WIDTH.getValue(), IMG_BUTTON_HEIGHT.getValue());
+				break;
+		}
 	}
 	
 	/**
-	 * A huge function that processes keyboard input to the
-	 * GUI. Special keys are escape to leave the GUI, backspace
-	 * to delete a character, and enter to plug in a command.
-	 * Because this function is messy and leaves the computer
-	 * as a hardcoded halfway chat based interpreter, this will
-	 * certainly be recoded in the near future.
+	 * Checks to see if a char typed by the player is either:
+	 * in the charset, the escape key, the enter key, or
+	 * the backspace key, and sends a packet to the server
+	 * for handling accordingly.
 	 */
 	@Override
-	public void keyTyped(char charTyped, int lwjglCode) {
-		// Closes the GUI if escape is pressed
-		if(lwjglCode == 1) {
-			mc.thePlayer.closeScreen();
-			mc.theWorld.markBlockForUpdate(tiledata.xCoord, tiledata.yCoord, tiledata.zCoord);
-		// If the key typed is in the charset
-		} else if(CharacterComputer.getCharacter(charTyped) != CharacterComputer.INVALID) {
-			// Put the ascii code for the char that was typed into the screen buffer at the cursor
-			tiledata.screenBuffer[tiledata.cursorX][tiledata.cursorY] = (byte) charTyped;
-			
-			// Move the cursor to the right, wrap if needed
-			tiledata.cursorX++;
-			tiledata.cursorX %= 80;
-		// If the enter key was pressed
-		} else if(charTyped == 13) {
-			// Initialize the StringBuilder (efficient way to concentate lots of Strings)
-			StringBuilder lineText = new StringBuilder();
-			
-			// Read all of the data from the left side of the current row up to the cursor
-			for(int screenColumn = 0;screenColumn<tiledata.cursorX;screenColumn++) {
-				// Get the data at the position, convert from charset data into ascii, and add onto the StringBuilder
-				lineText.append((char) CharacterComputer.getCharacter(tiledata.screenBuffer[screenColumn][tiledata.cursorY]).getCharCode());
-			}
-			// Move the cursor down and all the way to the left, wrap if needed
-			tiledata.cursorY++;
-			tiledata.cursorY %= 50;
-			tiledata.cursorX = 0;
-			
-			// Break up the built string to analyze it for a typed instruction
-			String[] split = lineText.toString().split(" ", 4);
-			
-			// Figure out what instruction was typed, print error message if it was invalid
-			InstructionComputer instruction = InstructionComputer.UNUSED;
-			try {
-				instruction = InstructionComputer.valueOf(split[0]);
-			} catch(IllegalArgumentException e) {
-				mc.thePlayer.addChatMessage(new ChatComponentText("That isn't a valid instruction."));
-				return;
-			}
-			
-			// Make sure enough args were added after the instruction for it to work
-			if(split.length < instruction.getLength()) {
-				mc.thePlayer.addChatMessage(new ChatComponentText("Not enough arguments."));
-				return;
-			}
-			
-			// Stop the computer
-			tiledata.setState(StateComputer.RESET);
-			
-			// Write the instruction and its args into computer memory accordingly
-			switch(instruction.getLength()) {
-				case 3:
-					int arg3;
-					try {
-						arg3 = Integer.parseInt(split[2]);
-					} catch(NumberFormatException e) {
-						mc.thePlayer.addChatMessage(new ChatComponentText("The second argument isn't a valid number."));
-						return;
-					}
-					tiledata.writeMemory(2, (byte) arg3);
-				//$FALL-THROUGH$
-				case 2:
-					int arg2;
-					try {
-						arg2 = Integer.parseInt(split[1]);
-					} catch(NumberFormatException e) {
-						mc.thePlayer.addChatMessage(new ChatComponentText("The first argument isn't a valid number."));
-						return;
-					}
-					tiledata.writeMemory(1, (byte) arg2);
-				//$FALL-THROUGH$
-				case 1:
-					tiledata.writeMemory(0, (byte) instruction.getHexValue());
-			}
-			
-			// Set the program counter to the instruction just written
-			tiledata.setProgramCounter(0);
-			
-			// Start up the computer
-			tiledata.setState(StateComputer.RUN);
-			
-			// Tick the computer once to make it run the instruction
-			tiledata.updateEntity();
-			
-			// Stop the computer again
-			tiledata.setState(StateComputer.HALT);
-			
-			// Send back a String representation of the computer in the chat
-			mc.thePlayer.addChatMessage(new ChatComponentText(tiledata.toString()));
-		// If backspace was pressed and the cursor isn't all the way back already
-		} else if(charTyped == 8 && tiledata.cursorX > 0) {
-			// Move the cursor back one space if it isn't already all the way back
-			tiledata.cursorX--;
-			
-			// Erase the data in the screen buffer at the new cursor location
-			tiledata.screenBuffer[tiledata.cursorX][tiledata.cursorY] = ' ';
+	protected void keyTyped(char charTyped, int lwjglCode) {
+		if(lwjglCode == 1) {mc.thePlayer.closeScreen();}
+		
+		if(CharacterComputer.getCharacter(charTyped) != CharacterComputer.INVALID ||
+				charTyped == 13 || (charTyped == 8 && tiledata.cursorX > 0)) {
+			Compute.networkWrapper.sendToServer(new MessageKeyPressed(charTyped));
 		}
 	}
+	
+	/**
+	 * Overriden to get rid of the default implementation full of useless code
+	 */
+	@Override
+	protected void mouseClicked(int mouseX, int mouseY, int button) {}
+	
+	/**
+	 * Overriden to get rid of the default implementation full of useless code
+	 */
+	@Override
+	protected void mouseClickMove(int mouseX, int mouseY, int lastButtonPressed, long timeSinceLastClick) {}
+	
+	/**
+	 * Overriden to get rid of the default implementation full of useless code
+	 */
+	@Override
+	protected void mouseMovedOrUp(int mouseX, int mouseY, int which) {}
+	
+	/**
+	 * Overriden to get rid of the default implementation full of useless code
+	 */
+	@Override
+	protected void handleMouseClick(Slot slot, int mouseX, int mouseY, int button) {}
+	
+	/**
+	 * Overriden to get rid of the default implementation full of useless code
+	 */
+	@Override
+	protected boolean checkHotbarKeys(int key) {return false;}
 	
 }
