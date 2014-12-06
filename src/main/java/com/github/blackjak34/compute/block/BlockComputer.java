@@ -3,7 +3,6 @@ package com.github.blackjak34.compute.block;
 import net.minecraft.block.Block;
 import net.minecraft.block.ITileEntityProvider;
 import net.minecraft.block.material.Material;
-import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.texture.IIconRegister;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.entity.player.EntityPlayer;
@@ -28,14 +27,6 @@ import cpw.mods.fml.relauncher.SideOnly;
  * @since	1.0
  */
 public class BlockComputer extends Block implements ITileEntityProvider {
-	
-	/**
-	 * The rotation of this computer block. This is
-	 * derived from the head yaw of the player who
-	 * placed it, so the values are zero for south,
-	 * one for west, two for north, and three for east.
-	 */
-	private int rotation;
 	
 	/**
 	 * An array of icons containing the various sprites
@@ -66,14 +57,14 @@ public class BlockComputer extends Block implements ITileEntityProvider {
 	 */
 	@Override
 	public void registerBlockIcons(IIconRegister iconRegister) {
-		icons[0] = iconRegister.registerIcon("doesnotcompute:Computer_Front4");
-		icons[1] = iconRegister.registerIcon("doesnotcompute:Computer_Front4_Halt");
-		icons[2] = iconRegister.registerIcon("doesnotcompute:Computer_Front4_Run");
-		icons[3] = iconRegister.registerIcon("doesnotcompute:Computer_Front4_Reset");
-		icons[4] = iconRegister.registerIcon("doesnotcompute:Computer_Front4_Disk");
-		icons[5] = iconRegister.registerIcon("doesnotcompute:Computer_Front4_Halt_Disk");
-		icons[6] = iconRegister.registerIcon("doesnotcompute:Computer_Front4_Run_Disk");
-		icons[7] = iconRegister.registerIcon("doesnotcompute:Computer_Front4_Reset_Disk");
+		icons[0] = iconRegister.registerIcon("doesnotcompute:Computer_Front4_Halt");
+		icons[1] = iconRegister.registerIcon("doesnotcompute:Computer_Front4_Run");
+		icons[2] = iconRegister.registerIcon("doesnotcompute:Computer_Front4_Reset");
+		icons[3] = iconRegister.registerIcon("doesnotcompute:Computer_Front4_Disk");
+		icons[4] = iconRegister.registerIcon("doesnotcompute:Computer_Front4_Halt_Disk");
+		icons[5] = iconRegister.registerIcon("doesnotcompute:Computer_Front4_Run_Disk");
+		icons[6] = iconRegister.registerIcon("doesnotcompute:Computer_Front4_Reset_Disk");
+		icons[7] = iconRegister.registerIcon("doesnotcompute:Computer_Front4");
 		icons[8] = iconRegister.registerIcon("doesnotcompute:Computer_Back");
 		icons[9] = iconRegister.registerIcon("doesnotcompute:Computer_Side");
 		
@@ -84,50 +75,17 @@ public class BlockComputer extends Block implements ITileEntityProvider {
 	 * Automatically called by Forge to fetch the face
 	 * textures of the block whenever its metadata changes.
 	 * This function sets the front face accordingly, while
-	 * keeping the other faces constant and accounting for
-	 * rotation.
+	 * keeping the other faces constant.
 	 * 
 	 * @return The texture associated with the specified side
 	 */
 	@Override
 	public IIcon getIcon(int side, int metadata) {
-		switch(rotation) {
-			case 0:
-				switch(side) {
-					case 2:
-						return icons[metadata];
-					case 3:
-						return icons[8];
-					default:
-						return icons[9];
-				}
-			case 1:
-				switch(side) {
-					case 5:
-						return icons[metadata];
-					case 4:
-						return icons[8];
-					default:
-						return icons[9];
-				}
+		switch(side) {
 			case 2:
-				switch(side) {
-					case 3:
-						return icons[metadata];
-					case 2:
-						return icons[8];
-					default:
-						return icons[9];
-				}
+				return icons[metadata];
 			case 3:
-				switch(side) {
-					case 4:
-						return icons[metadata];
-					case 5:
-						return icons[8];
-					default:
-						return icons[9];
-				}
+				return icons[8];
 			default:
 				return icons[9];
 		}
@@ -168,24 +126,10 @@ public class BlockComputer extends Block implements ITileEntityProvider {
 	 * means (players or server). This function deletes the
 	 * emulator instance that was associated with this
 	 * block.
-	 * THIS FUNCTION IS CALLED ON THE SERVER ONLY.
 	 */
 	@Override
 	public void onBlockPreDestroy(World world, int blockX, int blockY, int blockZ, int metadataOld) {
 		world.removeTileEntity(blockX, blockY, blockZ);
-	}
-	
-	/**
-	 * Forge calls this function whenever a block of this type
-	 * is placed into the world by a player. The only purpose
-	 * that this function serves is to calculate the rotation
-	 * of the block based on the player's head yaw.
-	 */
-	@Override
-	public int onBlockPlaced(World world, int blockX, int blockY, int blockZ, int side, float hitX, float hitY, float hitZ, int metadata) {
-		rotation = (((int) Minecraft.getMinecraft().thePlayer.getRotationYawHead() + 45) / 90) % 4;
-		
-		return metadata;
 	}
 	
 	/**

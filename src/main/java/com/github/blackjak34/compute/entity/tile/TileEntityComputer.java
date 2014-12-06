@@ -2,13 +2,13 @@ package com.github.blackjak34.compute.entity.tile;
 
 import java.util.Arrays;
 
-import net.minecraft.entity.player.EntityPlayerMP;
+import net.minecraft.block.Block;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.network.NetworkManager;
 import net.minecraft.network.Packet;
 import net.minecraft.network.play.server.S35PacketUpdateTileEntity;
 import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.ChatComponentText;
+import net.minecraft.world.World;
 
 import com.github.blackjak34.compute.block.BlockComputer;
 import com.github.blackjak34.compute.enums.CharacterComputer;
@@ -41,11 +41,24 @@ public class TileEntityComputer extends TileEntity {
 	public int cursorY = 0;
 	
 	/**
+	 * A 16-byte long circular key buffer that stores
+	 * keypresses sent by the client. This array should
+	 * be indexed using keyBufferStart and keyBufferPos.
+	 */
+	private byte[] keyBuffer = new byte[16];
+	
+	/**
+	 * Specific indexes used for reading data and writing
+	 * data into/out of the circular key buffer.
+	 */
+	private int keyBufferStart = 0, keyBufferPos = 0;
+	
+	/**
 	 * The screen buffer, for an 80x50 character screen
 	 * size. Writing a byte into this buffer will display
 	 * a character on the screen accordingly.
 	 */
-	public byte[][] screenBuffer = new byte[80][50];
+	private byte[][] screenBuffer = new byte[50][80];
 	
 	/**
 	 * The registers within the 6502. Register A acts as
@@ -109,6 +122,18 @@ public class TileEntityComputer extends TileEntity {
 	 * emulator has existed for.
 	 */
 	private long creationTime;
+	
+	/**
+	 * Determines whether the TileEntity should be regenerated
+	 * when the block id/metadata changes. Obviously, we don't
+	 * want the metadata to regen this because we use it for
+	 * setting the external block appearance.
+	 */
+	@Override
+	public boolean shouldRefresh(Block oldBlock, Block newBlock, int oldMeta, int newMeta, World world, int x, int y, int z)
+    {
+        return oldBlock != newBlock;
+    }
 	
 	/**
 	 * Retrieves a Packet to send over the network to the
@@ -221,6 +246,8 @@ public class TileEntityComputer extends TileEntity {
 	 * The constructor for an emulator instance. Fills the
 	 * memory with #$FF and saves the current time as the
 	 * time that this computer was created.
+	 * 
+	 * @param creationTime The world time when this TileEntity was created
 	 */
 	public TileEntityComputer(long creationTime) {
 		Arrays.fill(memory, (byte) 0xFF);
@@ -250,17 +277,7 @@ public class TileEntityComputer extends TileEntity {
 	 */
 	public void setState(StateComputer state) {
 		this.state = state;
-		switch(state) {
-		case HALT:
-			getWorldObj().setBlockMetadataWithNotify(xCoord, yCoord, zCoord, 1, 2);
-			break;
-		case RUN:
-			getWorldObj().setBlockMetadataWithNotify(xCoord, yCoord, zCoord, 2, 2);
-			break;
-		case RESET:
-			getWorldObj().setBlockMetadataWithNotify(xCoord, yCoord, zCoord, 3, 2);
-			break;
-		}
+		getWorldObj().setBlockMetadataWithNotify(xCoord, yCoord, zCoord, state.ordinal(), 2);
 	}
 	
 	/**
@@ -311,8 +328,8 @@ public class TileEntityComputer extends TileEntity {
 	 */
 	@Override
 	public void writeToNBT(NBTTagCompound data) {
-		for(int column=0;column<80;column++) {
-			data.setByteArray(("screenBuffer_column" + column), screenBuffer[column]);
+		for(int row=0;row<50;row++) {
+			data.setByteArray(("screenBuffer_row" + row), screenBuffer[row]);
 		}
 		data.setByte("registerA", registerA);
 		data.setByte("registerX", registerX);
@@ -352,9 +369,9 @@ public class TileEntityComputer extends TileEntity {
 	 */
 	@Override
 	public void readFromNBT(NBTTagCompound data) {
-		for(int column=0;column<80;column++) {
-			String key = "screenBuffer_column" + column;
-			if(data.hasKey(key)) {screenBuffer[column] = data.getByteArray(key);}
+		for(int row=0;row<50;row++) {
+			String key = "screenBuffer_row" + row;
+			if(data.hasKey(key)) {screenBuffer[row] = data.getByteArray(key);}
 		}
 		
 		if(data.hasKey("registerA")) {registerA = data.getByte("registerA");}
@@ -392,6 +409,21 @@ public class TileEntityComputer extends TileEntity {
 	 */
 	@Override
 	public void updateEntity() {
+		if(keyBufferStart != keyBufferPos) {
+			while(keyBufferStart != keyBufferPos) {
+				// write char onto screen
+				screenBuffer[cursorY][cursorX] = keyBuffer[keyBufferStart];
+				cursorX++;
+				cursorX %= 80;
+				
+				// increment start w/ wrap around to form circular buffer
+				keyBufferStart++;
+				keyBufferStart %= 16;
+			}
+			
+			getWorldObj().markBlockForUpdate(xCoord, yCoord, zCoord);
+		}
+		
 		if(state != StateComputer.RUN) {return;}
 		
 		markDirty();
@@ -503,19 +535,19 @@ public class TileEntityComputer extends TileEntity {
 		case BCC_REL:
 			if(flagCarry == false) {
 				byte relValue = readMemory(programCounter+1);
-				programCounter += relValue;
+				setProgramCounter(programCounter + relValue);
 			}
 			break;
 		case BCS_REL:
 			if(flagCarry == true) {
 				byte relValue = readMemory(programCounter+1);
-				programCounter += relValue;
+				setProgramCounter(programCounter + relValue);
 			}
 			break;
 		case BEQ_REL:
 			if(flagZero == true) {
 				byte relValue = readMemory(programCounter+1);
-				programCounter += relValue;
+				setProgramCounter(programCounter + relValue);
 			}
 			break;
 		case BIT_ABS:
@@ -535,19 +567,19 @@ public class TileEntityComputer extends TileEntity {
 		case BMI_REL:
 			if(flagSign == true) {
 				byte relValue = readMemory(programCounter+1);
-				programCounter += relValue;
+				setProgramCounter(programCounter + relValue);
 			}
 			break;
 		case BNE_REL:
 			if(flagZero == false) {
 				byte relValue = readMemory(programCounter+1);
-				programCounter += relValue;
+				setProgramCounter(programCounter + relValue);
 			}
 			break;
 		case BPL_REL:
 			if(flagSign == false) {
 				byte relValue = readMemory(programCounter+1);
-				programCounter += relValue;
+				setProgramCounter(programCounter + relValue);
 			}
 			break;
 		case BRK:
@@ -556,13 +588,13 @@ public class TileEntityComputer extends TileEntity {
 		case BVC_REL:
 			if(flagOverflow == false) {
 				byte relValue = readMemory(programCounter+1);
-				programCounter += relValue;
+				setProgramCounter(programCounter + relValue);
 			}
 			break;
 		case BVS_REL:
 			if(flagOverflow == true) {
 				byte relValue = readMemory(programCounter+1);
-				programCounter += relValue;
+				setProgramCounter(programCounter + relValue);
 			}
 			break;
 		case CLC:
@@ -740,17 +772,17 @@ public class TileEntityComputer extends TileEntity {
 			setSignZeroFlags(registerY);
 			break;
 		case JMP_ABS:
-			programCounter = readImmAddress(programCounter+1);
+			setProgramCounter(readImmAddress(programCounter+1));
 			break;
 		case JMP_IND:
-			programCounter = readImmAddress(readImmAddress(programCounter+1));
+			setProgramCounter(readImmAddress(readImmAddress(programCounter+1)));
 			break;
 		case JSR_ABS:
 			int addressToPush = programCounter + instruction.getLength() - 1;
 			pushStack((byte) (addressToPush >>> 8));
 			pushStack((byte) addressToPush);
 			
-			programCounter = readImmAddress(programCounter+1);
+			setProgramCounter(readImmAddress(programCounter+1));
 			break;
 		case LDA_ABS:
 			registerA = readMemory(readImmAddress(programCounter+1));
@@ -1046,10 +1078,10 @@ public class TileEntityComputer extends TileEntity {
 			flagOverflow = testBit(pullFlags2, 6);
 			flagSign = testBit(pullFlags2, 7);
 			
-			programCounter = pullImmAddress();
+			setProgramCounter(pullImmAddress());
 			break;
 		case RTS:
-			programCounter = pullImmAddress()+1;
+			setProgramCounter(pullImmAddress()+1);
 			break;
 		case SBC_ABS:
 			performAddition(readImmAddress(programCounter+1), true);
@@ -1156,8 +1188,7 @@ public class TileEntityComputer extends TileEntity {
 			break;
 		}
 		
-		programCounter += instruction.getLength();
-		programCounter %= 65536;
+		setProgramCounter(programCounter + instruction.getLength());
 	}
 	
 	/**
@@ -1247,107 +1278,175 @@ public class TileEntityComputer extends TileEntity {
 	}
 	
 	/**
+	 * Returns the byte value at the specified location in
+	 * the screen buffer.
+	 * 
+	 * @param screenColumn The x coord of the byte
+	 * @param screenRow The y coord of the byte
+	 * @return The byte at the specified coords
+	 */
+	public byte getCharAt(int screenColumn, int screenRow) {
+		return screenBuffer[screenRow][screenColumn];
+	}
+	
+	/**
+	 * Sets the char at a specific location in the
+	 * screen buffer.
+	 * 
+	 * @param screenColumn The x coord of the byte
+	 * @param screenRow The y coord of the byte
+	 * @param newValue The value to set at the specified coords
+	 */
+	public void setCharAt(int screenColumn, int screenRow, byte newValue) {
+		screenBuffer[screenRow][screenColumn] = newValue;
+	}
+	
+	/**
+	 * This function is called by this TIleEntity's Container
+	 * upon recieving a {@link MessageKeyPressed} packet. It
+	 * handles the keypress accordingly and then marks the
+	 * entity to be synced.
+	 * 
+	 * @param keyPressed The key that was pressed by a client
+	 */
+	public void onKeyPressed(char keyPressed) {
+		if(CharacterComputer.getCharacter(keyPressed) != CharacterComputer.INVALID) {
+			keyBuffer[keyBufferPos] = (byte) keyPressed;
+			
+			// increment position w/ wrap around for circular buffer
+			keyBufferPos++;
+			keyBufferPos %= 16;
+		// line break (enter)
+		} else if(keyPressed == 13) {
+			interpretLine();
+		// backspace
+		} else if(keyPressed == 8 && cursorX > 0) {
+			cursorX--;
+			screenBuffer[cursorY][cursorX] = ' ';
+		}
+		
+		getWorldObj().markBlockForUpdate(xCoord, yCoord, zCoord);
+	}
+	
+	/**
 	 * A big function that handles keypresses from clients
 	 * once they reach the serverside. This has a shoddy
 	 * pseudo-assembler built into it for testing purposes
 	 * and will certainly not be in the release version of
 	 * the mod.
-	 * 
-	 * @param charTyped The key pressed by the client
-	 * @param player The player who pressed the key; used for sending chat
 	 */
-	public void writeChar(char charTyped, EntityPlayerMP player) {
-		if(CharacterComputer.getCharacter(charTyped) != CharacterComputer.INVALID) {
-			// Put the ascii code for the char that was typed into the screen buffer at the cursor
-			screenBuffer[cursorX][cursorY] = (byte) charTyped;
+	public void interpretLine() {
+		String lineText = new String(screenBuffer[cursorY], 0, cursorX);
+		
+		// Move the cursor down and all the way to the left, wrap if needed
+		nextLine();
+		
+		// Break up the built string to analyze it for a typed instruction
+		String[] split = lineText.split(" ", 4);
+		
+		// Figure out what instruction was typed, print error message if it was invalid
+		InstructionComputer instruction = InstructionComputer.UNUSED;
+		try {
+			instruction = InstructionComputer.valueOf(split[0]);
+		} catch(IllegalArgumentException e) {
+			//player.addChatMessage(new ChatComponentText("That isn't a valid instruction."));
+			byte[] messageBytes = "That isn't a valid instruction.".getBytes();
 			
-			// Move the cursor to the right, wrap if needed
-			cursorX++;
-			cursorX %= 80;
-		// If the enter key was pressed
-		} else if(charTyped == 13) {
-			// Initialize the StringBuilder (efficient way to concentate lots of Strings)
-			StringBuilder lineText = new StringBuilder();
-			
-			// Read all of the data from the left side of the current row up to the cursor
-			for(int screenColumn = 0;screenColumn<cursorX;screenColumn++) {
-				// Get the data at the position, convert from charset data into ascii, and add onto the StringBuilder
-				lineText.append((char) CharacterComputer.getCharacter(screenBuffer[screenColumn][cursorY]).getCharCode());
-			}
-			// Move the cursor down and all the way to the left, wrap if needed
-			cursorY++;
-			cursorY %= 50;
-			cursorX = 0;
-			
-			// Break up the built string to analyze it for a typed instruction
-			String[] split = lineText.toString().split(" ", 4);
-			
-			// Figure out what instruction was typed, print error message if it was invalid
-			InstructionComputer instruction = InstructionComputer.UNUSED;
-			try {
-				instruction = InstructionComputer.valueOf(split[0]);
-			} catch(IllegalArgumentException e) {
-				player.addChatMessage(new ChatComponentText("That isn't a valid instruction."));
-				return;
+			for(int i=0;i<messageBytes.length;i++) {
+				screenBuffer[cursorY][i] = messageBytes[i];
 			}
 			
-			// Make sure enough args were added after the instruction for it to work
-			if(split.length < instruction.getLength()) {
-				player.addChatMessage(new ChatComponentText("Not enough arguments."));
-				return;
-			}
-			
-			// Stop the computer
-			setState(StateComputer.RESET);
-			
-			// Write the instruction and its args into computer memory accordingly
-			switch(instruction.getLength()) {
-				case 3:
-					int arg3;
-					try {
-						arg3 = Integer.parseInt(split[2]);
-					} catch(NumberFormatException e) {
-						player.addChatMessage(new ChatComponentText("The second argument isn't a valid number."));
-						return;
-					}
-					writeMemory(2, (byte) arg3);
-				//$FALL-THROUGH$
-				case 2:
-					int arg2;
-					try {
-						arg2 = Integer.parseInt(split[1]);
-					} catch(NumberFormatException e) {
-						player.addChatMessage(new ChatComponentText("The first argument isn't a valid number."));
-						return;
-					}
-					writeMemory(1, (byte) arg2);
-				//$FALL-THROUGH$
-				case 1:
-					writeMemory(0, (byte) instruction.getHexValue());
-			}
-			
-			// Set the program counter to the instruction just written
-			setProgramCounter(0);
-			
-			// Start up the computer
-			setState(StateComputer.RUN);
-			
-			// Tick the computer once to make it run the instruction
-			updateEntity();
-			
-			// Stop the computer again
-			setState(StateComputer.HALT);
-			
-			// Send back a String representation of the computer in the chat
-			player.addChatMessage(new ChatComponentText(toString()));
-		// If backspace was pressed and the cursor isn't all the way back already
-		} else if(charTyped == 8 && cursorX > 0) {
-			// Move the cursor back one space if it isn't already all the way back
-			cursorX--;
-			
-			// Erase the data in the screen buffer at the new cursor location
-			screenBuffer[cursorX][cursorY] = ' ';
+			nextLine();
+			return;
 		}
+		
+		// Make sure enough args were added after the instruction for it to work
+		if(split.length < instruction.getLength()) {
+			//player.addChatMessage(new ChatComponentText("Not enough arguments."));
+			byte[] messageBytes = "Not enough arguments.".getBytes();
+			
+			for(int i=0;i<messageBytes.length;i++) {
+				screenBuffer[cursorY][i] = messageBytes[i];
+			}
+			
+			nextLine();
+			return;
+		}
+		
+		// Stop the computer
+		setState(StateComputer.HALT);
+		
+		// Write the instruction and its args into computer memory accordingly
+		switch(instruction.getLength()) {
+			case 3:
+				int arg3;
+				try {
+					arg3 = Integer.parseInt(split[2]);
+				} catch(NumberFormatException e) {
+					//player.addChatMessage(new ChatComponentText("The second argument isn't a valid number."));
+					byte[] messageBytes = "The second argument isn't a valid number.".getBytes();
+					
+					for(int i=0;i<messageBytes.length;i++) {
+						screenBuffer[cursorY][i] = messageBytes[i];
+					}
+					
+					nextLine();
+					return;
+				}
+				writeMemory(2, (byte) arg3);
+			//$FALL-THROUGH$
+			case 2:
+				int arg2;
+				try {
+					arg2 = Integer.parseInt(split[1]);
+				} catch(NumberFormatException e) {
+					//player.addChatMessage(new ChatComponentText("The first argument isn't a valid number."));
+					byte[] messageBytes = "The first argument isn't a valid number.".getBytes();
+					
+					for(int i=0;i<messageBytes.length;i++) {
+						screenBuffer[cursorY][i] = messageBytes[i];
+					}
+					
+					nextLine();
+					return;
+				}
+				writeMemory(1, (byte) arg2);
+			//$FALL-THROUGH$
+			case 1:
+				writeMemory(0, (byte) instruction.getHexValue());
+		}
+		
+		// Set the program counter to the instruction just written
+		setProgramCounter(0);
+		
+		// Start up the computer
+		setState(StateComputer.RUN);
+		
+		// Tick the computer once to make it run the instruction
+		updateEntity();
+		
+		// Stop the computer again
+		setState(StateComputer.RESET);
+		
+		// Send back a String representation of the computer in the chat
+		//player.addChatMessage(new ChatComponentText(toString()));
+		byte[] messageBytes = toString().getBytes();
+		
+		for(int i=0;i<messageBytes.length;i++) {
+			screenBuffer[cursorY][i] = messageBytes[i];
+		}
+		
+		nextLine();
+	}
+	
+	/**
+	 * Moves the cursor down one line and all the way to the
+	 * left.
+	 */
+	private void nextLine() {
+		cursorY++;
+		cursorY %= 50;
+		cursorX = 0;
 	}
 	
 }

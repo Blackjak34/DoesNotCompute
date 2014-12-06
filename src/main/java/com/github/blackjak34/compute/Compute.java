@@ -1,7 +1,6 @@
 package com.github.blackjak34.compute;
 
 import net.minecraft.block.material.Material;
-
 import com.github.blackjak34.compute.block.BlockComputer;
 import com.github.blackjak34.compute.entity.tile.TileEntityComputer;
 import com.github.blackjak34.compute.item.ItemFloppy;
@@ -45,7 +44,7 @@ public class Compute {
     /**
      * The version of this release.
      */
-    public static final String VERSION = "1.0.1";
+    public static final String VERSION = "1.1.1";
     
     public static SimpleNetworkWrapper networkWrapper;
     

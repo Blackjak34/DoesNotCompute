@@ -209,6 +209,7 @@ public enum InstructionComputer {
 	 * values to the enums at initialization.
 	 * 
 	 * @param hexValue The hex value for this instruction
+	 * @param length How many bytes long this instruction is
 	 */
 	private InstructionComputer(int hexValue, int length) {
 		this.hexValue = hexValue;

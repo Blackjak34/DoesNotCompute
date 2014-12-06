@@ -34,10 +34,7 @@ public class HandlerKeyPressed implements IMessageHandler<MessageKeyPressed, IMe
 		Container container = context.getServerHandler().playerEntity.openContainer;
 		
 		if(container instanceof ContainerComputer) {
-			ContainerComputer computer = (ContainerComputer) container;
-			
-			computer.tiledata.writeChar(message.getKeyPressed(), context.getServerHandler().playerEntity);
-			computer.tiledata.getWorldObj().markBlockForUpdate(computer.tiledata.xCoord, computer.tiledata.yCoord, computer.tiledata.zCoord);
+			((ContainerComputer) container).tiledata.onKeyPressed(message.getKeyPressed());
 		}
 		
 		return null;

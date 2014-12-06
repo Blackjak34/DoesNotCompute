@@ -131,7 +131,7 @@ public class GuiComputer extends GuiContainer {
 				int screenPositionY = coordY + 8 + (screenRow * 3);
 				
 				// Retrieves the data about this character from the screen buffer
-				byte charAtLocation = tiledata.screenBuffer[screenColumn][screenRow];
+				byte charAtLocation = tiledata.getCharAt(screenColumn, screenRow);
 				
 				// Translates the data into charset data and converts position in the charset to pixels
 				CharacterComputer charSprite = CharacterComputer.getCharacter(charAtLocation);
@@ -147,7 +147,7 @@ public class GuiComputer extends GuiContainer {
 				tessellator.draw();
 				
 				// Draws in the cursor on the screen as a solid blinking block of green
-				if(screenRow == tiledata.cursorY && screenColumn == tiledata.cursorX && ((time >> 2) & 1L) > 0L) {
+				if(screenColumn == tiledata.cursorX && screenRow == tiledata.cursorY && ((time >> 2) & 1L) > 0L) {
 					GL11.glDisable(GL11.GL_TEXTURE_2D);
 					tessellator.startDrawingQuads();
 					tessellator.addVertex(screenPositionX, screenPositionY, zLevel);
