@@ -1,0 +1,4 @@
+{
+  "computer.keypress": {"category":"master", "sounds":[{"name":"keypress", "stream":false}]},
+  "computer.diskspin": {"category":"master", "sounds":[{"name":"diskspin", "stream":true}]}
+}

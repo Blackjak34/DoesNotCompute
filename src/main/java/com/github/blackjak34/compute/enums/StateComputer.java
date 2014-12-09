@@ -11,5 +11,5 @@ import com.github.blackjak34.compute.entity.tile.TileEntityComputer;
  * @since 1.0
  */
 public enum StateComputer {
-	HALT, RUN, RESET;
+	HALT, RUN, RESET
 }

@@ -11,7 +11,7 @@ import cpw.mods.fml.common.network.simpleimpl.MessageContext;
 
 /**
  * The serverside handler for a key pressed packet, sent by
- * {@link GuiComputer} whenever a valid key gets pressed.
+ * GuiComputer whenever a valid key gets pressed.
  * All this handler does is simply write the key into the
  * TileEntity's screen buffer through the Container associated
  * with it and then marks it for an update to sync it with

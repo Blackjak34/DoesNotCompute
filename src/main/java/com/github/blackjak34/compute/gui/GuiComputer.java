@@ -1,10 +1,11 @@
 package com.github.blackjak34.compute.gui;
 
+import com.github.blackjak34.compute.packet.MessageButtonClicked;
+import net.minecraft.client.gui.GuiButton;
 import org.lwjgl.opengl.GL11;
 
 import net.minecraft.client.gui.inventory.GuiContainer;
 import net.minecraft.client.renderer.Tessellator;
-import net.minecraft.inventory.Slot;
 import net.minecraft.util.ResourceLocation;
 
 import com.github.blackjak34.compute.Compute;
@@ -16,7 +17,7 @@ import com.github.blackjak34.compute.packet.MessageKeyPressed;
 import static com.github.blackjak34.compute.enums.GuiConstantComputer.*;
 
 /**
- * The GUI interface to the {@link BlockComputer} and
+ * The GUI interface to the BlockComputer and
  * {@link TileEntityComputer} that together comprise the
  * 6502 emulator. Accepts keyboard input from the player
  * and feeds it into the computer accordingly.
@@ -29,7 +30,7 @@ public class GuiComputer extends GuiContainer {
 	/**
 	 * The mod-specific identifier for this GUI. Only used
 	 * to differentiate between different GUIs when selecting
-	 * one to be opened. See {@link GuiConstantComputer} for
+	 * one to be opened. See GuiConstantComputer for
 	 * all other constants.
 	 */
 	public static final int GUIID = 42;
@@ -51,7 +52,7 @@ public class GuiComputer extends GuiContainer {
 	/**
 	 * The file path to where the main GUI texture is located.
 	 */
-	private static final ResourceLocation guiTextureLoc = new ResourceLocation("doesnotcompute:textures/gui/Computer_Gui3.png");
+	private static final ResourceLocation guiTextureLoc = new ResourceLocation("doesnotcompute:textures/gui/Computer_Gui4.png");
 	
 	/**
 	 * The file path to where the Computer's charset is located.
@@ -75,6 +76,45 @@ public class GuiComputer extends GuiContainer {
 		this.tiledata = tiledata;
 		xSize = 256;
 		ySize = 198;
+	}
+
+	/**
+	 * Sets up the buttons in the GUI.
+	 */
+	@Override
+	@SuppressWarnings("unchecked")
+	public void initGui() {
+		super.initGui();
+
+		GuiButton buttonStop = new GuiButton(BUTTON_STP.getValue(),
+				guiLeft+BUTTON_STP_X.getValue(), guiTop+BUTTON_STP_Y.getValue(),
+				BUTTON_WIDTH.getValue(), BUTTON_HEIGHT.getValue(), "");
+		GuiButton buttonRun = new GuiButton(BUTTON_RUN.getValue(),
+				guiLeft+BUTTON_RUN_X.getValue(), guiTop+BUTTON_RUN_Y.getValue(),
+				BUTTON_WIDTH.getValue(), BUTTON_HEIGHT.getValue(), "");
+		GuiButton buttonReset = new GuiButton(BUTTON_RST.getValue(),
+				guiLeft+BUTTON_RST_X.getValue(), guiTop+BUTTON_RST_Y.getValue(),
+				BUTTON_WIDTH.getValue(), BUTTON_HEIGHT.getValue(), "");
+		GuiButton buttonEject = new GuiButton(BUTTON_EJECT.getValue(),
+				guiLeft+BUTTON_EJECT_X.getValue(), guiTop+BUTTON_EJECT_Y.getValue(),
+				BUTTON_EJECT_WIDTH.getValue(), BUTTON_EJECT_HEIGHT.getValue(), "");
+
+		buttonList.add(BUTTON_STP.getValue(), buttonStop);
+		buttonList.add(BUTTON_RUN.getValue(), buttonRun);
+		buttonList.add(BUTTON_RST.getValue(), buttonReset);
+		buttonList.add(BUTTON_EJECT.getValue(), buttonEject);
+	}
+
+	/**
+	 * Called by Minecraft whenever a button on this GUI is pressed. The
+	 * only thing that this function does is send a packet to the server
+	 * with the button id to be processed.
+	 *
+	 * @param button The button that was clicked
+	 */
+	@Override
+	public void actionPerformed(GuiButton button) {
+		Compute.networkWrapper.sendToServer(new MessageButtonClicked(button.id));
 	}
 	
 	/**
@@ -180,6 +220,13 @@ public class GuiComputer extends GuiContainer {
 						IMG_BUTTON_WIDTH.getValue(), IMG_BUTTON_HEIGHT.getValue());
 				break;
 		}
+
+		// Draws the floppy disk in the drive slot if one is inserted into the computer.
+		if(tiledata.isFloppyInDrive()) {
+			drawTexturedModalRect(coordX + DISK_SLOT_X.getValue(), coordY + DISK_SLOT_Y.getValue(),
+					FLOPPY_DISK_X.getValue(), FLOPPY_DISK_Y.getValue(),
+					DISK_SLOT_WIDTH.getValue(), DISK_SLOT_HEIGHT.getValue());
+		}
 	}
 	
 	/**
@@ -195,37 +242,10 @@ public class GuiComputer extends GuiContainer {
 		if(CharacterComputer.getCharacter(charTyped) != CharacterComputer.INVALID ||
 				charTyped == 13 || (charTyped == 8 && tiledata.cursorX > 0)) {
 			Compute.networkWrapper.sendToServer(new MessageKeyPressed(charTyped));
+
+			// Plays a key pressing sound
+			mc.thePlayer.playSound("doesnotcompute:computer.keypress", 1.0f, 1.0f);
 		}
 	}
-	
-	/**
-	 * Overriden to get rid of the default implementation full of useless code
-	 */
-	@Override
-	protected void mouseClicked(int mouseX, int mouseY, int button) {}
-	
-	/**
-	 * Overriden to get rid of the default implementation full of useless code
-	 */
-	@Override
-	protected void mouseClickMove(int mouseX, int mouseY, int lastButtonPressed, long timeSinceLastClick) {}
-	
-	/**
-	 * Overriden to get rid of the default implementation full of useless code
-	 */
-	@Override
-	protected void mouseMovedOrUp(int mouseX, int mouseY, int which) {}
-	
-	/**
-	 * Overriden to get rid of the default implementation full of useless code
-	 */
-	@Override
-	protected void handleMouseClick(Slot slot, int mouseX, int mouseY, int button) {}
-	
-	/**
-	 * Overriden to get rid of the default implementation full of useless code
-	 */
-	@Override
-	protected boolean checkHotbarKeys(int key) {return false;}
 	
 }

@@ -3,6 +3,8 @@ package com.github.blackjak34.compute.entity.tile;
 import java.util.Arrays;
 
 import net.minecraft.block.Block;
+import net.minecraft.entity.item.EntityItem;
+import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.network.NetworkManager;
 import net.minecraft.network.Packet;
@@ -10,21 +12,39 @@ import net.minecraft.network.play.server.S35PacketUpdateTileEntity;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.world.World;
 
-import com.github.blackjak34.compute.block.BlockComputer;
+import com.github.blackjak34.compute.Compute;
 import com.github.blackjak34.compute.enums.CharacterComputer;
 import com.github.blackjak34.compute.enums.InstructionComputer;
 import com.github.blackjak34.compute.enums.StateComputer;
+import com.github.blackjak34.compute.item.ItemFloppy;
+
+import static com.github.blackjak34.compute.enums.GuiConstantComputer.*;
 
 /**
  * The emulator component of the Computer block. Fully
  * emulates an old 6502 processor from the '70s. Players
  * can feed information into the computer through the GUI
- * made available by {@link BlockComputer}.
+ * made available by {@link com.github.blackjak34.compute.block.BlockComputer}.
  * 
  * @author Blackjak34
  * @since 1.0
  */
 public class TileEntityComputer extends TileEntity {
+
+	/**
+	 * Whether or not this computer currently has a
+	 * floppy disk in its drive. Used for rendering
+	 * and eject checks.
+	 */
+	private boolean floppyInDrive = false;
+
+	/**
+	 * The data directory of the floppy disk currently
+	 * in this computer. This is explicitly set to null
+	 * when there is no floppy disk in the computer to
+	 * make errors more obvious.
+	 */
+	private String floppyDataDir = "null";
 	
 	/**
 	 * The current column on the screen that the cursor
@@ -110,8 +130,8 @@ public class TileEntityComputer extends TileEntity {
 	 * only executes instructions while its state is RUN,
 	 * RESET and HALT also serve to differentiate between
 	 * the two settings for the front texture of the
-	 * computer block. (see {@link BlockComputer} and
-	 * {@link StateComputer})
+	 * computer block. (see {@link com.github.blackjak34.compute.block.BlockComputer} and
+	 * {@link com.github.blackjak34.compute.enums.StateComputer})
 	 */
 	private StateComputer state = StateComputer.RESET;
 	
@@ -269,7 +289,7 @@ public class TileEntityComputer extends TileEntity {
 	
 	/**
 	 * Sets the computer's current state (see
-	 * {@link StateComputer}). The state should always be
+	 * {@link com.github.blackjak34.compute.enums.StateComputer}). The state should always be
 	 * changed through this function instead of directly
 	 * because the metadata is also set accordingly.
 	 * 
@@ -289,6 +309,53 @@ public class TileEntityComputer extends TileEntity {
 	public StateComputer getState() {
 		return state;
 	}
+
+	/**
+	 * Returns whether or not this computer currently has
+	 * a floppy disk in its disk drive.
+	 *
+	 * @return Whether or not there is a floppy in the drive
+	 */
+	public boolean isFloppyInDrive() {
+		return floppyInDrive;
+	}
+
+	/**
+	 * If there is a floppy disk in the computer and the world
+	 * is not remote (the code is running on the server), sets
+	 * isFloppyInDrive to false and floppyDataDir to 'null'. A
+	 * floppy disk item with the old value of floppyDataDir is
+	 * then spawned in the world and the block metadata is set
+	 * to no longer display a floppy in the drive.
+	 */
+	public void ejectFloppy() {
+		World world = getWorldObj();
+		if(!floppyInDrive || world.isRemote) {return;}
+		
+		EntityItem ejectedFloppy = new EntityItem(world, xCoord, yCoord, zCoord, new ItemStack(Compute.floppy));
+		ItemFloppy.setFloppyDataDir(ejectedFloppy.getEntityItem(), floppyDataDir);
+		world.spawnEntityInWorld(ejectedFloppy);
+		
+		floppyInDrive = false;
+		floppyDataDir = "null";
+
+		world.setBlockMetadataWithNotify(xCoord, yCoord, zCoord, world.getBlockMetadata(xCoord, yCoord, zCoord)-4, 2);
+	}
+
+	/**
+	 * Sets floppyInDrive to true, floppyDataDir to the
+	 * specified data directory, and the block metadata
+	 * to display a floppy disk in the drive.
+	 *
+	 * @param dataDirectory The data directory of the floppy disk
+	 */
+	public void insertFloppy(String dataDirectory) {
+		floppyInDrive = true;
+		floppyDataDir = dataDirectory;
+
+		World world = getWorldObj();
+		world.setBlockMetadataWithNotify(xCoord, yCoord, zCoord, world.getBlockMetadata(xCoord, yCoord, zCoord)+4, 2);
+	}
 	
 	/**
 	 * Returns a String representation of this object. This
@@ -300,19 +367,8 @@ public class TileEntityComputer extends TileEntity {
 	 */
 	@Override
 	public String toString() {
-		StringBuilder string = new StringBuilder();
-		string.append("A:");
-		string.append(String.format("%x", registerA).toUpperCase());
-		string.append(" X:");
-		string.append(String.format("%x", registerX).toUpperCase());
-		string.append(" Y:");
-		string.append(String.format("%x", registerY).toUpperCase());
-		string.append(" S:");
-		string.append(String.format("%x", stackPointer).toUpperCase());
-		string.append(" T:");
-		string.append(getComputerTime());
-		
-		return string.toString();
+		return String.format("A:%x X:%x Y:%x S:%x T:%d", registerA, registerX, registerY,
+				stackPointer, getComputerTime());
 	}
 	
 	/**
@@ -352,6 +408,9 @@ public class TileEntityComputer extends TileEntity {
 		
 		data.setString("state", state.toString());
 		data.setLong("creationTime", creationTime);
+
+		data.setBoolean("floppyInDrive", floppyInDrive);
+		data.setString("floppyDataDir", floppyDataDir);
 		
 		super.writeToNBT(data);
 	}
@@ -395,6 +454,10 @@ public class TileEntityComputer extends TileEntity {
 		
 		if(data.hasKey("state")) {state = StateComputer.valueOf(data.getString("state"));}
 		if(data.hasKey("creationTime")) {creationTime = data.getLong("creationTime");}
+
+		if(data.hasKey("floppyInDrive")) {floppyInDrive = data.getBoolean("floppyInDrive");
+		}
+		if(data.hasKey("floppyDataDir")) {floppyDataDir = data.getString("floppyDataDir");}
 		
 		super.readFromNBT(data);
 	}
@@ -487,7 +550,7 @@ public class TileEntityComputer extends TileEntity {
 			setSignZeroFlags(registerA);
 			break;
 		case ASL_A:
-			flagCarry = registerA>127;
+			flagCarry = registerA<0;
 			
 			registerA <<= 1;
 			setSignZeroFlags(registerA);
@@ -495,7 +558,7 @@ public class TileEntityComputer extends TileEntity {
 		case ASL_ABS:
 			int aslAbsAddress = readImmAddress(programCounter+1);
 			byte aslAbsValue = readMemory(aslAbsAddress);
-			flagCarry = aslAbsValue>127;
+			flagCarry = aslAbsValue<0;
 			
 			aslAbsValue <<= 1;
 			setSignZeroFlags(aslAbsValue);
@@ -505,7 +568,7 @@ public class TileEntityComputer extends TileEntity {
 		case ASL_ABS_X:
 			int aslAbsXAddress = readImmAddress(programCounter+1)+(registerX&0xFF);
 			byte aslAbsXValue = readMemory(aslAbsXAddress);
-			flagCarry = aslAbsXValue>127;
+			flagCarry = aslAbsXValue<0;
 			
 			aslAbsXValue <<= 1;
 			setSignZeroFlags(aslAbsXValue);
@@ -515,7 +578,7 @@ public class TileEntityComputer extends TileEntity {
 		case ASL_ZP:
 			int aslZpAddress = readMemory(programCounter+1);
 			byte aslZpValue = readMemory(aslZpAddress);
-			flagCarry = aslZpValue>127;
+			flagCarry = aslZpValue<0;
 			
 			aslZpValue <<= 1;
 			setSignZeroFlags(aslZpValue);
@@ -525,7 +588,7 @@ public class TileEntityComputer extends TileEntity {
 		case ASL_ZP_X:
 			int aslZpXAddress = readMemory(programCounter+1)+registerX & 0xFF;
 			byte aslZpXValue = readMemory(aslZpXAddress);
-			flagCarry = aslZpXValue>127;
+			flagCarry = aslZpXValue<0;
 			
 			aslZpXValue <<= 1;
 			setSignZeroFlags(aslZpXValue);
@@ -533,19 +596,19 @@ public class TileEntityComputer extends TileEntity {
 			writeMemory(aslZpXAddress, aslZpXValue);
 			break;
 		case BCC_REL:
-			if(flagCarry == false) {
+			if(!flagCarry) {
 				byte relValue = readMemory(programCounter+1);
 				setProgramCounter(programCounter + relValue);
 			}
 			break;
 		case BCS_REL:
-			if(flagCarry == true) {
+			if(flagCarry) {
 				byte relValue = readMemory(programCounter+1);
 				setProgramCounter(programCounter + relValue);
 			}
 			break;
 		case BEQ_REL:
-			if(flagZero == true) {
+			if(flagZero) {
 				byte relValue = readMemory(programCounter+1);
 				setProgramCounter(programCounter + relValue);
 			}
@@ -565,19 +628,19 @@ public class TileEntityComputer extends TileEntity {
 			flagOverflow = testBit(bitZpValue, 7);
 			break;
 		case BMI_REL:
-			if(flagSign == true) {
+			if(flagSign) {
 				byte relValue = readMemory(programCounter+1);
 				setProgramCounter(programCounter + relValue);
 			}
 			break;
 		case BNE_REL:
-			if(flagZero == false) {
+			if(!flagZero) {
 				byte relValue = readMemory(programCounter+1);
 				setProgramCounter(programCounter + relValue);
 			}
 			break;
 		case BPL_REL:
-			if(flagSign == false) {
+			if(!flagSign) {
 				byte relValue = readMemory(programCounter+1);
 				setProgramCounter(programCounter + relValue);
 			}
@@ -586,13 +649,13 @@ public class TileEntityComputer extends TileEntity {
 			flagBreak = true;
 			break;
 		case BVC_REL:
-			if(flagOverflow == false) {
+			if(!flagOverflow) {
 				byte relValue = readMemory(programCounter+1);
 				setProgramCounter(programCounter + relValue);
 			}
 			break;
 		case BVS_REL:
-			if(flagOverflow == true) {
+			if(flagOverflow) {
 				byte relValue = readMemory(programCounter+1);
 				setProgramCounter(programCounter + relValue);
 			}
@@ -1240,7 +1303,7 @@ public class TileEntityComputer extends TileEntity {
 	 */
 	private void performAddition(int addressOfValue, boolean subtract) {
 		byte addValue = readMemory(addressOfValue);
-		int result = (flagCarry ? 256 : 0 + registerA) + (subtract ? -addValue : addValue);
+		int result = (flagCarry ? 256 : 0) + registerA + (subtract ? -addValue : addValue);
 		registerA = (byte) result;
 		
 		flagOverflow = result<-128 || result>127;
@@ -1290,20 +1353,8 @@ public class TileEntityComputer extends TileEntity {
 	}
 	
 	/**
-	 * Sets the char at a specific location in the
-	 * screen buffer.
-	 * 
-	 * @param screenColumn The x coord of the byte
-	 * @param screenRow The y coord of the byte
-	 * @param newValue The value to set at the specified coords
-	 */
-	public void setCharAt(int screenColumn, int screenRow, byte newValue) {
-		screenBuffer[screenRow][screenColumn] = newValue;
-	}
-	
-	/**
 	 * This function is called by this TIleEntity's Container
-	 * upon recieving a {@link MessageKeyPressed} packet. It
+	 * upon receiving a MessageKeyPressed packet. It
 	 * handles the keypress accordingly and then marks the
 	 * entity to be synced.
 	 * 
@@ -1327,6 +1378,31 @@ public class TileEntityComputer extends TileEntity {
 		
 		getWorldObj().markBlockForUpdate(xCoord, yCoord, zCoord);
 	}
+
+	/**
+	 * This function is called by this TileEntity's Container
+	 * upon receiving a MessageButtonClicked packet. It
+	 * handles the button click accordingly and then marks the
+	 * entity to be synced. If one of the three state buttons
+	 * were pressed then the state is set, or if the floppy
+	 * disk eject button was pressed then the floppy disk (if
+	 * there is one in the drive) is ejected.
+	 *
+	 * @param buttonId The id of the button that was pressed
+	 */
+	public void onButtonClicked(int buttonId) {
+		if(buttonId == BUTTON_STP.getValue()) {
+			setState(StateComputer.HALT);
+		} else if(buttonId == BUTTON_RUN.getValue()) {
+			setState(StateComputer.RUN);
+		} else if(buttonId == BUTTON_RST.getValue()) {
+			setState(StateComputer.RESET);
+		} else if(buttonId == BUTTON_EJECT.getValue()) {
+			ejectFloppy();
+		}
+
+		getWorldObj().markBlockForUpdate(xCoord, yCoord, zCoord);
+	}
 	
 	/**
 	 * A big function that handles keypresses from clients
@@ -1345,16 +1421,12 @@ public class TileEntityComputer extends TileEntity {
 		String[] split = lineText.split(" ", 4);
 		
 		// Figure out what instruction was typed, print error message if it was invalid
-		InstructionComputer instruction = InstructionComputer.UNUSED;
+		InstructionComputer instruction;
 		try {
 			instruction = InstructionComputer.valueOf(split[0]);
 		} catch(IllegalArgumentException e) {
-			//player.addChatMessage(new ChatComponentText("That isn't a valid instruction."));
 			byte[] messageBytes = "That isn't a valid instruction.".getBytes();
-			
-			for(int i=0;i<messageBytes.length;i++) {
-				screenBuffer[cursorY][i] = messageBytes[i];
-			}
+			System.arraycopy(messageBytes, 0, screenBuffer[cursorY], 0, messageBytes.length);
 			
 			nextLine();
 			return;
@@ -1362,12 +1434,8 @@ public class TileEntityComputer extends TileEntity {
 		
 		// Make sure enough args were added after the instruction for it to work
 		if(split.length < instruction.getLength()) {
-			//player.addChatMessage(new ChatComponentText("Not enough arguments."));
 			byte[] messageBytes = "Not enough arguments.".getBytes();
-			
-			for(int i=0;i<messageBytes.length;i++) {
-				screenBuffer[cursorY][i] = messageBytes[i];
-			}
+			System.arraycopy(messageBytes, 0, screenBuffer[cursorY], 0, messageBytes.length);
 			
 			nextLine();
 			return;
@@ -1383,12 +1451,8 @@ public class TileEntityComputer extends TileEntity {
 				try {
 					arg3 = Integer.parseInt(split[2]);
 				} catch(NumberFormatException e) {
-					//player.addChatMessage(new ChatComponentText("The second argument isn't a valid number."));
 					byte[] messageBytes = "The second argument isn't a valid number.".getBytes();
-					
-					for(int i=0;i<messageBytes.length;i++) {
-						screenBuffer[cursorY][i] = messageBytes[i];
-					}
+					System.arraycopy(messageBytes, 0, screenBuffer[cursorY], 0, messageBytes.length);
 					
 					nextLine();
 					return;
@@ -1400,12 +1464,8 @@ public class TileEntityComputer extends TileEntity {
 				try {
 					arg2 = Integer.parseInt(split[1]);
 				} catch(NumberFormatException e) {
-					//player.addChatMessage(new ChatComponentText("The first argument isn't a valid number."));
 					byte[] messageBytes = "The first argument isn't a valid number.".getBytes();
-					
-					for(int i=0;i<messageBytes.length;i++) {
-						screenBuffer[cursorY][i] = messageBytes[i];
-					}
+					System.arraycopy(messageBytes, 0, screenBuffer[cursorY], 0, messageBytes.length);
 					
 					nextLine();
 					return;
@@ -1429,12 +1489,8 @@ public class TileEntityComputer extends TileEntity {
 		setState(StateComputer.RESET);
 		
 		// Send back a String representation of the computer in the chat
-		//player.addChatMessage(new ChatComponentText(toString()));
 		byte[] messageBytes = toString().getBytes();
-		
-		for(int i=0;i<messageBytes.length;i++) {
-			screenBuffer[cursorY][i] = messageBytes[i];
-		}
+		System.arraycopy(messageBytes, 0, screenBuffer[cursorY], 0, messageBytes.length);
 		
 		nextLine();
 	}

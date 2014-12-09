@@ -1,5 +1,7 @@
 package com.github.blackjak34.compute;
 
+import com.github.blackjak34.compute.packet.MessageButtonClicked;
+import com.github.blackjak34.compute.packet.handler.HandlerButtonClicked;
 import net.minecraft.block.material.Material;
 import com.github.blackjak34.compute.block.BlockComputer;
 import com.github.blackjak34.compute.entity.tile.TileEntityComputer;
@@ -7,7 +9,6 @@ import com.github.blackjak34.compute.item.ItemFloppy;
 import com.github.blackjak34.compute.packet.MessageKeyPressed;
 import com.github.blackjak34.compute.packet.handler.HandlerKeyPressed;
 import com.github.blackjak34.compute.proxy.CommonProxy;
-import com.github.blackjak34.compute.proxy.client.ClientProxy;
 
 import cpw.mods.fml.common.Mod;
 import cpw.mods.fml.common.Mod.EventHandler;
@@ -60,8 +61,8 @@ public class Compute {
     public static Compute instance;
     
     /**
-     * The proxy to use. This proxy is {@link ClientProxy}
-     * on the client-side, and {@link CommonProxy} on the
+     * The proxy to use. This proxy is {@link com.github.blackjak34.compute.proxy.client.ClientProxy}
+     * on the client-side, and {@link com.github.blackjak34.compute.proxy.CommonProxy} on the
      * server-side.
      */
     @SidedProxy(clientSide="com.github.blackjak34.compute.proxy.client.ClientProxy",
@@ -92,11 +93,12 @@ public class Compute {
     	
     	networkWrapper = NetworkRegistry.INSTANCE.newSimpleChannel(Compute.MODID);
     	networkWrapper.registerMessage(HandlerKeyPressed.class, MessageKeyPressed.class, 1, Side.SERVER);
+        networkWrapper.registerMessage(HandlerButtonClicked.class, MessageButtonClicked.class, 2, Side.SERVER);
     }
     
     /**
      * This function is called by Forge after Minecraft is
-     * initalized and before all other mods are
+     * initialized and before all other mods are
      * initialized. Utilized the proxy to register custom
      * renderers with Forge.
      * 
@@ -105,8 +107,8 @@ public class Compute {
     @SuppressWarnings("unused")
 	@EventHandler
     public void load(FMLInitializationEvent event) {
-            proxy.registerRenderers();
-            NetworkRegistry.INSTANCE.registerGuiHandler(instance, proxy);
+        proxy.registerRenderers();
+        NetworkRegistry.INSTANCE.registerGuiHandler(instance, proxy);
     }
     
     /**

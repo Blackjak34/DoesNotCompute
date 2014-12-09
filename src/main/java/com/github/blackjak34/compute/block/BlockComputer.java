@@ -6,6 +6,7 @@ import net.minecraft.block.material.Material;
 import net.minecraft.client.renderer.texture.IIconRegister;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.IIcon;
 import net.minecraft.world.World;
@@ -14,9 +15,7 @@ import com.github.blackjak34.compute.Compute;
 import com.github.blackjak34.compute.entity.tile.TileEntityComputer;
 import com.github.blackjak34.compute.enums.StateComputer;
 import com.github.blackjak34.compute.gui.GuiComputer;
-
-import cpw.mods.fml.relauncher.Side;
-import cpw.mods.fml.relauncher.SideOnly;
+import com.github.blackjak34.compute.item.ItemFloppy;
 
 /**
  * The Computer block. Serves as the physical world
@@ -36,7 +35,7 @@ public class BlockComputer extends Block implements ITileEntityProvider {
 	
 	/**
 	 * Almost identical to the constructor for
-	 * {@link Block}, but also sets miscellaneous
+	 * {@link net.minecraft.block.Block}, but also sets miscellaneous
 	 * information about the block.
 	 * 
 	 * @param material The material to use for the block
@@ -97,15 +96,24 @@ public class BlockComputer extends Block implements ITileEntityProvider {
 	 * default action for the item in the player's hand
 	 * should be performed (for example, placing a bucket
 	 * of water). This is used to open a GUI interface
-	 * that provides input to the emulator.
+	 * that provides input to the emulator and ejects/inserts
+	 * floppy disks as needed.
 	 * 
 	 * @return Whether or not to perform the item action
 	 */
 	@Override
-	@SideOnly(Side.CLIENT)
 	public boolean onBlockActivated(World world, int blockX, int blockY, int blockZ,
 			EntityPlayer player, int par6, float playerX, float playerY, float playerZ) {
-		player.openGui(Compute.instance, GuiComputer.GUIID, world, blockX, blockY, blockZ);
+		ItemStack itemInHand = player.getCurrentEquippedItem();
+		if(itemInHand != null && itemInHand.getItem() instanceof ItemFloppy) {
+			TileEntityComputer tiledata = (TileEntityComputer) world.getTileEntity(blockX, blockY, blockZ);
+
+			tiledata.ejectFloppy();
+			tiledata.insertFloppy(itemInHand.getTagCompound().getString("filename"));
+			player.setCurrentItemOrArmor(0, null);
+		} else {
+			player.openGui(Compute.instance, GuiComputer.GUIID, world, blockX, blockY, blockZ);
+		}
 		return true;
 	}
 	
@@ -125,10 +133,13 @@ public class BlockComputer extends Block implements ITileEntityProvider {
 	 * Called by Forge when this block gets broken by any
 	 * means (players or server). This function deletes the
 	 * emulator instance that was associated with this
-	 * block.
+	 * block and ejects its floppy disk if needed.
 	 */
 	@Override
 	public void onBlockPreDestroy(World world, int blockX, int blockY, int blockZ, int metadataOld) {
+		TileEntityComputer computer = (TileEntityComputer) world.getTileEntity(blockX, blockY, blockZ);
+		
+		computer.ejectFloppy();
 		world.removeTileEntity(blockX, blockY, blockZ);
 	}
 	

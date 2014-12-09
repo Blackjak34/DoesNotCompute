@@ -7,7 +7,7 @@ import net.minecraft.inventory.Container;
 
 /**
  * A Container for the serverside implementation of
- * {@link GuiComputer}. All this does at the moment
+ * GuiComputer. All this does at the moment
  * is store a reference to the serverside TileEntity
  * because the GUI doesn't actually have any inventory
  * that the server needs to manage; all of the managing

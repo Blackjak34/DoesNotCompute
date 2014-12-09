@@ -38,6 +38,16 @@ public class ItemFloppy extends Item {
 	 */
 	@Override
 	public void onUpdate(ItemStack item, World world, Entity player, int par4, boolean par5) {
+		setFloppyDataDir(item, "disk_" + UUID.randomUUID().toString());
+	}
+
+	/**
+	 * Sets the data directory on a given floppy disk to the given value.
+	 *
+	 * @param item The item to be set
+	 * @param dataDir The data directory to be set
+	 */
+	public static void setFloppyDataDir(ItemStack item, String dataDir) {
 		NBTTagCompound itemData;
 		if(!item.hasTagCompound()) {
 			itemData = new NBTTagCompound();
@@ -46,7 +56,7 @@ public class ItemFloppy extends Item {
 			if(itemData.getString("filename") != null) {return;}
 		}
 		
-		itemData.setString("filename", "disk_" + UUID.randomUUID().toString());
+		itemData.setString("filename", dataDir);
 		item.setTagCompound(itemData);
 	}
 	

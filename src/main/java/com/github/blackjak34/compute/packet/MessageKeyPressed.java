@@ -6,7 +6,7 @@ import cpw.mods.fml.common.network.simpleimpl.IMessage;
 /**
  * A packet containing a single char to be sent to the
  * server from the client whenever a key is pressed
- * within {@link GuiComputer}.
+ * within GuiComputer.
  * 
  * @author Blackjak34
  * @since 1.1.0
@@ -24,6 +24,7 @@ public class MessageKeyPressed implements IMessage {
 	 * though this shouldn't be used in actual mod code, it
 	 * shouldn't be removed either.
 	 */
+	@SuppressWarnings("unused")
 	public MessageKeyPressed() {}
 	
 	/**

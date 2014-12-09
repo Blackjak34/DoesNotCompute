@@ -2,7 +2,7 @@ package com.github.blackjak34.compute.enums;
 
 /**
  * Holds a bunch of constants used for rendering
- * {@link GuiComputer}.
+ * GuiComputer.
  * 
  * @author Blackjak34
  * @since 1.1.0
@@ -27,21 +27,22 @@ public enum GuiConstantComputer {
 	BUTTON_RST			(2),
 	BUTTON_RST_X		(209),
 	BUTTON_RST_Y		(174),
-	LIGHT_WIDTH			(6),
-	LIGHT_HEIGHT		(2),
-	LIGHT_RED_X			(34),
-	LIGHT_RED_Y			(169),
-	LIGHT_GRN_X			(114),
-	LIGHT_GRN_Y			(169),
-	LIGHT_RED_ACTIVE_X	(14),
-	LIGHT_RED_ACTIVE_Y	(198),
+	BUTTON_EJECT_WIDTH	(8),
+	BUTTON_EJECT_HEIGHT	(4),
+	BUTTON_EJECT		(3),
+	BUTTON_EJECT_X		(33),
+	BUTTON_EJECT_Y		(168),
+	LIGHT_WIDTH			(8),
+	LIGHT_HEIGHT		(4),
+	LIGHT_GRN_X			(113),
+	LIGHT_GRN_Y			(168),
 	LIGHT_GRN_ACTIVE_X	(14),
-	LIGHT_GRN_ACTIVE_Y	(200),
+	LIGHT_GRN_ACTIVE_Y	(198),
 	DISK_SLOT_WIDTH		(86),
 	DISK_SLOT_HEIGHT	(3),
 	DISK_SLOT_X			(34),
 	DISK_SLOT_Y			(175),
-	FLOPPY_DISK_X		(20),
+	FLOPPY_DISK_X		(22),
 	FLOPPY_DISK_Y		(198);
 	
 	/**
