@@ -1,7 +1,11 @@
 package com.github.blackjak34.compute.entity.tile;
 
+import java.io.File;
+import java.io.IOException;
 import java.util.Arrays;
 
+import com.google.common.io.Files;
+import cpw.mods.fml.common.FMLCommonHandler;
 import net.minecraft.block.Block;
 import net.minecraft.entity.item.EntityItem;
 import net.minecraft.item.ItemStack;
@@ -122,7 +126,9 @@ public class TileEntityComputer extends TileEntity {
 	 * The memory of the computer. This is represented
 	 * with a byte array 65536 bytes in length.
 	 */
-	private byte[] memory = new byte[65536];
+	private byte[] memory = new byte[32768];
+
+	private byte[] floppyData;
 	
 	/**
 	 * The current state of the computer. This state
@@ -206,8 +212,15 @@ public class TileEntityComputer extends TileEntity {
 	 * @return The byte at that location
 	 */
 	public byte readMemory(int index) {
-		if(index > 65535 || index < 0) {return (byte) 0xFF;}
-		return memory[index];
+		if(index < 0) {return (byte) 0xFF;}
+
+		if(index < 32768) {
+			return memory[index];
+		} else if(index < 65536 && floppyInDrive) {
+			return readFloppy(index);
+		} else {
+			return (byte) 0xFF;
+		}
 	}
 	
 	/**
@@ -220,8 +233,118 @@ public class TileEntityComputer extends TileEntity {
 	 * @param value The value to write
 	 */
 	public void writeMemory(int index, byte value) {
-		if(index > 65535 || index < 0) {return;}
-		memory[index] = value;
+		if(index < 0) {return;}
+
+		if(index < 32768) {
+			memory[index] = value;
+		} else if(index < 65536 && floppyInDrive) {
+			writeFloppy(index, value);
+		}
+
+		getWorldObj().markBlockForUpdate(xCoord, yCoord, zCoord);
+	}
+
+	/**
+	 * Returns whether or not this computer currently has
+	 * a floppy disk in its disk drive.
+	 *
+	 * @return Whether or not there is a floppy in the drive
+	 */
+	public boolean isFloppyInDrive() {
+		return floppyInDrive;
+	}
+
+	/**
+	 * If there is a floppy disk in the computer and the world
+	 * is not remote (the code is running on the server), sets
+	 * isFloppyInDrive to false and floppyDataDir to 'null'. A
+	 * floppy disk item with the old value of floppyDataDir is
+	 * then spawned in the world and the block metadata is set
+	 * to no longer display a floppy in the drive.
+	 */
+	public void ejectFloppy() {
+		World world = getWorldObj();
+		if(!floppyInDrive || world.isRemote) {return;}
+
+		ItemStack ejectedFloppy = new ItemStack(Compute.floppy);
+		ItemFloppy.setFloppyDataDir(ejectedFloppy, floppyDataDir);
+		world.spawnEntityInWorld(new EntityItem(world, xCoord, yCoord, zCoord, ejectedFloppy));
+
+		writeFloppyData();
+
+		floppyInDrive = false;
+		floppyDataDir = "null";
+		floppyData = null;
+
+		setState(state);
+	}
+
+	/**
+	 * Sets floppyInDrive to true, floppyDataDir to the
+	 * specified data directory, and the block metadata
+	 * to display a floppy disk in the drive.
+	 *
+	 * @param dataDirectory The data directory of the floppy disk
+	 */
+	public void insertFloppy(String dataDirectory) {
+		floppyInDrive = true;
+		floppyDataDir = dataDirectory;
+
+		if(!getWorldObj().isRemote) {loadFloppyData();}
+
+		setState(state);
+	}
+
+	private byte readFloppy(int index) {
+		if(!floppyInDrive) {return (byte) 0xFF;}
+		if(floppyData == null) {loadFloppyData();}
+
+		return floppyData[index - 32768];
+	}
+
+	private void writeFloppy(int index, byte value) {
+		if(!floppyInDrive) {return;}
+		if(floppyData == null) {loadFloppyData();}
+
+		floppyData[index - 32768] = value;
+	}
+
+	private void loadFloppyData() {
+		File dataDirectory = new File(getWorldObj().getSaveHandler().getWorldDirectory(), "/doesnotcompute/");
+		File floppyDataFile = new File(dataDirectory, floppyDataDir);
+		try {
+			if(!dataDirectory.exists()) {dataDirectory.mkdir();}
+
+			if (floppyDataFile.createNewFile()) {
+				System.out.println("Created a new floppy disk data file at " + floppyDataFile.getCanonicalPath());
+			}
+
+			floppyData = Files.toByteArray(floppyDataFile);
+			if(floppyData.length == 0) {floppyData = new byte[32768];}
+		} catch(IOException e) {
+			System.err.println("Errors occurred while loading the floppy disk data file." +
+					" Exiting to avoid imminent crashes and/or death.");
+			e.printStackTrace();
+			FMLCommonHandler.instance().exitJava(-1, false);
+		}
+	}
+
+	private void writeFloppyData() {
+		File dataDirectory = new File(getWorldObj().getSaveHandler().getWorldDirectory(), "/doesnotcompute/");
+		File floppyDataFile = new File(dataDirectory, floppyDataDir);
+		try {
+			if(!dataDirectory.exists()) {dataDirectory.mkdir();}
+
+			if (floppyDataFile.createNewFile()) {
+				System.out.println("Created a new floppy disk data file at " + floppyDataFile.getCanonicalPath());
+			}
+
+			Files.write(floppyData, floppyDataFile);
+		} catch(IOException e) {
+			System.err.println("Errors occurred while saving the floppy disk data file." +
+					" Exiting to avoid imminent crashes and/or death.");
+			FMLCommonHandler.instance().exitJava(-1, false);
+		}
 	}
 	
 	/**
@@ -297,7 +420,7 @@ public class TileEntityComputer extends TileEntity {
 	 */
 	public void setState(StateComputer state) {
 		this.state = state;
-		getWorldObj().setBlockMetadataWithNotify(xCoord, yCoord, zCoord, state.ordinal(), 2);
+		getWorldObj().setBlockMetadataWithNotify(xCoord, yCoord, zCoord, state.ordinal() + (floppyInDrive ? 4 : 0), 2);
 	}
 	
 	/**
@@ -311,53 +434,6 @@ public class TileEntityComputer extends TileEntity {
 	}
 
 	/**
-	 * Returns whether or not this computer currently has
-	 * a floppy disk in its disk drive.
-	 *
-	 * @return Whether or not there is a floppy in the drive
-	 */
-	public boolean isFloppyInDrive() {
-		return floppyInDrive;
-	}
-
-	/**
-	 * If there is a floppy disk in the computer and the world
-	 * is not remote (the code is running on the server), sets
-	 * isFloppyInDrive to false and floppyDataDir to 'null'. A
-	 * floppy disk item with the old value of floppyDataDir is
-	 * then spawned in the world and the block metadata is set
-	 * to no longer display a floppy in the drive.
-	 */
-	public void ejectFloppy() {
-		World world = getWorldObj();
-		if(!floppyInDrive || world.isRemote) {return;}
-		
-		EntityItem ejectedFloppy = new EntityItem(world, xCoord, yCoord, zCoord, new ItemStack(Compute.floppy));
-		ItemFloppy.setFloppyDataDir(ejectedFloppy.getEntityItem(), floppyDataDir);
-		world.spawnEntityInWorld(ejectedFloppy);
-		
-		floppyInDrive = false;
-		floppyDataDir = "null";
-
-		world.setBlockMetadataWithNotify(xCoord, yCoord, zCoord, world.getBlockMetadata(xCoord, yCoord, zCoord)-4, 2);
-	}
-
-	/**
-	 * Sets floppyInDrive to true, floppyDataDir to the
-	 * specified data directory, and the block metadata
-	 * to display a floppy disk in the drive.
-	 *
-	 * @param dataDirectory The data directory of the floppy disk
-	 */
-	public void insertFloppy(String dataDirectory) {
-		floppyInDrive = true;
-		floppyDataDir = dataDirectory;
-
-		World world = getWorldObj();
-		world.setBlockMetadataWithNotify(xCoord, yCoord, zCoord, world.getBlockMetadata(xCoord, yCoord, zCoord)+4, 2);
-	}
-	
-	/**
 	 * Returns a String representation of this object. This
 	 * includes the values of the A, X, and Y registers, as
 	 * well as the stack pointer, and the number of ticks
@@ -367,7 +443,7 @@ public class TileEntityComputer extends TileEntity {
 	 */
 	@Override
 	public String toString() {
-		return String.format("A:%x X:%x Y:%x S:%x T:%d", registerA, registerX, registerY,
+		return String.format("A:%X X:%X Y:%X S:%X T:%d", registerA, registerX, registerY,
 				stackPointer, getComputerTime());
 	}
 	
@@ -411,6 +487,8 @@ public class TileEntityComputer extends TileEntity {
 
 		data.setBoolean("floppyInDrive", floppyInDrive);
 		data.setString("floppyDataDir", floppyDataDir);
+
+		if(floppyData != null) {data.setByteArray("floppyData", floppyData);}
 		
 		super.writeToNBT(data);
 	}
@@ -455,9 +533,10 @@ public class TileEntityComputer extends TileEntity {
 		if(data.hasKey("state")) {state = StateComputer.valueOf(data.getString("state"));}
 		if(data.hasKey("creationTime")) {creationTime = data.getLong("creationTime");}
 
-		if(data.hasKey("floppyInDrive")) {floppyInDrive = data.getBoolean("floppyInDrive");
-		}
+		if(data.hasKey("floppyInDrive")) {floppyInDrive = data.getBoolean("floppyInDrive");}
 		if(data.hasKey("floppyDataDir")) {floppyDataDir = data.getString("floppyDataDir");}
+
+		if(data.hasKey("floppyData")) {floppyData = data.getByteArray("floppyData");}
 		
 		super.readFromNBT(data);
 	}
@@ -1264,7 +1343,7 @@ public class TileEntityComputer extends TileEntity {
 	private int readImmAddress(int addressToRead) {
 		byte low = readMemory(addressToRead);
 		byte high = readMemory(addressToRead+1);
-		return (high << 8) | low;
+		return (((high << 8) | low) & 65535);
 	}
 	
 	/**
@@ -1412,7 +1491,7 @@ public class TileEntityComputer extends TileEntity {
 	 * the mod.
 	 */
 	public void interpretLine() {
-		String lineText = new String(screenBuffer[cursorY], 0, cursorX);
+		String lineText = new String(screenBuffer[cursorY], 0, cursorX).toUpperCase();
 		
 		// Move the cursor down and all the way to the left, wrap if needed
 		nextLine();
