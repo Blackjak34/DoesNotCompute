@@ -1,18 +1,17 @@
 package com.github.blackjak34.compute.gui;
 
-import com.github.blackjak34.compute.packet.MessageButtonClicked;
-import net.minecraft.client.gui.GuiButton;
-import org.lwjgl.opengl.GL11;
-
-import net.minecraft.client.gui.inventory.GuiContainer;
-import net.minecraft.client.renderer.Tessellator;
-import net.minecraft.util.ResourceLocation;
-
 import com.github.blackjak34.compute.Compute;
 import com.github.blackjak34.compute.container.ContainerComputer;
 import com.github.blackjak34.compute.entity.tile.TileEntityComputer;
 import com.github.blackjak34.compute.enums.CharacterComputer;
+import com.github.blackjak34.compute.packet.MessageButtonClicked;
 import com.github.blackjak34.compute.packet.MessageKeyPressed;
+import net.minecraft.client.gui.GuiButton;
+import net.minecraft.client.gui.inventory.GuiContainer;
+import net.minecraft.client.renderer.Tessellator;
+import net.minecraft.client.renderer.WorldRenderer;
+import net.minecraft.util.ResourceLocation;
+import org.lwjgl.opengl.GL11;
 
 import static com.github.blackjak34.compute.enums.GuiConstantComputer.*;
 
@@ -47,7 +46,7 @@ public class GuiComputer extends GuiContainer {
 	 * An instance of Minecraft's tessellator, used for custom
 	 * rendering.
 	 */
-	private static final Tessellator tessellator = Tessellator.instance;
+	private static final Tessellator tessellator = Tessellator.getInstance();
 	
 	/**
 	 * The file path to where the main GUI texture is located.
@@ -162,7 +161,8 @@ public class GuiComputer extends GuiContainer {
 		
 		// Fetches the current world time, will be relevant later when drawing the cursor
 		long time = mc.theWorld.getWorldTime();
-		
+
+		WorldRenderer worldRenderer = tessellator.getWorldRenderer();
 		// Iterates through each character on the screen
 		for(int screenColumn=0;screenColumn<80;screenColumn++) {
 			for(int screenRow=0;screenRow<50;screenRow++) {
@@ -177,23 +177,23 @@ public class GuiComputer extends GuiContainer {
 				CharacterComputer charSprite = CharacterComputer.getCharacter(charAtLocation);
 				int charU = charSprite.getUValue() * 8;
 				int charV = charSprite.getVValue() * 8;
-				
+
 				// Renders in the character with the tessellator, multiplying by the scale factor to convert pixels to uv coords
-				tessellator.startDrawingQuads();
-				tessellator.addVertexWithUV(screenPositionX, screenPositionY, zLevel, charU*UV_SCALE, charV*UV_SCALE);
-				tessellator.addVertexWithUV(screenPositionX, screenPositionY+3, zLevel, charU*UV_SCALE, (charV+8)*UV_SCALE);
-				tessellator.addVertexWithUV(screenPositionX+3, screenPositionY+3, zLevel, (charU+8)*UV_SCALE, (charV+8)*UV_SCALE);
-				tessellator.addVertexWithUV(screenPositionX+3, screenPositionY, zLevel, (charU+8)*UV_SCALE, charV*UV_SCALE);
+				worldRenderer.startDrawingQuads();
+				worldRenderer.addVertexWithUV(screenPositionX, screenPositionY, zLevel, charU*UV_SCALE, charV*UV_SCALE);
+				worldRenderer.addVertexWithUV(screenPositionX, screenPositionY + 3, zLevel, charU * UV_SCALE, (charV + 8) * UV_SCALE);
+				worldRenderer.addVertexWithUV(screenPositionX + 3, screenPositionY + 3, zLevel, (charU + 8) * UV_SCALE, (charV + 8) * UV_SCALE);
+				worldRenderer.addVertexWithUV(screenPositionX + 3, screenPositionY, zLevel, (charU + 8) * UV_SCALE, charV * UV_SCALE);
 				tessellator.draw();
 				
 				// Draws in the cursor on the screen as a solid blinking block of green
 				if(screenColumn == tiledata.cursorX && screenRow == tiledata.cursorY && ((time >> 2) & 1L) > 0L) {
 					GL11.glDisable(GL11.GL_TEXTURE_2D);
-					tessellator.startDrawingQuads();
-					tessellator.addVertex(screenPositionX, screenPositionY, zLevel);
-					tessellator.addVertex(screenPositionX, screenPositionY+3, zLevel);
-					tessellator.addVertex(screenPositionX+3, screenPositionY+3, zLevel);
-					tessellator.addVertex(screenPositionX+3, screenPositionY, zLevel);
+					worldRenderer.startDrawingQuads();
+					worldRenderer.addVertex(screenPositionX, screenPositionY, zLevel);
+					worldRenderer.addVertex(screenPositionX, screenPositionY+3, zLevel);
+					worldRenderer.addVertex(screenPositionX+3, screenPositionY+3, zLevel);
+					worldRenderer.addVertex(screenPositionX+3, screenPositionY, zLevel);
 					tessellator.draw();
 					GL11.glEnable(GL11.GL_TEXTURE_2D);
 				}
@@ -202,23 +202,15 @@ public class GuiComputer extends GuiContainer {
 		
 		GL11.glColor4d(1.0, 1.0, 1.0, 1.0);
 		mc.renderEngine.bindTexture(guiTextureLoc);
-		
-		switch(tiledata.getState()) {
-			case HALT:
-				drawTexturedModalRect(coordX + IMG_BUTTON_STP_X.getValue(), coordY + IMG_BUTTON_STP_Y.getValue(),
-						0, ySize,
-						IMG_BUTTON_WIDTH.getValue(), IMG_BUTTON_HEIGHT.getValue());
-				break;
-			case RUN:
-				drawTexturedModalRect(coordX + IMG_BUTTON_RUN_X.getValue(), coordY + IMG_BUTTON_RUN_Y.getValue(),
-						0, ySize,
-						IMG_BUTTON_WIDTH.getValue(), IMG_BUTTON_HEIGHT.getValue());
-				break;
-			case RESET:
-				drawTexturedModalRect(coordX + IMG_BUTTON_RST_X.getValue(), coordY + IMG_BUTTON_RST_Y.getValue(),
-						0, ySize,
-						IMG_BUTTON_WIDTH.getValue(), IMG_BUTTON_HEIGHT.getValue());
-				break;
+
+		if(tiledata.isRunning()) {
+			drawTexturedModalRect(coordX + IMG_BUTTON_RUN_X.getValue(), coordY + IMG_BUTTON_RUN_Y.getValue(),
+					0, ySize,
+					IMG_BUTTON_WIDTH.getValue(), IMG_BUTTON_HEIGHT.getValue());
+		} else {
+			drawTexturedModalRect(coordX + IMG_BUTTON_STP_X.getValue(), coordY + IMG_BUTTON_STP_Y.getValue(),
+					0, ySize,
+					IMG_BUTTON_WIDTH.getValue(), IMG_BUTTON_HEIGHT.getValue());
 		}
 
 		// Draws the floppy disk in the drive slot if one is inserted into the computer.

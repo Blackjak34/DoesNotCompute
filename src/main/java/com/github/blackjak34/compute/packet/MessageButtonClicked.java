@@ -1,7 +1,7 @@
 package com.github.blackjak34.compute.packet;
 
-import cpw.mods.fml.common.network.simpleimpl.IMessage;
 import io.netty.buffer.ByteBuf;
+import net.minecraftforge.fml.common.network.simpleimpl.IMessage;
 
 /**
  * A simple packet holding a single int value for sending button presses

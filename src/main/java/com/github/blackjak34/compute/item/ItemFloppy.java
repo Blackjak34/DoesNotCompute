@@ -26,7 +26,6 @@ public class ItemFloppy extends Item {
 	public ItemFloppy() {
 		setCreativeTab(CreativeTabs.tabMisc);
 		setUnlocalizedName("itemFloppy");
-		setTextureName("doesnotcompute:Floppy_Blue");
 		setNoRepair();
 	}
 	

@@ -1,21 +1,24 @@
 package com.github.blackjak34.compute.block;
 
+import com.github.blackjak34.compute.Compute;
+import com.github.blackjak34.compute.entity.tile.TileEntityComputer;
+import com.github.blackjak34.compute.gui.GuiComputer;
+import com.github.blackjak34.compute.item.ItemFloppy;
 import net.minecraft.block.Block;
 import net.minecraft.block.ITileEntityProvider;
 import net.minecraft.block.material.Material;
-import net.minecraft.client.renderer.texture.IIconRegister;
+import net.minecraft.block.properties.PropertyBool;
+import net.minecraft.block.properties.PropertyDirection;
+import net.minecraft.block.state.BlockState;
+import net.minecraft.block.state.IBlockState;
 import net.minecraft.creativetab.CreativeTabs;
+import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.IIcon;
+import net.minecraft.util.BlockPos;
+import net.minecraft.util.EnumFacing;
 import net.minecraft.world.World;
-
-import com.github.blackjak34.compute.Compute;
-import com.github.blackjak34.compute.entity.tile.TileEntityComputer;
-import com.github.blackjak34.compute.enums.StateComputer;
-import com.github.blackjak34.compute.gui.GuiComputer;
-import com.github.blackjak34.compute.item.ItemFloppy;
 
 /**
  * The Computer block. Serves as the physical world
@@ -26,13 +29,11 @@ import com.github.blackjak34.compute.item.ItemFloppy;
  * @since	1.0
  */
 public class BlockComputer extends Block implements ITileEntityProvider {
-	
-	/**
-	 * An array of icons containing the various sprites
-	 * used (mostly) for the front of the computer.
-	 */
-	private static final IIcon[] icons = new IIcon[10];
-	
+
+	public static final PropertyDirection FACING = PropertyDirection.create("facing", EnumFacing.Plane.HORIZONTAL);
+	public static final PropertyBool RUNNING = PropertyBool.create("running");
+	public static final PropertyBool DISK = PropertyBool.create("disk");
+
 	/**
 	 * Almost identical to the constructor for
 	 * {@link net.minecraft.block.Block}, but also sets miscellaneous
@@ -44,75 +45,57 @@ public class BlockComputer extends Block implements ITileEntityProvider {
 		super(material);
 		
 		setCreativeTab(CreativeTabs.tabMisc);
-		setBlockName("blockComputer");
+		setUnlocalizedName("blockComputer");
 		setHarvestLevel("pickaxe", 1);
-		setBlockTextureName("doesnotcompute:Computer_Side");
+		setDefaultState(blockState.getBaseState()
+				.withProperty(FACING, EnumFacing.NORTH)
+				.withProperty(RUNNING, false)
+				.withProperty(DISK, false)
+		);
 	}
-	
-	/**
-	 * Registers the icons (textures) used for this Block.
-	 * Most of these textures are used for the various
-	 * states of the front face of the computer.
-	 */
+
 	@Override
-	public void registerBlockIcons(IIconRegister iconRegister) {
-		icons[0] = iconRegister.registerIcon("doesnotcompute:Computer_Front4_Halt");
-		icons[1] = iconRegister.registerIcon("doesnotcompute:Computer_Front4_Run");
-		icons[2] = iconRegister.registerIcon("doesnotcompute:Computer_Front4_Reset");
-		icons[3] = iconRegister.registerIcon("doesnotcompute:Computer_Front4_Disk");
-		icons[4] = iconRegister.registerIcon("doesnotcompute:Computer_Front4_Halt_Disk");
-		icons[5] = iconRegister.registerIcon("doesnotcompute:Computer_Front4_Run_Disk");
-		icons[6] = iconRegister.registerIcon("doesnotcompute:Computer_Front4_Reset_Disk");
-		icons[7] = iconRegister.registerIcon("doesnotcompute:Computer_Front4");
-		icons[8] = iconRegister.registerIcon("doesnotcompute:Computer_Back");
-		icons[9] = iconRegister.registerIcon("doesnotcompute:Computer_Side");
-		
-		super.registerBlockIcons(iconRegister);
+	protected BlockState createBlockState() {
+		return new BlockState(this, FACING, RUNNING, DISK);
 	}
-	
-	/**
-	 * Automatically called by Forge to fetch the face
-	 * textures of the block whenever its metadata changes.
-	 * This function sets the front face accordingly, while
-	 * keeping the other faces constant.
-	 * 
-	 * @return The texture associated with the specified side
-	 */
+
 	@Override
-	public IIcon getIcon(int side, int metadata) {
-		switch(side) {
+	public int getMetaFromState(IBlockState state) {
+		boolean isRunning = (Boolean) state.getValue(RUNNING);
+		boolean hasDisk = (Boolean) state.getValue(DISK);
+
+		return (isRunning ? 1 : 0) + (hasDisk ? 2 : 0);
+	}
+
+	@Override
+	public IBlockState getStateFromMeta(int metadata) {
+		IBlockState state = getDefaultState();
+
+		switch(metadata) {
+			case 1:
+				return state.withProperty(RUNNING, true);
 			case 2:
-				return icons[metadata];
+				return state.withProperty(DISK, true);
 			case 3:
-				return icons[8];
+				return state.withProperty(RUNNING, true).withProperty(DISK, true);
 			default:
-				return icons[9];
+				return state;
 		}
 	}
-	
-	/**
-	 * Called by Forge whenever a player right clicks on
-	 * this block. The return value is whether or not the
-	 * default action for the item in the player's hand
-	 * should be performed (for example, placing a bucket
-	 * of water). This is used to open a GUI interface
-	 * that provides input to the emulator and ejects/inserts
-	 * floppy disks as needed.
-	 * 
-	 * @return Whether or not to perform the item action
-	 */
+
 	@Override
-	public boolean onBlockActivated(World world, int blockX, int blockY, int blockZ,
-			EntityPlayer player, int par6, float playerX, float playerY, float playerZ) {
+	public boolean onBlockActivated(World world, BlockPos coords, IBlockState state, EntityPlayer player,
+			EnumFacing side, float hitX, float hitY, float hitZ) {
 		ItemStack itemInHand = player.getCurrentEquippedItem();
+
 		if(itemInHand != null && itemInHand.getItem() instanceof ItemFloppy) {
-			TileEntityComputer tiledata = (TileEntityComputer) world.getTileEntity(blockX, blockY, blockZ);
+			TileEntityComputer tiledata = (TileEntityComputer) world.getTileEntity(coords);
 
 			tiledata.ejectFloppy();
 			tiledata.insertFloppy(itemInHand.getTagCompound().getString("filename"));
 			player.setCurrentItemOrArmor(0, null);
 		} else {
-			player.openGui(Compute.instance, GuiComputer.GUIID, world, blockX, blockY, blockZ);
+			player.openGui(Compute.instance, GuiComputer.GUIID, world, coords.getX(), coords.getY(), coords.getZ());
 		}
 		return true;
 	}
@@ -128,32 +111,18 @@ public class BlockComputer extends Block implements ITileEntityProvider {
 	public TileEntity createNewTileEntity(World world, int par2) {
 		return new TileEntityComputer(world.getTotalWorldTime());
 	}
-	
-	/**
-	 * Called by Forge when this block gets broken by any
-	 * means (players or server). This function deletes the
-	 * emulator instance that was associated with this
-	 * block and ejects its floppy disk if needed.
-	 */
+
 	@Override
-	public void onBlockPreDestroy(World world, int blockX, int blockY, int blockZ, int metadataOld) {
-		TileEntityComputer computer = (TileEntityComputer) world.getTileEntity(blockX, blockY, blockZ);
-		
+	public void breakBlock(World world, BlockPos coords, IBlockState state) {
+		TileEntityComputer computer = (TileEntityComputer) world.getTileEntity(coords);
 		computer.ejectFloppy();
-		world.removeTileEntity(blockX, blockY, blockZ);
+
+		world.removeTileEntity(coords);
 	}
-	
-	/**
-	 * This function performs some post-initialization for
-	 * the TileEntity associated with this block. Currently
-	 * the only thing that this function does is set the
-	 * initial state ({@link StateComputer}) of the block.
-	 */
+
 	@Override
-    public void onPostBlockPlaced(World world, int blockX, int blockY, int blockZ, int metadata) {
-		TileEntityComputer computer = (TileEntityComputer) world.getTileEntity(blockX, blockY, blockZ);
-		
-		computer.setState(StateComputer.RESET);
+	public void onBlockPlacedBy(World world, BlockPos coords, IBlockState state, EntityLivingBase placer, ItemStack stack) {
+		world.setBlockState(coords, state.withProperty(FACING, EnumFacing.fromAngle(placer.getRotationYawHead())));
 	}
-	
+
 }

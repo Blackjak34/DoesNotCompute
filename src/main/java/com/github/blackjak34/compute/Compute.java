@@ -1,26 +1,23 @@
 package com.github.blackjak34.compute;
 
-import com.github.blackjak34.compute.packet.MessageButtonClicked;
-import com.github.blackjak34.compute.packet.handler.HandlerButtonClicked;
-import net.minecraft.block.material.Material;
 import com.github.blackjak34.compute.block.BlockComputer;
 import com.github.blackjak34.compute.entity.tile.TileEntityComputer;
 import com.github.blackjak34.compute.item.ItemFloppy;
+import com.github.blackjak34.compute.packet.MessageButtonClicked;
 import com.github.blackjak34.compute.packet.MessageKeyPressed;
+import com.github.blackjak34.compute.packet.handler.HandlerButtonClicked;
 import com.github.blackjak34.compute.packet.handler.HandlerKeyPressed;
 import com.github.blackjak34.compute.proxy.CommonProxy;
-
-import cpw.mods.fml.common.Mod;
-import cpw.mods.fml.common.Mod.EventHandler;
-import cpw.mods.fml.common.Mod.Instance;
-import cpw.mods.fml.common.SidedProxy;
-import cpw.mods.fml.common.event.FMLInitializationEvent;
-import cpw.mods.fml.common.event.FMLPostInitializationEvent;
-import cpw.mods.fml.common.event.FMLPreInitializationEvent;
-import cpw.mods.fml.common.network.NetworkRegistry;
-import cpw.mods.fml.common.network.simpleimpl.SimpleNetworkWrapper;
-import cpw.mods.fml.common.registry.GameRegistry;
-import cpw.mods.fml.relauncher.Side;
+import net.minecraft.block.material.Material;
+import net.minecraftforge.fml.common.Mod;
+import net.minecraftforge.fml.common.SidedProxy;
+import net.minecraftforge.fml.common.event.FMLInitializationEvent;
+import net.minecraftforge.fml.common.event.FMLPostInitializationEvent;
+import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
+import net.minecraftforge.fml.common.network.NetworkRegistry;
+import net.minecraftforge.fml.common.network.simpleimpl.SimpleNetworkWrapper;
+import net.minecraftforge.fml.common.registry.GameRegistry;
+import net.minecraftforge.fml.relauncher.Side;
 
 /**
  * The base class for the mod. Performs general setup,
@@ -57,7 +54,7 @@ public class Compute {
      * The instance of this class that Forge uses. This is
      * the only instance that will ever be created.
      */
-    @Instance(value = Compute.MODID)
+    @Mod.Instance(value = Compute.MODID)
     public static Compute instance;
     
     /**
@@ -78,7 +75,7 @@ public class Compute {
      * @param event The Forge event for pre-initialization
      */
     @SuppressWarnings("unused")
-	@EventHandler
+	@Mod.EventHandler
     public void preInit(FMLPreInitializationEvent event) {
     	computer = new BlockComputer(Material.iron);
     	
@@ -89,7 +86,6 @@ public class Compute {
     	floppy = new ItemFloppy();
     	
     	GameRegistry.registerItem(floppy, "itemFloppy");
-    	
     	
     	networkWrapper = NetworkRegistry.INSTANCE.newSimpleChannel(Compute.MODID);
     	networkWrapper.registerMessage(HandlerKeyPressed.class, MessageKeyPressed.class, 1, Side.SERVER);
@@ -105,8 +101,8 @@ public class Compute {
      * @param event The Forge event for initialization
      */
     @SuppressWarnings("unused")
-	@EventHandler
-    public void load(FMLInitializationEvent event) {
+	@Mod.EventHandler
+    public void init(FMLInitializationEvent event) {
         proxy.registerRenderers();
         NetworkRegistry.INSTANCE.registerGuiHandler(instance, proxy);
     }
@@ -119,7 +115,7 @@ public class Compute {
      * @param event The Forge event for post-initialization
      */
     @SuppressWarnings("unused")
-	@EventHandler
+	@Mod.EventHandler
     public void postInit(FMLPostInitializationEvent event) {}
     
 }

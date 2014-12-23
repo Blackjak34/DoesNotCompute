@@ -2,10 +2,10 @@ package com.github.blackjak34.compute.packet.handler;
 
 import com.github.blackjak34.compute.container.ContainerComputer;
 import com.github.blackjak34.compute.packet.MessageButtonClicked;
-import cpw.mods.fml.common.network.simpleimpl.IMessage;
-import cpw.mods.fml.common.network.simpleimpl.IMessageHandler;
-import cpw.mods.fml.common.network.simpleimpl.MessageContext;
 import net.minecraft.inventory.Container;
+import net.minecraftforge.fml.common.network.simpleimpl.IMessage;
+import net.minecraftforge.fml.common.network.simpleimpl.IMessageHandler;
+import net.minecraftforge.fml.common.network.simpleimpl.MessageContext;
 
 /**
  * A simple handler for {@link MessageButtonClicked} packets being

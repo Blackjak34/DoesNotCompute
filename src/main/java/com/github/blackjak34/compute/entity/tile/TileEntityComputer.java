@@ -1,28 +1,29 @@
 package com.github.blackjak34.compute.entity.tile;
 
-import java.io.File;
-import java.io.IOException;
-import java.util.Arrays;
-
+import com.github.blackjak34.compute.Compute;
+import com.github.blackjak34.compute.block.BlockComputer;
+import com.github.blackjak34.compute.enums.CharacterComputer;
+import com.github.blackjak34.compute.enums.InstructionComputer;
+import com.github.blackjak34.compute.item.ItemFloppy;
 import com.google.common.io.Files;
-import cpw.mods.fml.common.FMLCommonHandler;
-import net.minecraft.block.Block;
+import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.item.EntityItem;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.network.NetworkManager;
 import net.minecraft.network.Packet;
 import net.minecraft.network.play.server.S35PacketUpdateTileEntity;
+import net.minecraft.server.gui.IUpdatePlayerListBox;
 import net.minecraft.tileentity.TileEntity;
+import net.minecraft.util.BlockPos;
 import net.minecraft.world.World;
-
-import com.github.blackjak34.compute.Compute;
-import com.github.blackjak34.compute.enums.CharacterComputer;
-import com.github.blackjak34.compute.enums.InstructionComputer;
-import com.github.blackjak34.compute.enums.StateComputer;
-import com.github.blackjak34.compute.item.ItemFloppy;
+import net.minecraftforge.fml.common.FMLCommonHandler;
 
 import static com.github.blackjak34.compute.enums.GuiConstantComputer.*;
+
+import java.io.File;
+import java.io.IOException;
+import java.util.Arrays;
 
 /**
  * The emulator component of the Computer block. Fully
@@ -33,7 +34,7 @@ import static com.github.blackjak34.compute.enums.GuiConstantComputer.*;
  * @author Blackjak34
  * @since 1.0
  */
-public class TileEntityComputer extends TileEntity {
+public class TileEntityComputer extends TileEntity implements IUpdatePlayerListBox {
 
 	/**
 	 * Whether or not this computer currently has a
@@ -126,20 +127,11 @@ public class TileEntityComputer extends TileEntity {
 	 * The memory of the computer. This is represented
 	 * with a byte array 65536 bytes in length.
 	 */
-	private byte[] memory = new byte[32768];
+	private byte[] memory = new byte[28768];
 
 	private byte[] floppyData;
 	
-	/**
-	 * The current state of the computer. This state
-	 * may be 'RESET', 'HALT', or 'RUN'. While the computer
-	 * only executes instructions while its state is RUN,
-	 * RESET and HALT also serve to differentiate between
-	 * the two settings for the front texture of the
-	 * computer block. (see {@link com.github.blackjak34.compute.block.BlockComputer} and
-	 * {@link com.github.blackjak34.compute.enums.StateComputer})
-	 */
-	private StateComputer state = StateComputer.RESET;
+	private boolean running = false;
 	
 	/**
 	 * The world time when this tile entity was created.
@@ -156,9 +148,9 @@ public class TileEntityComputer extends TileEntity {
 	 * setting the external block appearance.
 	 */
 	@Override
-	public boolean shouldRefresh(Block oldBlock, Block newBlock, int oldMeta, int newMeta, World world, int x, int y, int z)
+	public boolean shouldRefresh(World world, BlockPos coords, IBlockState oldState, IBlockState newState)
     {
-        return oldBlock != newBlock;
+        return oldState.getBlock() != newState.getBlock();
     }
 	
 	/**
@@ -177,7 +169,7 @@ public class TileEntityComputer extends TileEntity {
 		NBTTagCompound data = new NBTTagCompound();
 		writeToNBT(data);
 		
-		return new S35PacketUpdateTileEntity(xCoord, yCoord, zCoord, 1, data);
+		return new S35PacketUpdateTileEntity(pos, 1, data);
 	}
 	
 	/**
@@ -187,7 +179,7 @@ public class TileEntityComputer extends TileEntity {
 	 */
 	@Override
 	public void onDataPacket(NetworkManager networkManager, S35PacketUpdateTileEntity packet) {
-		readFromNBT(packet.func_148857_g());
+		readFromNBT(packet.getNbtCompound());
 	}
 	
 	/**
@@ -214,13 +206,15 @@ public class TileEntityComputer extends TileEntity {
 	public byte readMemory(int index) {
 		if(index < 0) {return (byte) 0xFF;}
 
+		if(index < 28768) {return memory[index];}
 		if(index < 32768) {
-			return memory[index];
-		} else if(index < 65536 && floppyInDrive) {
-			return readFloppy(index);
-		} else {
-			return (byte) 0xFF;
+			int indexY = (index-28768)/80;
+			int indexX = (index-28768)%80;
+			return screenBuffer[indexY][indexX];
 		}
+		if(index < 65536 && floppyInDrive) {return readFloppy(index);}
+
+		return (byte) 0xFF;
 	}
 	
 	/**
@@ -235,13 +229,17 @@ public class TileEntityComputer extends TileEntity {
 	public void writeMemory(int index, byte value) {
 		if(index < 0) {return;}
 
-		if(index < 32768) {
+		if(index < 28768) {
 			memory[index] = value;
+		} else if(index < 32768) {
+			int indexY = (index-28768)/80;
+			int indexX = (index-28768)%80;
+			screenBuffer[indexY][indexX] = value;
 		} else if(index < 65536 && floppyInDrive) {
 			writeFloppy(index, value);
 		}
 
-		getWorldObj().markBlockForUpdate(xCoord, yCoord, zCoord);
+		worldObj.markBlockForUpdate(pos);
 	}
 
 	/**
@@ -263,12 +261,12 @@ public class TileEntityComputer extends TileEntity {
 	 * to no longer display a floppy in the drive.
 	 */
 	public void ejectFloppy() {
-		World world = getWorldObj();
+		World world = worldObj;
 		if(!floppyInDrive || world.isRemote) {return;}
 
 		ItemStack ejectedFloppy = new ItemStack(Compute.floppy);
 		ItemFloppy.setFloppyDataDir(ejectedFloppy, floppyDataDir);
-		world.spawnEntityInWorld(new EntityItem(world, xCoord, yCoord, zCoord, ejectedFloppy));
+		world.spawnEntityInWorld(new EntityItem(world, pos.getX(), pos.getY(), pos.getZ(), ejectedFloppy));
 
 		writeFloppyData();
 
@@ -276,7 +274,7 @@ public class TileEntityComputer extends TileEntity {
 		floppyDataDir = "null";
 		floppyData = null;
 
-		setState(state);
+		worldObj.setBlockState(pos, worldObj.getBlockState(pos).withProperty(BlockComputer.DISK, false), 2);
 	}
 
 	/**
@@ -290,9 +288,9 @@ public class TileEntityComputer extends TileEntity {
 		floppyInDrive = true;
 		floppyDataDir = dataDirectory;
 
-		if(!getWorldObj().isRemote) {loadFloppyData();}
+		if(!worldObj.isRemote) {loadFloppyData();}
 
-		setState(state);
+		worldObj.setBlockState(pos, worldObj.getBlockState(pos).withProperty(BlockComputer.DISK, true), 2);
 	}
 
 	private byte readFloppy(int index) {
@@ -310,7 +308,7 @@ public class TileEntityComputer extends TileEntity {
 	}
 
 	private void loadFloppyData() {
-		File dataDirectory = new File(getWorldObj().getSaveHandler().getWorldDirectory(), "/doesnotcompute/");
+		File dataDirectory = new File(worldObj.getSaveHandler().getWorldDirectory(), "/doesnotcompute/");
 		File floppyDataFile = new File(dataDirectory, floppyDataDir);
 		try {
 			if(!dataDirectory.exists()) {dataDirectory.mkdir();}
@@ -330,7 +328,7 @@ public class TileEntityComputer extends TileEntity {
 	}
 
 	private void writeFloppyData() {
-		File dataDirectory = new File(getWorldObj().getSaveHandler().getWorldDirectory(), "/doesnotcompute/");
+		File dataDirectory = new File(worldObj.getSaveHandler().getWorldDirectory(), "/doesnotcompute/");
 		File floppyDataFile = new File(dataDirectory, floppyDataDir);
 		try {
 			if(!dataDirectory.exists()) {dataDirectory.mkdir();}
@@ -394,6 +392,7 @@ public class TileEntityComputer extends TileEntity {
 	 */
 	public TileEntityComputer(long creationTime) {
 		Arrays.fill(memory, (byte) 0xFF);
+
 		this.creationTime = creationTime;
 	}
 	
@@ -410,27 +409,13 @@ public class TileEntityComputer extends TileEntity {
 		programCounter %= 65536;
 	}
 	
-	/**
-	 * Sets the computer's current state (see
-	 * {@link com.github.blackjak34.compute.enums.StateComputer}). The state should always be
-	 * changed through this function instead of directly
-	 * because the metadata is also set accordingly.
-	 * 
-	 * @param state The new state to use
-	 */
-	public void setState(StateComputer state) {
-		this.state = state;
-		getWorldObj().setBlockMetadataWithNotify(xCoord, yCoord, zCoord, state.ordinal() + (floppyInDrive ? 4 : 0), 2);
+	public void setRunning(boolean value) {
+		running = value;
+		worldObj.setBlockState(pos, worldObj.getBlockState(pos).withProperty(BlockComputer.RUNNING, value));
 	}
 	
-	/**
-	 * Returns the current state of this computer, used to
-	 * update the lights in the GUI.
-	 * 
-	 * @return The current state of this emulator
-	 */
-	public StateComputer getState() {
-		return state;
+	public boolean isRunning() {
+		return running;
 	}
 
 	/**
@@ -482,7 +467,7 @@ public class TileEntityComputer extends TileEntity {
 		data.setInteger("cursorX", cursorX);
 		data.setInteger("cursorY", cursorY);
 		
-		data.setString("state", state.toString());
+		data.setBoolean("running", running);
 		data.setLong("creationTime", creationTime);
 
 		data.setBoolean("floppyInDrive", floppyInDrive);
@@ -530,7 +515,7 @@ public class TileEntityComputer extends TileEntity {
 		if(data.hasKey("cursorX")) {cursorX = data.getInteger("cursorX");}
 		if(data.hasKey("cursorY")) {cursorY = data.getInteger("cursorY");}
 		
-		if(data.hasKey("state")) {state = StateComputer.valueOf(data.getString("state"));}
+		if(data.hasKey("running")) {running = data.getBoolean("running");}
 		if(data.hasKey("creationTime")) {creationTime = data.getLong("creationTime");}
 
 		if(data.hasKey("floppyInDrive")) {floppyInDrive = data.getBoolean("floppyInDrive");}
@@ -550,7 +535,7 @@ public class TileEntityComputer extends TileEntity {
 	 * the emulator to asynchronously execute a command.
 	 */
 	@Override
-	public void updateEntity() {
+	public void update() {
 		if(keyBufferStart != keyBufferPos) {
 			while(keyBufferStart != keyBufferPos) {
 				// write char onto screen
@@ -563,10 +548,10 @@ public class TileEntityComputer extends TileEntity {
 				keyBufferStart %= 16;
 			}
 			
-			getWorldObj().markBlockForUpdate(xCoord, yCoord, zCoord);
+			worldObj.markBlockForUpdate(pos);
 		}
 		
-		if(state != StateComputer.RUN) {return;}
+		if(!running) {return;}
 		
 		markDirty();
 		
@@ -1280,7 +1265,7 @@ public class TileEntityComputer extends TileEntity {
 			writeMemory(readMemory(programCounter+1)+registerX & 0xFF, registerA);
 			break;
 		case STP:
-			setState(StateComputer.HALT);
+			setRunning(false);
 			break;
 		case STX_ABS:
 			writeMemory(readImmAddress(programCounter+1), registerX);
@@ -1325,7 +1310,7 @@ public class TileEntityComputer extends TileEntity {
 			setSignZeroFlags(registerY);
 			break;
 		case UNUSED:
-			setState(StateComputer.HALT);
+			setRunning(false);
 			System.out.println("The computer has encountered an unknown instruction: " + String.format("%x", instruction.getHexValue()).toUpperCase());
 			break;
 		}
@@ -1416,7 +1401,7 @@ public class TileEntityComputer extends TileEntity {
 	 * @return The number of ticks that this computer has existed for
 	 */
 	private long getComputerTime() {
-		return getWorldObj().getTotalWorldTime() - creationTime;
+		return worldObj.getTotalWorldTime() - creationTime;
 	}
 	
 	/**
@@ -1455,7 +1440,7 @@ public class TileEntityComputer extends TileEntity {
 			screenBuffer[cursorY][cursorX] = ' ';
 		}
 		
-		getWorldObj().markBlockForUpdate(xCoord, yCoord, zCoord);
+		worldObj.markBlockForUpdate(pos);
 	}
 
 	/**
@@ -1471,16 +1456,17 @@ public class TileEntityComputer extends TileEntity {
 	 */
 	public void onButtonClicked(int buttonId) {
 		if(buttonId == BUTTON_STP.getValue()) {
-			setState(StateComputer.HALT);
+			setRunning(false);
 		} else if(buttonId == BUTTON_RUN.getValue()) {
-			setState(StateComputer.RUN);
+			setRunning(true);
 		} else if(buttonId == BUTTON_RST.getValue()) {
-			setState(StateComputer.RESET);
+			setRunning(false);
+			setProgramCounter(0);
 		} else if(buttonId == BUTTON_EJECT.getValue()) {
 			ejectFloppy();
 		}
 
-		getWorldObj().markBlockForUpdate(xCoord, yCoord, zCoord);
+		worldObj.markBlockForUpdate(pos);
 	}
 	
 	/**
@@ -1521,7 +1507,7 @@ public class TileEntityComputer extends TileEntity {
 		}
 		
 		// Stop the computer
-		setState(StateComputer.HALT);
+		setRunning(false);
 		
 		// Write the instruction and its args into computer memory accordingly
 		switch(instruction.getLength()) {
@@ -1559,13 +1545,13 @@ public class TileEntityComputer extends TileEntity {
 		setProgramCounter(0);
 		
 		// Start up the computer
-		setState(StateComputer.RUN);
+		setRunning(true);
 		
 		// Tick the computer once to make it run the instruction
-		updateEntity();
+		update();
 		
 		// Stop the computer again
-		setState(StateComputer.RESET);
+		setRunning(false);
 		
 		// Send back a String representation of the computer in the chat
 		byte[] messageBytes = toString().getBytes();

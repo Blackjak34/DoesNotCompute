@@ -1,7 +1,7 @@
 package com.github.blackjak34.compute.packet;
 
 import io.netty.buffer.ByteBuf;
-import cpw.mods.fml.common.network.simpleimpl.IMessage;
+import net.minecraftforge.fml.common.network.simpleimpl.IMessage;
 
 /**
  * A packet containing a single char to be sent to the
