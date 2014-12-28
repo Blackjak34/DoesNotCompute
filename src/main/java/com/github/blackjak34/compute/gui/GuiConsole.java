@@ -1,11 +1,11 @@
 package com.github.blackjak34.compute.gui;
 
-import com.github.blackjak34.compute.Compute;
-import com.github.blackjak34.compute.container.ContainerComputer;
-import com.github.blackjak34.compute.entity.tile.TileEntityComputer;
+import com.github.blackjak34.compute.DoesNotCompute;
+import com.github.blackjak34.compute.container.ContainerConsole;
+import com.github.blackjak34.compute.entity.tile.TileEntityConsole;
 import com.github.blackjak34.compute.enums.CharacterComputer;
-import com.github.blackjak34.compute.packet.MessageButtonClicked;
-import com.github.blackjak34.compute.packet.MessageKeyPressed;
+import com.github.blackjak34.compute.packet.MessageActionPerformed;
+import com.github.blackjak34.compute.packet.MessageKeyTyped;
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.gui.inventory.GuiContainer;
 import net.minecraft.client.renderer.Tessellator;
@@ -15,71 +15,28 @@ import org.lwjgl.opengl.GL11;
 
 import static com.github.blackjak34.compute.enums.GuiConstantComputer.*;
 
-/**
- * The GUI interface to the BlockComputer and
- * {@link TileEntityComputer} that together comprise the
- * 6502 emulator. Accepts keyboard input from the player
- * and feeds it into the computer accordingly.
- * 
- * @author Blackjak34
- * @since 1.0.1
- */
-public class GuiComputer extends GuiContainer {
-	
-	/**
-	 * The mod-specific identifier for this GUI. Only used
-	 * to differentiate between different GUIs when selecting
-	 * one to be opened. See GuiConstantComputer for
-	 * all other constants.
-	 */
+public class GuiConsole extends GuiContainer {
+
 	public static final int GUIID = 42;
-	
-	/**
-	 * A special constant equal to 1/256. When the gui texture
-	 * is stored within a 256x256 image, a pixel count can be
-	 * multiplied by this constant to convert to uv coordinates
-	 * (a range from 0 to 1).
-	 */
+
 	private static final double UV_SCALE = 0.00390625;
-	
-	/**
-	 * An instance of Minecraft's tessellator, used for custom
-	 * rendering.
-	 */
+
 	private static final Tessellator tessellator = Tessellator.getInstance();
-	
-	/**
-	 * The file path to where the main GUI texture is located.
-	 */
+
 	private static final ResourceLocation guiTextureLoc = new ResourceLocation("doesnotcompute:textures/gui/Computer_Gui4.png");
-	
-	/**
-	 * The file path to where the Computer's charset is located.
-	 */
+
 	private static final ResourceLocation charsetLoc = new ResourceLocation("doesnotcompute:textures/gui/Computer_Charset3.png");
-	
-	/**
-	 * The {@link TileEntityComputer} that this GUI is displaying
-	 * the contents of.
-	 */
-	private TileEntityComputer tiledata;
-	
-	/**
-	 * This constructor only serves to assign the TileEntity
-	 * to its associated variable for later use.
-	 * @param tiledata The TileEntityComputer that this GUI represents
-	 */
-	public GuiComputer(TileEntityComputer tiledata) {
-		super(new ContainerComputer(tiledata));
+
+	private TileEntityConsole tiledata;
+
+	public GuiConsole(TileEntityConsole tiledata) {
+		super(new ContainerConsole(tiledata));
 		
 		this.tiledata = tiledata;
 		xSize = 256;
 		ySize = 198;
 	}
 
-	/**
-	 * Sets up the buttons in the GUI.
-	 */
 	@Override
 	@SuppressWarnings("unchecked")
 	public void initGui() {
@@ -104,44 +61,20 @@ public class GuiComputer extends GuiContainer {
 		buttonList.add(BUTTON_EJECT.getValue(), buttonEject);
 	}
 
-	/**
-	 * Called by Minecraft whenever a button on this GUI is pressed. The
-	 * only thing that this function does is send a packet to the server
-	 * with the button id to be processed.
-	 *
-	 * @param button The button that was clicked
-	 */
 	@Override
 	public void actionPerformed(GuiButton button) {
-		Compute.networkWrapper.sendToServer(new MessageButtonClicked(button.id));
+		DoesNotCompute.networkWrapper.sendToServer(new MessageActionPerformed(button.id));
 	}
-	
-	/**
-	 * Simply specifies that this GUI does not pause the game
-	 * when opened.
-	 */
+
 	@Override
 	public boolean doesGuiPauseGame() {return false;}
-	
-	/**
-	 * Draws the screen of this GUI. This is overrided to
-	 * avoid all of the fancy logic in the default method
-	 * because we aren't actually rendering any ItemStacks,
-	 * just normal GUI stuff.
-	 */
+
 	@Override
 	public void drawScreen(int mouseX, int mouseY, float partialTicks) {
 		drawDefaultBackground();
 		drawGuiContainerBackgroundLayer(partialTicks, mouseX, mouseY);
 	}
-	
-	/**
-	 * The meat of the GUI code. Draws in the GUI background
-	 * using the tessellator and then individually draws in
-	 * each character on the screen from the charset depending
-	 * on the data stored in the {@link TileEntityComputer}'s
-	 * screen buffer.
-	 */
+
 	@Override
 	protected void drawGuiContainerBackgroundLayer(float partialTicks, int mouseX, int mouseY) {
 		// Switches the color to default and binds the texture to prepare for rendering
@@ -163,6 +96,8 @@ public class GuiComputer extends GuiContainer {
 		long time = mc.theWorld.getWorldTime();
 
 		WorldRenderer worldRenderer = tessellator.getWorldRenderer();
+		int cursorX = tiledata.getCursorX();
+		int cursorY = tiledata.getCursorY();
 		// Iterates through each character on the screen
 		for(int screenColumn=0;screenColumn<80;screenColumn++) {
 			for(int screenRow=0;screenRow<50;screenRow++) {
@@ -171,7 +106,7 @@ public class GuiComputer extends GuiContainer {
 				int screenPositionY = coordY + 8 + (screenRow * 3);
 				
 				// Retrieves the data about this character from the screen buffer
-				byte charAtLocation = tiledata.getCharAt(screenColumn, screenRow);
+				byte charAtLocation = tiledata.displayBuffer[screenRow][screenColumn];
 				
 				// Translates the data into charset data and converts position in the charset to pixels
 				CharacterComputer charSprite = CharacterComputer.getCharacter(charAtLocation);
@@ -187,7 +122,7 @@ public class GuiComputer extends GuiContainer {
 				tessellator.draw();
 				
 				// Draws in the cursor on the screen as a solid blinking block of green
-				if(screenColumn == tiledata.cursorX && screenRow == tiledata.cursorY && ((time >> 2) & 1L) > 0L) {
+				if(screenColumn == cursorX && screenRow == cursorY && ((time >> 2) & 1L) > 0L) {
 					GL11.glDisable(GL11.GL_TEXTURE_2D);
 					worldRenderer.startDrawingQuads();
 					worldRenderer.addVertex(screenPositionX, screenPositionY, zLevel);
@@ -220,24 +155,15 @@ public class GuiComputer extends GuiContainer {
 					DISK_SLOT_WIDTH.getValue(), DISK_SLOT_HEIGHT.getValue());
 		}
 	}
-	
-	/**
-	 * Checks to see if a char typed by the player is either:
-	 * in the charset, the escape key, the enter key, or
-	 * the backspace key, and sends a packet to the server
-	 * for handling accordingly.
-	 */
+
 	@Override
 	protected void keyTyped(char charTyped, int lwjglCode) {
 		if(lwjglCode == 1) {mc.thePlayer.closeScreen();}
 		
-		if(CharacterComputer.getCharacter(charTyped) != CharacterComputer.INVALID ||
-				charTyped == 13 || (charTyped == 8 && tiledata.cursorX > 0)) {
-			Compute.networkWrapper.sendToServer(new MessageKeyPressed(charTyped));
+		DoesNotCompute.networkWrapper.sendToServer(new MessageKeyTyped(charTyped));
 
-			// Plays a key pressing sound
-			mc.thePlayer.playSound("doesnotcompute:computer.keypress", 1.0f, 1.0f);
-		}
+		// Plays a key pressing sound
+		mc.thePlayer.playSound("doesnotcompute:computer.keypress", 1.0f, 1.0f);
 	}
 	
 }

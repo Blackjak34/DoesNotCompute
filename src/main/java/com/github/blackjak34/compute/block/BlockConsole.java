@@ -1,8 +1,9 @@
 package com.github.blackjak34.compute.block;
 
-import com.github.blackjak34.compute.Compute;
-import com.github.blackjak34.compute.entity.tile.TileEntityComputer;
-import com.github.blackjak34.compute.gui.GuiComputer;
+import com.github.blackjak34.compute.DoesNotCompute;
+import com.github.blackjak34.compute.entity.tile.TileEntityConsole;
+import com.github.blackjak34.compute.entity.tile.TileEntityEmulator;
+import com.github.blackjak34.compute.gui.GuiConsole;
 import com.github.blackjak34.compute.item.ItemFloppy;
 import net.minecraft.block.Block;
 import net.minecraft.block.ITileEntityProvider;
@@ -20,32 +21,17 @@ import net.minecraft.util.BlockPos;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.world.World;
 
-/**
- * The Computer block. Serves as the physical world
- * component of the computer that allows players to access
- * the 6502 emulator within {@link TileEntityComputer}.
- * 
- * @author	Blackjak34
- * @since	1.0
- */
-public class BlockComputer extends Block implements ITileEntityProvider {
+public class BlockConsole extends Block implements ITileEntityProvider {
 
 	public static final PropertyDirection FACING = PropertyDirection.create("facing", EnumFacing.Plane.HORIZONTAL);
 	public static final PropertyBool RUNNING = PropertyBool.create("running");
 	public static final PropertyBool DISK = PropertyBool.create("disk");
 
-	/**
-	 * Almost identical to the constructor for
-	 * {@link net.minecraft.block.Block}, but also sets miscellaneous
-	 * information about the block.
-	 * 
-	 * @param material The material to use for the block
-	 */
-	public BlockComputer(Material material) {
+	public BlockConsole(Material material) {
 		super(material);
 		
 		setCreativeTab(CreativeTabs.tabMisc);
-		setUnlocalizedName("blockComputer");
+		setUnlocalizedName("blockConsole");
 		setHarvestLevel("pickaxe", 1);
 		setDefaultState(blockState.getBaseState()
 				.withProperty(FACING, EnumFacing.NORTH)
@@ -87,36 +73,35 @@ public class BlockComputer extends Block implements ITileEntityProvider {
 	public boolean onBlockActivated(World world, BlockPos coords, IBlockState state, EntityPlayer player,
 			EnumFacing side, float hitX, float hitY, float hitZ) {
 		ItemStack itemInHand = player.getCurrentEquippedItem();
-
 		if(itemInHand != null && itemInHand.getItem() instanceof ItemFloppy) {
-			TileEntityComputer tiledata = (TileEntityComputer) world.getTileEntity(coords);
+			if(!world.isRemote) {
+				TileEntityEmulator emulator = (TileEntityEmulator) world.getTileEntity(coords);
 
-			tiledata.ejectFloppy();
-			tiledata.insertFloppy(itemInHand.getTagCompound().getString("filename"));
-			player.setCurrentItemOrArmor(0, null);
+				if(emulator.insertFloppy(itemInHand.getTagCompound().getString("filename"))) {
+					player.setCurrentItemOrArmor(0, null);
+				}
+			}
 		} else {
-			player.openGui(Compute.instance, GuiComputer.GUIID, world, coords.getX(), coords.getY(), coords.getZ());
+			player.openGui(DoesNotCompute.instance, GuiConsole.GUIID, world, coords.getX(), coords.getY(), coords.getZ());
 		}
+
 		return true;
 	}
-	
-	/**
-	 * Called by Forge whenever this block is placed.
-	 * A new instance of {@link TileEntityComputer} is
-	 * returned.
-	 * 
-	 * @return A new TileEntityComputer instance
-	 */
+
 	@Override
 	public TileEntity createNewTileEntity(World world, int par2) {
-		return new TileEntityComputer(world.getTotalWorldTime());
+		if(world.isRemote) {
+			return new TileEntityConsole();
+		} else {
+			return new TileEntityEmulator(world);
+		}
 	}
 
 	@Override
 	public void breakBlock(World world, BlockPos coords, IBlockState state) {
-		TileEntityComputer computer = (TileEntityComputer) world.getTileEntity(coords);
-		computer.ejectFloppy();
-
+		if(!world.isRemote) {
+			((TileEntityEmulator) world.getTileEntity(coords)).ejectFloppy();
+		}
 		world.removeTileEntity(coords);
 	}
 

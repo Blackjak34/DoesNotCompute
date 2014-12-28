@@ -1,8 +1,9 @@
 package com.github.blackjak34.compute.proxy;
 
-import com.github.blackjak34.compute.container.ContainerComputer;
-import com.github.blackjak34.compute.entity.tile.TileEntityComputer;
-import com.github.blackjak34.compute.gui.GuiComputer;
+import com.github.blackjak34.compute.container.ContainerEmulator;
+import com.github.blackjak34.compute.entity.tile.TileEntityConsole;
+import com.github.blackjak34.compute.entity.tile.TileEntityEmulator;
+import com.github.blackjak34.compute.gui.GuiConsole;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.BlockPos;
 import net.minecraft.world.World;
@@ -24,8 +25,8 @@ public class CommonProxy implements IGuiHandler {
 	@Override
 	public Object getServerGuiElement(int ID, EntityPlayer player, World world, int blockX, int blockY, int blockZ) {
 		switch(ID) {
-			case GuiComputer.GUIID:
-				return new ContainerComputer((TileEntityComputer) world.getTileEntity(new BlockPos(blockX, blockY, blockZ)));
+			case GuiConsole.GUIID:
+				return new ContainerEmulator((TileEntityEmulator) world.getTileEntity(new BlockPos(blockX, blockY, blockZ)));
 		}
 		
 		return null;
@@ -34,8 +35,8 @@ public class CommonProxy implements IGuiHandler {
 	@Override
 	public Object getClientGuiElement(int ID, EntityPlayer player, World world, int blockX, int blockY, int blockZ) {
 		switch(ID) {
-			case GuiComputer.GUIID:
-				return new GuiComputer((TileEntityComputer) world.getTileEntity(new BlockPos(blockX, blockY, blockZ)));
+			case GuiConsole.GUIID:
+				return new GuiConsole((TileEntityConsole) world.getTileEntity(new BlockPos(blockX, blockY, blockZ)));
 		}
 		
 		return null;
