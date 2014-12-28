@@ -56,6 +56,7 @@ public class TileEntityEmulator extends TileEntity implements IUpdatePlayerListB
         copyFileIntoArray(world, "boot", memory, 512, 28250);
     }
 
+    @SuppressWarnings("unused")
     public TileEntityEmulator() {}
 
     public void onKeyTyped(char keyTyped) {
@@ -70,7 +71,7 @@ public class TileEntityEmulator extends TileEntity implements IUpdatePlayerListB
     public void onActionPerformed(int buttonId) {
         if(buttonId == BUTTON_STP.getValue()) {
             setRunning(false);
-        } else if(buttonId == BUTTON_RUN.getValue()) {
+        } else if(buttonId == BUTTON_START.getValue()) {
             setRunning(true);
         } else if(buttonId == BUTTON_RST.getValue()) {
             setRunning(false);
@@ -225,9 +226,12 @@ public class TileEntityEmulator extends TileEntity implements IUpdatePlayerListB
 
     public void update() {
         if(!running) {return;}
-
         markDirty();
 
+        for(int i=0;i<25000;i++) {executeInstruction();}
+    }
+
+    public void executeInstruction() {
         InstructionComputer instruction = InstructionComputer.getInstruction(readMemory(programCounter)&255);
         switch(instruction) {
             case ADC_ABS:

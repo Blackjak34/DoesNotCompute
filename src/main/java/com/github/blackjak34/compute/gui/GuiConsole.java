@@ -18,13 +18,12 @@ import static com.github.blackjak34.compute.enums.GuiConstantComputer.*;
 public class GuiConsole extends GuiContainer {
 
 	public static final int GUIID = 42;
-
 	private static final double UV_SCALE = 0.00390625;
 
 	private static final Tessellator tessellator = Tessellator.getInstance();
+	private static final WorldRenderer worldRenderer = tessellator.getWorldRenderer();
 
-	private static final ResourceLocation guiTextureLoc = new ResourceLocation("doesnotcompute:textures/gui/Computer_Gui4.png");
-
+	private static final ResourceLocation guiTextureLoc = new ResourceLocation("doesnotcompute:textures/gui/Computer_Gui5.png");
 	private static final ResourceLocation charsetLoc = new ResourceLocation("doesnotcompute:textures/gui/Computer_Charset3.png");
 
 	private TileEntityConsole tiledata;
@@ -45,8 +44,8 @@ public class GuiConsole extends GuiContainer {
 		GuiButton buttonStop = new GuiButton(BUTTON_STP.getValue(),
 				guiLeft+BUTTON_STP_X.getValue(), guiTop+BUTTON_STP_Y.getValue(),
 				BUTTON_WIDTH.getValue(), BUTTON_HEIGHT.getValue(), "");
-		GuiButton buttonRun = new GuiButton(BUTTON_RUN.getValue(),
-				guiLeft+BUTTON_RUN_X.getValue(), guiTop+BUTTON_RUN_Y.getValue(),
+		GuiButton buttonRun = new GuiButton(BUTTON_START.getValue(),
+				guiLeft+BUTTON_START_X.getValue(), guiTop+BUTTON_START_Y.getValue(),
 				BUTTON_WIDTH.getValue(), BUTTON_HEIGHT.getValue(), "");
 		GuiButton buttonReset = new GuiButton(BUTTON_RST.getValue(),
 				guiLeft+BUTTON_RST_X.getValue(), guiTop+BUTTON_RST_Y.getValue(),
@@ -55,10 +54,10 @@ public class GuiConsole extends GuiContainer {
 				guiLeft+BUTTON_EJECT_X.getValue(), guiTop+BUTTON_EJECT_Y.getValue(),
 				BUTTON_EJECT_WIDTH.getValue(), BUTTON_EJECT_HEIGHT.getValue(), "");
 
-		buttonList.add(BUTTON_STP.getValue(), buttonStop);
-		buttonList.add(BUTTON_RUN.getValue(), buttonRun);
-		buttonList.add(BUTTON_RST.getValue(), buttonReset);
-		buttonList.add(BUTTON_EJECT.getValue(), buttonEject);
+		buttonList.add(buttonStop);
+		buttonList.add(buttonRun);
+		buttonList.add(buttonReset);
+		buttonList.add(buttonEject);
 	}
 
 	@Override
@@ -95,7 +94,6 @@ public class GuiConsole extends GuiContainer {
 		// Fetches the current world time, will be relevant later when drawing the cursor
 		long time = mc.theWorld.getWorldTime();
 
-		WorldRenderer worldRenderer = tessellator.getWorldRenderer();
 		int cursorX = tiledata.getCursorX();
 		int cursorY = tiledata.getCursorY();
 		// Iterates through each character on the screen
@@ -139,13 +137,13 @@ public class GuiConsole extends GuiContainer {
 		mc.renderEngine.bindTexture(guiTextureLoc);
 
 		if(tiledata.isRunning()) {
-			drawTexturedModalRect(coordX + IMG_BUTTON_RUN_X.getValue(), coordY + IMG_BUTTON_RUN_Y.getValue(),
+			drawTexturedModalRect(coordX + LIGHT_RUN_X.getValue(), coordY + LIGHT_RUN_Y.getValue(),
 					0, ySize,
-					IMG_BUTTON_WIDTH.getValue(), IMG_BUTTON_HEIGHT.getValue());
+					LIGHT_STATE_WIDTH.getValue(), LIGHT_STATE_HEIGHT.getValue());
 		} else {
-			drawTexturedModalRect(coordX + IMG_BUTTON_STP_X.getValue(), coordY + IMG_BUTTON_STP_Y.getValue(),
+			drawTexturedModalRect(coordX + LIGHT_HALT_X.getValue(), coordY + LIGHT_HALT_Y.getValue(),
 					0, ySize,
-					IMG_BUTTON_WIDTH.getValue(), IMG_BUTTON_HEIGHT.getValue());
+					LIGHT_STATE_WIDTH.getValue(), LIGHT_STATE_HEIGHT.getValue());
 		}
 
 		// Draws the floppy disk in the drive slot if one is inserted into the computer.
