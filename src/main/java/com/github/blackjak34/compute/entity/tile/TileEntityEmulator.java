@@ -32,8 +32,12 @@ public class TileEntityEmulator extends TileEntity implements IUpdatePlayerListB
     private int registerA = 0;
     private int registerX = 0;
     private int registerY = 0;
-    private int stackPointer = 255;
+    private int registerI = 0;
+    private int registerD = 0;
+    private int pStackPointer = 255;
+    private int rStackPointer = 255;
     private int programCounter = 512;
+    private int cyclesElapsed = 0;
 
     private boolean running = false;
     private boolean floppyInDrive = false;
@@ -53,6 +57,7 @@ public class TileEntityEmulator extends TileEntity implements IUpdatePlayerListB
 
     public TileEntityEmulator(World world) {
         Arrays.fill(memory, (byte) 0xFF);
+        Arrays.fill(floppyData, (byte) 0xFF);
         copyFileIntoArray(world, "boot", memory, 512, 28250);
     }
 
@@ -228,7 +233,8 @@ public class TileEntityEmulator extends TileEntity implements IUpdatePlayerListB
         if(!running) {return;}
         markDirty();
 
-        for(int i=0;i<25000;i++) {executeInstruction();}
+        cyclesElapsed = 0;
+        while(cyclesElapsed < 3500) {executeInstruction();}
     }
 
     public void executeInstruction() {
@@ -340,18 +346,21 @@ public class TileEntityEmulator extends TileEntity implements IUpdatePlayerListB
                 if(!flagCarry) {
                     byte relValue = (byte) readMemory(programCounter+1);
                     setProgramCounter(programCounter + relValue);
+                    cyclesElapsed++;
                 }
                 break;
             case BCS_REL:
                 if(flagCarry) {
                     byte relValue = (byte) readMemory(programCounter+1);
                     setProgramCounter(programCounter + relValue);
+                    cyclesElapsed++;
                 }
                 break;
             case BEQ_REL:
                 if(flagZero) {
                     byte relValue = (byte) readMemory(programCounter+1);
                     setProgramCounter(programCounter + relValue);
+                    cyclesElapsed++;
                 }
                 break;
             case BIT_ABS:
@@ -372,33 +381,53 @@ public class TileEntityEmulator extends TileEntity implements IUpdatePlayerListB
                 if(flagSign) {
                     byte relValue = (byte) readMemory(programCounter+1);
                     setProgramCounter(programCounter + relValue);
+                    cyclesElapsed++;
                 }
                 break;
             case BNE_REL:
                 if(!flagZero) {
                     byte relValue = (byte) readMemory(programCounter+1);
                     setProgramCounter(programCounter + relValue);
+                    cyclesElapsed++;
                 }
                 break;
             case BPL_REL:
                 if(!flagSign) {
                     byte relValue = (byte) readMemory(programCounter+1);
                     setProgramCounter(programCounter + relValue);
+                    cyclesElapsed++;
                 }
                 break;
             case BRK:
+                pushRStack(programCounter >>> 8);
+                pushRStack(programCounter);
+
+                int pushFlags3 = flagCarry ? 1 : 0;
+                pushFlags3 += flagZero ? 2 : 0;
+                pushFlags3 += flagInterrupt ? 4 : 0;
+                pushFlags3 += flagDecimal ? 8 : 0;
+                pushFlags3 += flagBreak ? 16 : 0;
+                pushFlags3 += 32;
+                pushFlags3 += flagOverflow ? 64 : 0;
+                pushFlags3 += flagSign ? 128 : 0;
+                pushPStack(pushFlags3);
+
+                flagDecimal = false;
                 flagBreak = true;
+                flagInterrupt = true;
                 break;
             case BVC_REL:
                 if(!flagOverflow) {
                     byte relValue = (byte) readMemory(programCounter+1);
                     setProgramCounter(programCounter + relValue);
+                    cyclesElapsed++;
                 }
                 break;
             case BVS_REL:
                 if(flagOverflow) {
                     byte relValue = (byte) readMemory(programCounter+1);
                     setProgramCounter(programCounter + relValue);
+                    cyclesElapsed++;
                 }
                 break;
             case CLC:
@@ -581,9 +610,9 @@ public class TileEntityEmulator extends TileEntity implements IUpdatePlayerListB
                 setProgramCounter(readImmAddress(readImmAddress(programCounter+1)));
                 break;
             case JSR_ABS:
-                int addressToPush = programCounter + instruction.getLength() - 1;
-                pushStack(addressToPush >>> 8);
-                pushStack(addressToPush);
+                int addressToPush = programCounter + 2;
+                pushRStack(addressToPush >>> 8);
+                pushRStack(addressToPush);
 
                 setProgramCounter(readImmAddress(programCounter+1));
                 break;
@@ -740,7 +769,7 @@ public class TileEntityEmulator extends TileEntity implements IUpdatePlayerListB
                 setSignZeroFlags(registerA);
                 break;
             case PHA:
-                pushStack(registerA);
+                pushPStack(registerA);
                 break;
             case PHP:
                 int pushFlags = flagCarry ? 1 : 0;
@@ -752,13 +781,13 @@ public class TileEntityEmulator extends TileEntity implements IUpdatePlayerListB
                 pushFlags += flagOverflow ? 64 : 0;
                 pushFlags += flagSign ? 128 : 0;
 
-                pushStack(pushFlags);
+                pushPStack(pushFlags);
                 break;
             case PLA:
-                registerA = pullStack();
+                registerA = pullPStack();
                 break;
             case PLP:
-                int pullFlags = pullStack();
+                int pullFlags = pullPStack();
 
                 flagCarry = testBit(pullFlags, 0);
                 flagZero = testBit(pullFlags, 1);
@@ -865,7 +894,7 @@ public class TileEntityEmulator extends TileEntity implements IUpdatePlayerListB
                 writeMemory(rorZpAddress, rorZpValue);
                 break;
             case ROR_ZP_X:
-                int rorZpXAddress = readMemory(programCounter+1)+registerX & 0xFF;
+                int rorZpXAddress = readMemory(programCounter+1)+registerX & 255;
                 int rorZpXValue = readMemory(rorZpXAddress);
 
                 flagCarry = testBit(rorZpXValue, 0);
@@ -876,7 +905,7 @@ public class TileEntityEmulator extends TileEntity implements IUpdatePlayerListB
                 writeMemory(rorZpXAddress, rorZpXValue);
                 break;
             case RTI:
-                int pullFlags2 = pullStack();
+                int pullFlags2 = pullPStack();
 
                 flagCarry = testBit(pullFlags2, 0);
                 flagZero = testBit(pullFlags2, 1);
@@ -889,7 +918,7 @@ public class TileEntityEmulator extends TileEntity implements IUpdatePlayerListB
                 setProgramCounter(pullImmAddress());
                 break;
             case RTS:
-                setProgramCounter(pullImmAddress()+1);
+                setProgramCounter(pullImmAddress());
                 break;
             case SBC_ABS:
                 performAddition(readImmAddress(programCounter+1), true);
@@ -904,7 +933,7 @@ public class TileEntityEmulator extends TileEntity implements IUpdatePlayerListB
                 performAddition(programCounter+1, true);
                 break;
             case SBC_IND_X:
-                performAddition(readImmAddress(readMemory(programCounter+1)+registerX & 0xFF), true);
+                performAddition(readImmAddress(readMemory(programCounter+1)+registerX & 255), true);
                 break;
             case SBC_IND_Y:
                 performAddition(readImmAddress(readMemory(programCounter+1))+registerY, true);
@@ -913,7 +942,7 @@ public class TileEntityEmulator extends TileEntity implements IUpdatePlayerListB
                 performAddition(readMemory(programCounter+1), true);
                 break;
             case SBC_ZP_X:
-                performAddition(readMemory(programCounter+1)+registerX & 0xFF, true);
+                performAddition(readMemory(programCounter+1)+registerX & 255, true);
                 break;
             case SEC:
                 flagCarry = true;
@@ -934,7 +963,7 @@ public class TileEntityEmulator extends TileEntity implements IUpdatePlayerListB
                 writeMemory(readImmAddress(programCounter+1)+registerY, registerA);
                 break;
             case STA_IND_X:
-                writeMemory(readImmAddress(readMemory(programCounter+1)+registerX & 0xFF), registerA);
+                writeMemory(readImmAddress(readMemory(programCounter+1)+registerX & 255), registerA);
                 break;
             case STA_IND_Y:
                 writeMemory(readImmAddress(readMemory(programCounter+1))+registerY, registerA);
@@ -943,7 +972,7 @@ public class TileEntityEmulator extends TileEntity implements IUpdatePlayerListB
                 writeMemory(readMemory(programCounter+1), registerA);
                 break;
             case STA_ZP_X:
-                writeMemory(readMemory(programCounter+1)+registerX & 0xFF, registerA);
+                writeMemory(readMemory(programCounter+1)+registerX & 255, registerA);
                 break;
             case STP:
                 setRunning(false);
@@ -965,7 +994,7 @@ public class TileEntityEmulator extends TileEntity implements IUpdatePlayerListB
                 writeMemory(readMemory(programCounter+1), registerY);
                 break;
             case STY_ZP_X:
-                writeMemory(readMemory(programCounter+1)+registerX & 0xFF, registerY);
+                writeMemory(readMemory(programCounter+1)+registerX & 255, registerY);
                 break;
             case TAX:
                 registerX = registerA;
@@ -976,20 +1005,228 @@ public class TileEntityEmulator extends TileEntity implements IUpdatePlayerListB
                 setSignZeroFlags(registerA);
                 break;
             case TSX:
-                registerX = stackPointer;
-                setSignZeroFlags(stackPointer);
+                registerX = pStackPointer;
+                setSignZeroFlags(pStackPointer);
                 break;
             case TXA:
                 registerA = registerX;
                 setSignZeroFlags(registerX);
                 break;
             case TXS:
-                stackPointer = registerX;
+                pStackPointer = registerX;
                 setSignZeroFlags(registerX);
                 break;
             case TYA:
                 registerA = registerY;
                 setSignZeroFlags(registerY);
+                break;
+            case RHI:
+                pushRStack(registerI);
+                break;
+            case ORA_IND:
+                registerA |= readMemory(readImmAddress(readMemory(programCounter+1)));
+                setSignZeroFlags(registerA);
+                break;
+            case INC_A:
+                registerA++;
+                setSignZeroFlags(registerA);
+                break;
+            case RHX:
+                pushRStack(registerX);
+                break;
+            case RLI:
+                registerI = pullRStack();
+                setSignZeroFlags(registerI);
+                break;
+            case AND_IND:
+                registerA &= readMemory(readImmAddress(readMemory(programCounter+1)));
+                break;
+            case BIT_ZP_X:
+                int bitZpXValue = readMemory(readMemory(programCounter+1)+registerX & 255);
+
+                flagZero = (registerA & bitZpXValue) == 0;
+                flagSign = testBit(bitZpXValue, 6);
+                flagOverflow = bitZpXValue>127;
+                break;
+            case DEC_A:
+                registerA--;
+                setSignZeroFlags(registerA);
+                break;
+            case RLX:
+                registerX = pullRStack();
+                setSignZeroFlags(registerX);
+                break;
+            case BIT_ABS_X:
+                int bitAbsXValue = readMemory(readImmAddress(programCounter + 1)+registerX);
+
+                flagZero = (registerA & bitAbsXValue) == 0;
+                flagSign = testBit(bitAbsXValue, 6);
+                flagOverflow = bitAbsXValue>127;
+                break;
+            case RHA:
+                pushRStack(registerA);
+                break;
+            case EOR_IND:
+                registerA ^= readMemory(readImmAddress(readMemory(programCounter+1)));
+                setSignZeroFlags(registerA);
+                break;
+            case PHY:
+                pushPStack(registerY);
+                break;
+            case RHY:
+                pushRStack(registerY);
+                break;
+            case TXI:
+                registerX = registerI;
+                setSignZeroFlags(registerI);
+                break;
+            case STZ_ZP:
+                writeMemory(readMemory(programCounter+1), 0);
+                break;
+            case RLA:
+                registerA = pullRStack();
+                setSignZeroFlags(registerA);
+                break;
+            case ADC_IND:
+                performAddition(readImmAddress(readMemory(programCounter+1)), false);
+                break;
+            case STZ_ZP_X:
+                writeMemory(readMemory(programCounter+1)+registerX & 255, 0);
+                break;
+            case PLY:
+                registerY = pullPStack();
+                setSignZeroFlags(registerY);
+                break;
+            case RLY:
+                registerY = pullRStack();
+                setSignZeroFlags(registerY);
+                break;
+            case JMP_ABS_X:
+                setProgramCounter(readImmAddress(readImmAddress(programCounter+1)+registerX));
+                break;
+            case BRA_REL:
+                byte relValue = (byte) readMemory(programCounter+1);
+                setProgramCounter(programCounter + relValue);
+                break;
+            case BIT_IMM:
+                flagZero = (registerA & readMemory(programCounter + 1)) == 0;
+                break;
+            case TXR:
+                rStackPointer = registerX;
+                setSignZeroFlags(registerX);
+                break;
+            case STA_IND:
+                writeMemory(readImmAddress(readMemory(programCounter+1)), registerA);
+                break;
+            case TXY:
+                registerY = registerX;
+                setSignZeroFlags(registerX);
+                break;
+            case STZ_ABS:
+                writeMemory(readImmAddress(programCounter+1), 0);
+                break;
+            case STZ_ABS_X:
+                writeMemory(readImmAddress(programCounter+1)+registerX, 0);
+                break;
+            case TRX:
+                registerX = rStackPointer;
+                setSignZeroFlags(rStackPointer);
+                break;
+            case TDA:
+                registerA = registerD;
+                setSignZeroFlags(registerD);
+                break;
+            case LDA_IND:
+                registerA = readMemory(readImmAddress(readMemory(programCounter+1)));
+                setSignZeroFlags(registerA);
+                break;
+            case TYX:
+                registerX = registerY;
+                setSignZeroFlags(registerY);
+                break;
+            case TAD:
+                registerD = registerA;
+                setSignZeroFlags(registerA);
+                break;
+            case PLD:
+                registerD = pullPStack();
+                setSignZeroFlags(registerD);
+                break;
+            case CMP_IND:
+                performComparation(readImmAddress(readMemory(programCounter+1)), registerA);
+                break;
+            case PHX:
+                pushPStack(registerX);
+                break;
+            case TIX:
+                registerX = registerI;
+                setSignZeroFlags(registerI);
+                break;
+            case PHD:
+                pushPStack(registerD);
+                break;
+            case SBC_IND:
+                performAddition(readImmAddress(readMemory(programCounter+1)), true);
+                break;
+            case PLX:
+                registerX = pullPStack();
+                setSignZeroFlags(registerX);
+                break;
+            case TSB_ZP:
+                int tsbZpAddress = readMemory(programCounter+1);
+                int tsbZpValue = readMemory(tsbZpAddress);
+
+                flagZero = (registerA & tsbZpValue) == 0;
+                tsbZpValue |= registerA;
+
+                writeMemory(tsbZpAddress, tsbZpValue);
+                break;
+            case TSB_ABS:
+                int tsbAbsAddress = readImmAddress(programCounter + 1);
+                int tsbAbsValue = readMemory(tsbAbsAddress);
+
+                flagZero = (registerA & tsbAbsValue) == 0;
+                tsbAbsValue |= registerA;
+
+                writeMemory(tsbAbsAddress, tsbAbsValue);
+                break;
+            case TRB_ZP:
+                int trbZpAddress = readMemory(programCounter+1);
+                int trbZpValue = readMemory(trbZpAddress);
+
+                flagZero = (registerA & trbZpValue) == 0;
+                trbZpValue |= ~registerA;
+
+                writeMemory(trbZpAddress, trbZpValue);
+                break;
+            case TRB_ABS:
+                int trbAbsAddress = readImmAddress(programCounter + 1);
+                int trbAbsValue = readMemory(trbAbsAddress);
+
+                flagZero = (registerA & trbAbsValue) == 0;
+                trbAbsValue |= ~registerA;
+
+                writeMemory(trbAbsAddress, trbAbsValue);
+                break;
+            case MUL_ZP:
+                break;
+            case MUL_ZP_X:
+                break;
+            case MUL_ABS:
+                break;
+            case MUL_ABS_X:
+                break;
+            case DIV_ZP:
+                break;
+            case DIV_ZP_X:
+                break;
+            case DIV_ABS:
+                break;
+            case DIV_ABS_X:
+                break;
+            case WAI:
+                break;
+            case MMU:
                 break;
             case UNUSED:
                 setRunning(false);
@@ -997,6 +1234,7 @@ public class TileEntityEmulator extends TileEntity implements IUpdatePlayerListB
         }
 
         setProgramCounter(programCounter + instruction.getLength());
+        cyclesElapsed += instruction.getNumCycles();
     }
 
     private int readImmAddress(int addressToRead) {
@@ -1006,8 +1244,8 @@ public class TileEntityEmulator extends TileEntity implements IUpdatePlayerListB
     }
 
     private int pullImmAddress() {
-        int low = pullStack();
-        int high = pullStack();
+        int low = pullRStack();
+        int high = pullRStack();
         return (high << 8) | low;
     }
 
@@ -1024,13 +1262,14 @@ public class TileEntityEmulator extends TileEntity implements IUpdatePlayerListB
         flagOverflow = (byte) result<-128 || (byte) result>127;
         flagCarry = result>255;
         setSignZeroFlags(registerA);
+
+        if(flagDecimal) {cyclesElapsed++;}
     }
 
     private void performComparation(int addressOfValue, int valueComparedTo) {
         int compareValue = readMemory(addressOfValue);
         int result = (256 + valueComparedTo) - compareValue;
 
-        flagOverflow = (byte) result<-128 || (byte) result>127;
         flagCarry = result>255;
         setSignZeroFlags(result & 255);
     }
@@ -1039,14 +1278,24 @@ public class TileEntityEmulator extends TileEntity implements IUpdatePlayerListB
         return (target&(1<<offset)) != 0;
     }
 
-    private void pushStack(int value) {
-        memory[256 + stackPointer] = (byte) value;
-        stackPointer--;
+    private void pushPStack(int value) {
+        memory[256 + pStackPointer] = (byte) value;
+        pStackPointer--;
     }
 
-    private int pullStack() {
-        stackPointer++;
-        return memory[256 + stackPointer]&255;
+    private void pushRStack(int value) {
+        memory[512 + rStackPointer] = (byte) value;
+        rStackPointer--;
+    }
+
+    private int pullPStack() {
+        pStackPointer++;
+        return memory[256 + pStackPointer]&255;
+    }
+
+    private int pullRStack() {
+        rStackPointer++;
+        return memory[512 + rStackPointer]&255;
     }
 
     @Override
@@ -1067,7 +1316,10 @@ public class TileEntityEmulator extends TileEntity implements IUpdatePlayerListB
         data.setInteger("registerA", registerA);
         data.setInteger("registerX", registerX);
         data.setInteger("registerY", registerY);
-        data.setInteger("stackPointer", stackPointer);
+        data.setInteger("registerI", registerI);
+        data.setInteger("registerD", registerD);
+        data.setInteger("pStackPointer", pStackPointer);
+        data.setInteger("rStackPointer", rStackPointer);
         data.setInteger("programCounter", programCounter);
 
         data.setBoolean("running", running);
@@ -1080,7 +1332,10 @@ public class TileEntityEmulator extends TileEntity implements IUpdatePlayerListB
         data.setBoolean("flagOverflow", flagOverflow);
         data.setBoolean("flagSign", flagSign);
 
+        if(floppyFilename != null) {data.setString("floppyFilename", floppyFilename);}
+
         data.setByteArray("memory", memory);
+        data.setByteArray("floppyData", floppyData);
 
         super.writeToNBT(data);
     }
@@ -1092,7 +1347,10 @@ public class TileEntityEmulator extends TileEntity implements IUpdatePlayerListB
         registerA = data.getInteger("registerA");
         registerX = data.getInteger("registerX");
         registerY = data.getInteger("registerY");
-        stackPointer = data.getInteger("stackPointer");
+        registerI = data.getInteger("registerI");
+        registerD = data.getInteger("registerD");
+        pStackPointer = data.getInteger("pStackPointer");
+        rStackPointer = data.getInteger("rStackPointer");
         programCounter = data.getInteger("programCounter");
 
         running = data.getBoolean("running");
@@ -1105,7 +1363,10 @@ public class TileEntityEmulator extends TileEntity implements IUpdatePlayerListB
         flagOverflow = data.getBoolean("flagOverflow");
         flagSign = data.getBoolean("flagSign");
 
+        if(data.hasKey("floppyFilename")) {floppyFilename = data.getString("floppyFilename");}
+
         memory = data.getByteArray("memory");
+        floppyData = data.getByteArray("floppyData");
 
         super.readFromNBT(data);
     }
@@ -1118,6 +1379,7 @@ public class TileEntityEmulator extends TileEntity implements IUpdatePlayerListB
 
     @Override
     public String toString() {
-        return String.format("A:%X X:%X Y:%X S:%X", registerA, registerX, registerY, stackPointer);
+        return String.format("A:%X X:%X Y:%X I:%X D:%X P:%X R:%X",
+                registerA, registerX, registerY, registerI, registerD, pStackPointer, rStackPointer);
     }
 }
