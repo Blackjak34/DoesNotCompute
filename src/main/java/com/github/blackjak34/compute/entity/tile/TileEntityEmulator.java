@@ -8,8 +8,10 @@ import com.github.blackjak34.compute.item.ItemFloppy;
 import com.github.blackjak34.compute.packet.MessageUpdateCursor;
 import com.github.blackjak34.compute.packet.MessageUpdateDisplay;
 import com.google.common.io.Files;
+import net.minecraft.block.material.Material;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.item.EntityItem;
+import net.minecraft.init.Blocks;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.network.Packet;
@@ -46,8 +48,10 @@ public class TileEntityEmulator extends TileEntity implements IUpdatePlayerListB
     private boolean flagInterrupt = false;
     private boolean flagDecimal = false;
     private boolean flagBreak = false;
+    private boolean flagAccumulator = false;
     private boolean flagOverflow = false;
     private boolean flagSign = false;
+    private boolean flagEmulate = false;
 
     private byte[] keyBuffer = new byte[16];
     private byte[] memory = new byte[32768];
@@ -56,8 +60,8 @@ public class TileEntityEmulator extends TileEntity implements IUpdatePlayerListB
     private String floppyFilename;
 
     public TileEntityEmulator(World world) {
-        Arrays.fill(memory, (byte) 0xFF);
-        Arrays.fill(floppyData, (byte) 0xFF);
+        Arrays.fill(memory, (byte) 255);
+        Arrays.fill(floppyData, (byte) 255);
         copyFileIntoArray(world, "boot", memory, 512, 28250);
     }
 
@@ -102,7 +106,7 @@ public class TileEntityEmulator extends TileEntity implements IUpdatePlayerListB
         if(!floppyInDrive) {return;}
 
         copyArrayIntoFile(worldObj, floppyFilename, floppyData);
-        Arrays.fill(floppyData, (byte) 0xFF);
+        Arrays.fill(floppyData, (byte) 255);
 
         worldObj.spawnEntityInWorld(new EntityItem(worldObj, pos.getX(), pos.getY(), pos.getZ(),
                 ItemFloppy.setFloppyFilename(new ItemStack(DoesNotCompute.floppy), floppyFilename)));
@@ -172,6 +176,27 @@ public class TileEntityEmulator extends TileEntity implements IUpdatePlayerListB
         return true;
     }
 
+    private boolean isEightBit(boolean indexRegister) {
+        return flagEmulate || (!indexRegister && flagAccumulator) || (indexRegister && flagBreak);
+    }
+
+    private int readDynamic(int index, boolean isIndexRegister) {
+        if(isEightBit(isIndexRegister)) {
+            return readMemory(index);
+        } else {
+            return (readMemory(index) << 8) | readMemory(index+1);
+        }
+    }
+
+    private void writeDynamic(int index, int value, boolean isIndexRegister) {
+        if(isEightBit(isIndexRegister)) {
+            writeMemory(index, value);
+        } else {
+            writeMemory(index, (value >>> 8));
+            writeMemory(index+1, value);
+        }
+    }
+
     private int readMemory(int index) {
         if(index < 0 || index > 65535) {return 255;}
 
@@ -238,25 +263,25 @@ public class TileEntityEmulator extends TileEntity implements IUpdatePlayerListB
     }
 
     public void executeInstruction() {
-        InstructionComputer instruction = InstructionComputer.getInstruction(readMemory(programCounter)&255);
+        InstructionComputer instruction = InstructionComputer.getInstruction(readMemory(programCounter));
         switch(instruction) {
             case ADC_ABS:
-                performAddition(readImmAddress(programCounter+1), false);
+                performAddition(getAbsAddress(programCounter+1), false);
                 break;
             case ADC_ABS_X:
-                performAddition(readImmAddress(programCounter+1)+registerX, false);
+                performAddition(getAbsAddress(programCounter+1)+registerX, false);
                 break;
             case ADC_ABS_Y:
-                performAddition(readImmAddress(programCounter+1)+registerY, false);
+                performAddition(getAbsAddress(programCounter+1)+registerY, false);
                 break;
             case ADC_IMM:
                 performAddition(programCounter+1, false);
                 break;
             case ADC_IND_X:
-                performAddition(readImmAddress(readMemory(programCounter+1)+registerX & 255), false);
+                performAddition(getAbsAddress(readMemory(programCounter+1)+registerX & 255), false);
                 break;
             case ADC_IND_Y:
-                performAddition(readImmAddress(readMemory(programCounter+1))+registerY, false);
+                performAddition(getAbsAddress(readMemory(programCounter+1))+registerY, false);
                 break;
             case ADC_ZP:
                 performAddition(readMemory(programCounter+1), false);
@@ -265,60 +290,69 @@ public class TileEntityEmulator extends TileEntity implements IUpdatePlayerListB
                 performAddition(readMemory(programCounter+1)+registerX & 255, false);
                 break;
             case AND_ABS:
-                registerA &= readMemory(readImmAddress(programCounter+1));
-                setSignZeroFlags(registerA);
+                registerA &= readDynamic(getAbsAddress(programCounter+1), false);
+                setSignZeroDynamic(registerA, false);
                 break;
             case AND_ABS_X:
-                registerA &= readMemory(readImmAddress(programCounter+1)+registerX);
-                setSignZeroFlags(registerA);
+                registerA &= readDynamic(getAbsAddress(programCounter+1)+registerX, false);
+                setSignZeroDynamic(registerA, false);
                 break;
             case AND_ABS_Y:
-                registerA &= readMemory(readImmAddress(programCounter+1)+registerY);
-                setSignZeroFlags(registerA);
+                registerA &= readDynamic(getAbsAddress(programCounter+1)+registerY, false);
+                setSignZeroDynamic(registerA, false);
                 break;
             case AND_IMM:
-                registerA &= readMemory(programCounter+1);
-                setSignZeroFlags(registerA);
+                registerA &= readDynamic(programCounter + 1, false);
+                setSignZeroDynamic(registerA, false);
                 break;
             case AND_IND_X:
-                registerA &= readMemory(readImmAddress(readMemory(programCounter+1)+registerX & 255));
-                setSignZeroFlags(registerA);
+                registerA &= readDynamic(getAbsAddress(readMemory(programCounter+1)+registerX & 255), false);
+                setSignZeroDynamic(registerA, false);
                 break;
             case AND_IND_Y:
-                registerA &= readMemory(readImmAddress(readMemory(programCounter+1))+registerY);
-                setSignZeroFlags(registerA);
+                registerA &= readDynamic(getAbsAddress(readMemory(programCounter+1))+registerY, false);
+                setSignZeroDynamic(registerA, false);
                 break;
             case AND_ZP:
-                registerA &= readMemory(readMemory(programCounter+1));
-                setSignZeroFlags(registerA);
+                registerA &= readDynamic(readMemory(programCounter+1), false);
+                setSignZeroDynamic(registerA, false);
                 break;
             case AND_ZP_X:
-                registerA &= readMemory(readMemory(programCounter+1)+registerX & 255);
-                setSignZeroFlags(registerA);
+                registerA &= readDynamic(readMemory(programCounter+1)+registerX & 255, false);
+                setSignZeroDynamic(registerA, false);
                 break;
             case ASL_A:
-                flagCarry = registerA<0;
+                if(isEightBit(false)) {
+                    int lowByte = registerA&255;
+                    flagCarry = lowByte > 127;
+                    registerA = (registerA&65280) | ((lowByte << 1)&255);
+                } else {
+                    flagCarry = registerA > 32767;
+                    registerA <<= 1;
+                    registerA &= 65535;
+                }
 
-                registerA <<= 1;
-                setSignZeroFlags(registerA);
+                setSignZeroDynamic(registerA, false);
                 break;
             case ASL_ABS:
-                int aslAbsAddress = readImmAddress(programCounter+1);
+                int aslAbsAddress = getAbsAddress(programCounter+1);
                 int aslAbsValue = readMemory(aslAbsAddress);
                 flagCarry = aslAbsValue>127;
 
                 aslAbsValue <<= 1;
-                setSignZeroFlags(aslAbsValue);
+                aslAbsValue &= 255;
+                setSignZero(aslAbsValue);
 
                 writeMemory(aslAbsAddress, aslAbsValue);
                 break;
             case ASL_ABS_X:
-                int aslAbsXAddress = readImmAddress(programCounter+1)+registerX;
+                int aslAbsXAddress = getAbsAddress(programCounter+1)+registerX;
                 int aslAbsXValue = readMemory(aslAbsXAddress);
                 flagCarry = aslAbsXValue>127;
 
                 aslAbsXValue <<= 1;
-                setSignZeroFlags(aslAbsXValue);
+                aslAbsXValue &= 255;
+                setSignZero(aslAbsXValue);
 
                 writeMemory(aslAbsXAddress, aslAbsXValue);
                 break;
@@ -328,7 +362,8 @@ public class TileEntityEmulator extends TileEntity implements IUpdatePlayerListB
                 flagCarry = aslZpValue>127;
 
                 aslZpValue <<= 1;
-                setSignZeroFlags(aslZpValue);
+                aslZpValue &= 255;
+                setSignZero(aslZpValue);
 
                 writeMemory(aslZpAddress, aslZpValue);
                 break;
@@ -338,7 +373,8 @@ public class TileEntityEmulator extends TileEntity implements IUpdatePlayerListB
                 flagCarry = aslZpXValue>127;
 
                 aslZpXValue <<= 1;
-                setSignZeroFlags(aslZpXValue);
+                aslZpXValue &= 255;
+                setSignZero(aslZpXValue);
 
                 writeMemory(aslZpXAddress, aslZpXValue);
                 break;
@@ -364,18 +400,28 @@ public class TileEntityEmulator extends TileEntity implements IUpdatePlayerListB
                 }
                 break;
             case BIT_ABS:
-                int bitAbsValue = readMemory(readImmAddress(programCounter+1));
+                int bitAbsValue = readDynamic(getAbsAddress(programCounter + 1), false);
 
                 flagZero = (registerA & bitAbsValue) == 0;
-                flagSign = testBit(bitAbsValue, 6);
-                flagOverflow = bitAbsValue>127;
+                if(isEightBit(false)) {
+                    flagSign = bitAbsValue > 127;
+                    flagOverflow = testBit(bitAbsValue, 6);
+                } else {
+                    flagSign = bitAbsValue > 32767;
+                    flagOverflow = testBit(bitAbsValue, 14);
+                }
                 break;
             case BIT_ZP:
-                int bitZpValue = readMemory(readMemory(programCounter+1));
+                int bitZpValue = readDynamic(readMemory(programCounter + 1), false);
 
                 flagZero = (registerA & bitZpValue) == 0;
-                flagSign = testBit(bitZpValue, 6);
-                flagOverflow = bitZpValue>127;
+                if(isEightBit(false)) {
+                    flagSign = bitZpValue > 127;
+                    flagOverflow = testBit(bitZpValue, 6);
+                } else {
+                    flagSign = bitZpValue > 32767;
+                    flagOverflow = testBit(bitZpValue, 14);
+                }
                 break;
             case BMI_REL:
                 if(flagSign) {
@@ -443,62 +489,62 @@ public class TileEntityEmulator extends TileEntity implements IUpdatePlayerListB
                 flagOverflow = false;
                 break;
             case CMP_ABS:
-                performComparation(readImmAddress(programCounter+1), registerA);
+                performComparation(getAbsAddress(programCounter+1), registerA, false);
                 break;
             case CMP_ABS_X:
-                performComparation(readImmAddress(programCounter+1)+registerX, registerA);
+                performComparation(getAbsAddress(programCounter+1)+registerX, registerA, false);
                 break;
             case CMP_ABS_Y:
-                performComparation(readImmAddress(programCounter+1)+registerY, registerA);
+                performComparation(getAbsAddress(programCounter+1)+registerY, registerA, false);
                 break;
             case CMP_IMM:
-                performComparation(programCounter+1, registerA);
+                performComparation(programCounter+1, registerA, false);
                 break;
             case CMP_IND_X:
-                performComparation(readImmAddress(readMemory(programCounter+1)+registerX & 255), registerA);
+                performComparation(getAbsAddress(readMemory(programCounter+1)+registerX & 255), registerA, false);
                 break;
             case CMP_IND_Y:
-                performComparation(readImmAddress(readMemory(programCounter+1))+registerY, registerA);
+                performComparation(getAbsAddress(readMemory(programCounter+1))+registerY, registerA, false);
                 break;
             case CMP_ZP:
-                performComparation(readMemory(programCounter+1), registerA);
+                performComparation(readMemory(programCounter+1), registerA, false);
                 break;
             case CMP_ZP_X:
-                performComparation(readMemory(programCounter+1)+registerX & 255, registerA);
+                performComparation(readMemory(programCounter+1)+registerX & 255, registerA, false);
                 break;
             case CPX_ABS:
-                performComparation(readImmAddress(programCounter+1), registerX);
+                performComparation(getAbsAddress(programCounter+1), registerX, true);
                 break;
             case CPX_IMM:
-                performComparation(programCounter+1, registerX);
+                performComparation(programCounter+1, registerX, true);
                 break;
             case CPX_ZP:
-                performComparation(readMemory(programCounter+1), registerX);
+                performComparation(readMemory(programCounter+1), registerX, true);
                 break;
             case CPY_ABS:
-                performComparation(readImmAddress(programCounter+1), registerY);
+                performComparation(getAbsAddress(programCounter+1), registerY, true);
                 break;
             case CPY_IMM:
-                performComparation(programCounter+1, registerY);
+                performComparation(programCounter+1, registerY, true);
                 break;
             case CPY_ZP:
-                performComparation(readMemory(programCounter+1), registerY);
+                performComparation(readMemory(programCounter+1), registerY, true);
                 break;
             case DEC_ABS:
-                int decAbsAddress = readImmAddress(programCounter+1);
+                int decAbsAddress = getAbsAddress(programCounter+1);
                 int decAbsValue = readMemory(decAbsAddress);
 
                 decAbsValue--;
-                setSignZeroFlags(decAbsValue);
+                setSignZero(decAbsValue);
 
                 writeMemory(decAbsAddress, decAbsValue);
                 break;
             case DEC_ABS_X:
-                int decAbsXAddress = readImmAddress(programCounter+1)+registerX;
+                int decAbsXAddress = getAbsAddress(programCounter+1)+registerX;
                 int decAbsXValue = readMemory(decAbsXAddress);
 
                 decAbsXValue--;
-                setSignZeroFlags(decAbsXValue);
+                setSignZero(decAbsXValue);
 
                 writeMemory(decAbsXAddress, decAbsXValue);
                 break;
@@ -507,7 +553,7 @@ public class TileEntityEmulator extends TileEntity implements IUpdatePlayerListB
                 int decZpValue = readMemory(decZpAddress);
 
                 decZpValue--;
-                setSignZeroFlags(decZpValue);
+                setSignZero(decZpValue);
 
                 writeMemory(decZpAddress, decZpValue);
                 break;
@@ -516,64 +562,66 @@ public class TileEntityEmulator extends TileEntity implements IUpdatePlayerListB
                 int decZpXValue = readMemory(decZpXAddress);
 
                 decZpXValue--;
-                setSignZeroFlags(decZpXValue);
+                setSignZero(decZpXValue);
 
                 writeMemory(decZpXAddress, decZpXValue);
                 break;
             case DEX:
                 registerX--;
-                setSignZeroFlags(registerX);
+                registerX &= (isEightBit(true) ? 255 : 65535);
+                setSignZeroDynamic(registerX, true);
                 break;
             case DEY:
                 registerY--;
-                setSignZeroFlags(registerY);
+                registerY &= (isEightBit(true) ? 255 : 65535);
+                setSignZeroDynamic(registerY, true);
                 break;
             case EOR_ABS:
-                registerA ^= readMemory(readImmAddress(programCounter+1));
-                setSignZeroFlags(registerA);
+                registerA ^= readDynamic(getAbsAddress(programCounter + 1), false);
+                setSignZeroDynamic(registerA, false);
                 break;
             case EOR_ABS_X:
-                registerA ^= readMemory(readImmAddress(programCounter+1)+registerX);
-                setSignZeroFlags(registerA);
+                registerA ^= readDynamic(getAbsAddress(programCounter + 1) + registerX, false);
+                setSignZeroDynamic(registerA, false);
                 break;
             case EOR_ABS_Y:
-                registerA ^= readMemory(readImmAddress(programCounter+1)+registerY);
-                setSignZeroFlags(registerA);
+                registerA ^= readDynamic(getAbsAddress(programCounter + 1) + registerY, false);
+                setSignZeroDynamic(registerA, false);
                 break;
             case EOR_IMM:
-                registerA ^= readMemory(programCounter+1);
-                setSignZeroFlags(registerA);
+                registerA ^= readDynamic(programCounter + 1, false);
+                setSignZeroDynamic(registerA, false);
                 break;
             case EOR_IND_X:
-                registerA ^= readMemory(readImmAddress(readMemory(programCounter+1)+registerX & 255));
-                setSignZeroFlags(registerA);
+                registerA ^= readDynamic(getAbsAddress(readMemory(programCounter + 1) + registerX & 255), false);
+                setSignZeroDynamic(registerA, false);
                 break;
             case EOR_IND_Y:
-                registerA ^= readMemory(readImmAddress(readMemory(programCounter+1))+registerY);
-                setSignZeroFlags(registerA);
+                registerA ^= readDynamic(getAbsAddress(readMemory(programCounter + 1)) + registerY, false);
+                setSignZeroDynamic(registerA, false);
                 break;
             case EOR_ZP:
-                registerA ^= readMemory(readMemory(programCounter+1));
-                setSignZeroFlags(registerA);
+                registerA ^= readDynamic(readMemory(programCounter + 1), false);
+                setSignZeroDynamic(registerA, false);
                 break;
             case EOR_ZP_X:
-                registerA ^= readMemory(readMemory(programCounter+1)+registerX & 255);
-                setSignZeroFlags(registerA);
+                registerA ^= readDynamic(readMemory(programCounter + 1) + registerX & 255, false);
+                setSignZeroDynamic(registerA, false);
                 break;
             case INC_ABS:
-                int incAbsAddress = readImmAddress(programCounter+1);
+                int incAbsAddress = getAbsAddress(programCounter+1);
                 int incAbsValue = readMemory(incAbsAddress);
 
-                setSignZeroFlags(++incAbsValue);
+                setSignZero(++incAbsValue);
 
                 writeMemory(incAbsAddress, incAbsValue);
                 break;
             case INC_ABS_X:
-                int incAbsXAddress = readImmAddress(programCounter+1)+registerX;
+                int incAbsXAddress = getAbsAddress(programCounter+1)+registerX;
                 int incAbsXValue = readMemory(incAbsXAddress);
 
                 incAbsXValue++;
-                setSignZeroFlags(incAbsXValue);
+                setSignZero(incAbsXValue);
 
                 writeMemory(incAbsXAddress, incAbsXValue);
                 break;
@@ -582,7 +630,7 @@ public class TileEntityEmulator extends TileEntity implements IUpdatePlayerListB
                 int incZpValue = readMemory(incZpAddress);
 
                 incZpValue++;
-                setSignZeroFlags(incZpValue);
+                setSignZero(incZpValue);
 
                 writeMemory(incZpAddress, incZpValue);
                 break;
@@ -591,128 +639,134 @@ public class TileEntityEmulator extends TileEntity implements IUpdatePlayerListB
                 int incZpXValue = readMemory(incZpXAddress);
 
                 incZpXValue++;
-                setSignZeroFlags(incZpXValue);
+                setSignZero(incZpXValue);
 
                 writeMemory(incZpXAddress, incZpXValue);
                 break;
             case INX:
                 registerX++;
-                setSignZeroFlags(registerX);
+                registerX &= (isEightBit(true) ? 255 : 65535);
+                setSignZeroDynamic(registerX, true);
                 break;
             case INY:
                 registerY++;
-                setSignZeroFlags(registerY);
+                registerY &= (isEightBit(true) ? 255 : 65535);
+                setSignZeroDynamic(registerY, true);
                 break;
             case JMP_ABS:
-                setProgramCounter(readImmAddress(programCounter+1));
+                setProgramCounter(getAbsAddress(programCounter+1));
                 break;
             case JMP_IND:
-                setProgramCounter(readImmAddress(readImmAddress(programCounter+1)));
+                setProgramCounter(getAbsAddress(getAbsAddress(programCounter+1)));
                 break;
             case JSR_ABS:
                 int addressToPush = programCounter + 2;
                 pushRStack(addressToPush >>> 8);
                 pushRStack(addressToPush);
 
-                setProgramCounter(readImmAddress(programCounter+1));
+                setProgramCounter(getAbsAddress(programCounter+1));
                 break;
             case LDA_ABS:
-                registerA = readMemory(readImmAddress(programCounter+1));
-                setSignZeroFlags(registerA);
+                registerA = readDynamic(getAbsAddress(programCounter + 1), false);
+                setSignZeroDynamic(registerA, false);
                 break;
             case LDA_ABS_X:
-                registerA = readMemory(readImmAddress(programCounter+1)+registerX);
-                setSignZeroFlags(registerA);
+                registerA = readDynamic(getAbsAddress(programCounter + 1) + registerX, false);
+                setSignZeroDynamic(registerA, false);
                 break;
             case LDA_ABS_Y:
-                registerA = readMemory(readImmAddress(programCounter+1)+registerY);
-                setSignZeroFlags(registerA);
+                registerA = readDynamic(getAbsAddress(programCounter + 1) + registerY, false);
+                setSignZeroDynamic(registerA, false);
                 break;
             case LDA_IMM:
-                registerA = readMemory(programCounter+1);
-                setSignZeroFlags(registerA);
+                registerA = readDynamic(programCounter + 1, false);
+                setSignZeroDynamic(registerA, false);
                 break;
             case LDA_IND_X:
-                registerA = readMemory(readImmAddress(readMemory(programCounter+1)+registerX & 255));
-                setSignZeroFlags(registerA);
+                registerA = readDynamic(getAbsAddress(readMemory(programCounter + 1) + registerX & 255), false);
+                setSignZeroDynamic(registerA, false);
                 break;
             case LDA_IND_Y:
-                registerA = readMemory(readImmAddress(readMemory(programCounter+1))+registerY);
-                setSignZeroFlags(registerA);
+                registerA = readDynamic(getAbsAddress(readMemory(programCounter + 1)) + registerY, false);
+                setSignZeroDynamic(registerA, false);
                 break;
             case LDA_ZP:
-                registerA = readMemory(readMemory(programCounter+1));
-                setSignZeroFlags(registerA);
+                registerA = readDynamic(readMemory(programCounter + 1), false);
+                setSignZeroDynamic(registerA, false);
                 break;
             case LDA_ZP_X:
-                registerA = readMemory(readMemory(programCounter+1)+registerX & 255);
-                setSignZeroFlags(registerA);
+                registerA = readDynamic(readMemory(programCounter + 1) + registerX & 255, false);
+                setSignZeroDynamic(registerA, false);
                 break;
             case LDX_ABS:
-                registerX = readMemory(readImmAddress(programCounter+1));
-                setSignZeroFlags(registerX);
+                registerX = readDynamic(getAbsAddress(programCounter + 1), true);
+                setSignZeroDynamic(registerX, true);
                 break;
             case LDX_ABS_Y:
-                registerX = readMemory(readImmAddress(programCounter+1)+registerY);
-                setSignZeroFlags(registerX);
+                registerX = readDynamic(getAbsAddress(programCounter + 1) + registerY, true);
+                setSignZeroDynamic(registerX, true);
                 break;
             case LDX_IMM:
-                registerX = readMemory(programCounter+1);
-                setSignZeroFlags(registerX);
+                registerX = readDynamic(programCounter + 1, true);
+                setSignZeroDynamic(registerX, true);
                 break;
             case LDX_ZP:
-                registerX = readMemory(readMemory(programCounter+1));
-                setSignZeroFlags(registerX);
+                registerX = readDynamic(readMemory(programCounter + 1), true);
+                setSignZeroDynamic(registerX, true);
                 break;
             case LDX_ZP_Y:
-                registerX = readMemory(readMemory(programCounter+1)+registerY & 255);
-                setSignZeroFlags(registerX);
+                registerX = readDynamic(readMemory(programCounter + 1) + registerY & 255, true);
+                setSignZeroDynamic(registerX, true);
                 break;
             case LDY_ABS:
-                registerY = readMemory(readImmAddress(programCounter+1));
-                setSignZeroFlags(registerY);
+                registerY = readDynamic(getAbsAddress(programCounter + 1), true);
+                setSignZeroDynamic(registerY, true);
                 break;
             case LDY_ABS_X:
-                registerY = readMemory(readImmAddress(programCounter+1)+registerX);
-                setSignZeroFlags(registerY);
+                registerY = readDynamic(getAbsAddress(programCounter + 1) + registerX, true);
+                setSignZeroDynamic(registerY, true);
                 break;
             case LDY_IMM:
-                registerY = readMemory(programCounter+1);
-                setSignZeroFlags(registerY);
+                registerY = readDynamic(programCounter + 1, true);
+                setSignZeroDynamic(registerY, true);
                 break;
             case LDY_ZP:
-                registerY = readMemory(readMemory(programCounter+1));
-                setSignZeroFlags(registerY);
+                registerY = readDynamic(readMemory(programCounter + 1), true);
+                setSignZeroDynamic(registerY, true);
                 break;
             case LDY_ZP_X:
-                registerY = readMemory(readMemory(programCounter+1)+registerX & 255);
-                setSignZeroFlags(registerY);
+                registerY = readDynamic(readMemory(programCounter + 1) + registerX & 255, true);
+                setSignZeroDynamic(registerY, true);
                 break;
             case LSR_A:
                 flagCarry = testBit(registerA, 0);
+                if(isEightBit(false)) {
+                    registerA = (registerA&65280) | (registerA&255 >>> 1);
+                } else {
+                    registerA >>>= 1;
+                }
 
-                registerA >>>= 1;
-                setSignZeroFlags(registerA);
+                setSignZeroDynamic(registerA, false);
                 break;
             case LSR_ABS:
-                int lsrAbsAddress = readImmAddress(programCounter+1);
+                int lsrAbsAddress = getAbsAddress(programCounter+1);
                 int lsrAbsValue = readMemory(lsrAbsAddress);
 
                 flagCarry = testBit(lsrAbsValue, 0);
 
                 lsrAbsValue >>>= 1;
-                setSignZeroFlags(lsrAbsValue);
+                setSignZero(lsrAbsValue);
 
                 writeMemory(lsrAbsAddress, lsrAbsValue);
                 break;
             case LSR_ABS_X:
-                int lsrAbsXAddress = readImmAddress(programCounter+1)+registerX;
+                int lsrAbsXAddress = getAbsAddress(programCounter+1)+registerX;
                 int lsrAbsXValue = readMemory(lsrAbsXAddress);
 
                 flagCarry = testBit(lsrAbsXValue, 0);
 
                 lsrAbsXValue >>>= 1;
-                setSignZeroFlags(lsrAbsXValue);
+                setSignZero(lsrAbsXValue);
 
                 writeMemory(lsrAbsXAddress, lsrAbsXValue);
                 break;
@@ -721,7 +775,7 @@ public class TileEntityEmulator extends TileEntity implements IUpdatePlayerListB
                 int lsrZpValue = readMemory(lsrZpAddress);
 
                 lsrZpValue >>>= 1;
-                setSignZeroFlags(lsrZpValue);
+                setSignZero(lsrZpValue);
 
                 writeMemory(lsrZpAddress, lsrZpValue);
                 break;
@@ -730,46 +784,47 @@ public class TileEntityEmulator extends TileEntity implements IUpdatePlayerListB
                 int lsrZpXValue = readMemory(lsrZpXAddress);
 
                 lsrZpXValue >>>= 1;
-                setSignZeroFlags(lsrZpXValue);
+                setSignZero(lsrZpXValue);
 
                 writeMemory(lsrZpXAddress, lsrZpXValue);
                 break;
             case NOP:
                 break;
             case ORA_ABS:
-                registerA |= readMemory(readImmAddress(programCounter+1));
-                setSignZeroFlags(registerA);
+                registerA |= readDynamic(getAbsAddress(programCounter+1), false);
+                setSignZeroDynamic(registerA, false);
                 break;
             case ORA_ABS_X:
-                registerA |= readMemory(readImmAddress(programCounter+1)+registerX);
-                setSignZeroFlags(registerA);
+                registerA |= readDynamic(getAbsAddress(programCounter+1)+registerX, false);
+                setSignZeroDynamic(registerA, false);
                 break;
             case ORA_ABS_Y:
-                registerA |= readMemory(readImmAddress(programCounter+1)+registerY);
-                setSignZeroFlags(registerA);
+                registerA |= readDynamic(getAbsAddress(programCounter+1)+registerY, false);
+                setSignZeroDynamic(registerA, false);
                 break;
             case ORA_IMM:
-                registerA |= readMemory(programCounter+1);
-                setSignZeroFlags(registerA);
+                registerA |= readDynamic(programCounter + 1, false);
+                setSignZeroDynamic(registerA, false);
                 break;
             case ORA_IND_X:
-                registerA |= readMemory(readImmAddress(readMemory(programCounter+1)+registerX & 255));
-                setSignZeroFlags(registerA);
+                registerA |= readDynamic(getAbsAddress(readMemory(programCounter+1)+registerX & 255), false);
+                setSignZeroDynamic(registerA, false);
                 break;
             case ORA_IND_Y:
-                registerA |= readMemory(readImmAddress(readMemory(programCounter+1))+registerY);
-                setSignZeroFlags(registerA);
+                registerA |= readDynamic(getAbsAddress(readMemory(programCounter+1))+registerY, false);
+                setSignZeroDynamic(registerA, false);
                 break;
             case ORA_ZP:
-                registerA |= readMemory(readMemory(programCounter+1));
-                setSignZeroFlags(registerA);
+                registerA |= readDynamic(readMemory(programCounter+1), false);
+                setSignZeroDynamic(registerA, false);
                 break;
             case ORA_ZP_X:
-                registerA |= readMemory(readMemory(programCounter+1)+registerX & 255);
-                setSignZeroFlags(registerA);
+                registerA |= readDynamic(readMemory(programCounter+1)+registerX & 255, false);
+                setSignZeroDynamic(registerA, false);
                 break;
             case PHA:
                 pushPStack(registerA);
+                if(!isEightBit(false)) {pushPStack(registerA >>> 8);}
                 break;
             case PHP:
                 int pushFlags = flagCarry ? 1 : 0;
@@ -777,7 +832,7 @@ public class TileEntityEmulator extends TileEntity implements IUpdatePlayerListB
                 pushFlags += flagInterrupt ? 4 : 0;
                 pushFlags += flagDecimal ? 8 : 0;
                 pushFlags += flagBreak ? 16 : 0;
-                pushFlags += 32;
+                pushFlags += flagEmulate||flagAccumulator ? 32 : 0;
                 pushFlags += flagOverflow ? 64 : 0;
                 pushFlags += flagSign ? 128 : 0;
 
@@ -785,6 +840,7 @@ public class TileEntityEmulator extends TileEntity implements IUpdatePlayerListB
                 break;
             case PLA:
                 registerA = pullPStack();
+                if(!isEightBit(false)) {registerA |= (pullPStack() << 8);}
                 break;
             case PLP:
                 int pullFlags = pullPStack();
@@ -794,114 +850,137 @@ public class TileEntityEmulator extends TileEntity implements IUpdatePlayerListB
                 flagInterrupt = testBit(pullFlags, 2);
                 flagDecimal = testBit(pullFlags, 3);
                 flagBreak = testBit(pullFlags, 4);
+                flagAccumulator = testBit(pullFlags, 5);
                 flagOverflow = testBit(pullFlags, 6);
                 flagSign = testBit(pullFlags, 7);
                 break;
             case ROL_A:
-                flagCarry = testBit(registerA, 7);
-                registerA <<= 1;
-                registerA &= 255;
-                registerA += flagCarry ? 1 : 0;
+                boolean rolATemp;
+                if(isEightBit(false)) {
+                    int lowByte = registerA&255;
+                    rolATemp = lowByte > 127;
+                    registerA = (registerA&65280) | ((lowByte << 1)&255);
+                } else {
+                    rolATemp = registerA > 32767;
+                    registerA <<= 1;
+                    registerA &= 65535;
+                }
+                registerA += (flagCarry ? 1 : 0);
+                flagCarry = rolATemp;
 
-                setSignZeroFlags(registerA);
+                setSignZeroDynamic(registerA, false);
                 break;
             case ROL_ABS:
-                int rolAbsAddress = readImmAddress(programCounter+1);
+                int rolAbsAddress = getAbsAddress(programCounter+1);
                 int rolAbsValue = readMemory(rolAbsAddress);
 
-                flagCarry = rolAbsValue>127;
+                boolean rolAbsTemp = rolAbsValue>127;
                 rolAbsValue <<= 1;
                 rolAbsValue &= 255;
                 rolAbsValue += flagCarry ? 1 : 0;
+                flagCarry = rolAbsTemp;
 
-                setSignZeroFlags(rolAbsValue);
+                setSignZero(rolAbsValue);
                 writeMemory(rolAbsAddress, rolAbsValue);
                 break;
             case ROL_ABS_X:
-                int rolAbsXAddress = readImmAddress(programCounter+1)+registerX;
+                int rolAbsXAddress = getAbsAddress(programCounter+1)+registerX;
                 int rolAbsXValue = readMemory(rolAbsXAddress);
 
-                flagCarry = testBit(rolAbsXValue, 7);
+                boolean rolAbsXTemp = rolAbsXValue>127;
                 rolAbsXValue <<= 1;
                 rolAbsXValue &= 255;
                 rolAbsXValue += flagCarry ? 1 : 0;
+                flagCarry = rolAbsXTemp;
 
-                setSignZeroFlags(rolAbsXValue);
+                setSignZero(rolAbsXValue);
                 writeMemory(rolAbsXAddress, rolAbsXValue);
                 break;
             case ROL_ZP:
                 int rolZpAddress = readMemory(readMemory(programCounter+1));
                 int rolZpValue = readMemory(rolZpAddress);
 
-                flagCarry = testBit(rolZpValue, 7);
+                boolean rolZpTemp = rolZpValue>127;
                 rolZpValue <<= 1;
                 rolZpValue &= 255;
                 rolZpValue += flagCarry ? 1 : 0;
+                flagCarry = rolZpTemp;
 
-                setSignZeroFlags(rolZpValue);
+                setSignZero(rolZpValue);
                 writeMemory(rolZpAddress, rolZpValue);
                 break;
             case ROL_ZP_X:
                 int rolZpXAddress = readMemory(readMemory(programCounter+1)+registerX & 255);
                 int rolZpXValue = readMemory(rolZpXAddress);
 
-                flagCarry = testBit(rolZpXValue, 7);
+                boolean rolZpXTemp = rolZpXValue>127;
                 rolZpXValue <<= 1;
                 rolZpXValue &= 255;
                 rolZpXValue += flagCarry ? 1 : 0;
+                flagCarry = rolZpXTemp;
 
-                setSignZeroFlags(rolZpXValue);
+                setSignZero(rolZpXValue);
                 writeMemory(rolZpXAddress, rolZpXValue);
                 break;
             case ROR_A:
-                flagCarry = testBit(registerA, 0);
-                registerA >>>= 1;
-                registerA += flagCarry ? 128 : 0;
+                boolean rorATemp = testBit(registerA, 0);
+                if(isEightBit(false)) {
+                    registerA = (registerA&65280) | (registerA&255 >>> 1);
+                    registerA += (flagCarry ? 128 : 0);
+                } else {
+                    registerA >>>= 1;
+                    registerA += (flagCarry ? 32768 : 0);
+                }
+                flagCarry = rorATemp;
 
-                setSignZeroFlags(registerA);
+                setSignZeroDynamic(registerA, false);
                 break;
             case ROR_ABS:
-                int rorAbsAddress = readImmAddress(programCounter+1);
+                int rorAbsAddress = getAbsAddress(programCounter+1);
                 int rorAbsValue = readMemory(rorAbsAddress);
 
-                flagCarry = testBit(rorAbsValue, 0);
+                boolean rorAbsTemp = testBit(rorAbsValue, 0);
                 rorAbsValue >>>= 1;
                 rorAbsValue += flagCarry ? 128 : 0;
+                flagCarry = rorAbsTemp;
 
-                setSignZeroFlags(rorAbsValue);
+                setSignZero(rorAbsValue);
                 writeMemory(rorAbsAddress, rorAbsValue);
                 break;
             case ROR_ABS_X:
-                int rorAbsXAddress = readImmAddress(programCounter+1)+registerX;
+                int rorAbsXAddress = getAbsAddress(programCounter+1)+registerX;
                 int rorAbsXValue = readMemory(rorAbsXAddress);
 
-                flagCarry = testBit(rorAbsXValue, 0);
+                boolean rorAbsXTemp = testBit(rorAbsXValue, 0);
                 rorAbsXValue >>>= 1;
                 rorAbsXValue += flagCarry ? 128 : 0;
+                flagCarry = rorAbsXTemp;
 
-                setSignZeroFlags(rorAbsXValue);
+                setSignZero(rorAbsXValue);
                 writeMemory(rorAbsXAddress, rorAbsXValue);
                 break;
             case ROR_ZP:
                 int rorZpAddress = readMemory(programCounter+1);
                 int rorZpValue = readMemory(rorZpAddress);
 
-                flagCarry = testBit(rorZpValue, 0);
+                boolean rorZpTemp = testBit(rorZpValue, 0);
                 rorZpValue >>>= 1;
                 rorZpValue += flagCarry ? 128 : 0;
+                flagCarry = rorZpTemp;
 
-                setSignZeroFlags(rorZpValue);
+                setSignZero(rorZpValue);
                 writeMemory(rorZpAddress, rorZpValue);
                 break;
             case ROR_ZP_X:
                 int rorZpXAddress = readMemory(programCounter+1)+registerX & 255;
                 int rorZpXValue = readMemory(rorZpXAddress);
 
-                flagCarry = testBit(rorZpXValue, 0);
+                boolean rorZpXTemp = testBit(rorZpXValue, 0);
                 rorZpXValue >>>= 1;
                 rorZpXValue += flagCarry ? 128 : 0;
+                flagCarry = rorZpXTemp;
 
-                setSignZeroFlags(rorZpXValue);
+                setSignZero(rorZpXValue);
                 writeMemory(rorZpXAddress, rorZpXValue);
                 break;
             case RTI:
@@ -912,6 +991,7 @@ public class TileEntityEmulator extends TileEntity implements IUpdatePlayerListB
                 flagInterrupt = testBit(pullFlags2, 2);
                 flagDecimal = testBit(pullFlags2, 3);
                 flagBreak = testBit(pullFlags2, 4);
+                flagAccumulator = testBit(pullFlags2, 5);
                 flagOverflow = testBit(pullFlags2, 6);
                 flagSign = testBit(pullFlags2, 7);
 
@@ -921,22 +1001,22 @@ public class TileEntityEmulator extends TileEntity implements IUpdatePlayerListB
                 setProgramCounter(pullImmAddress());
                 break;
             case SBC_ABS:
-                performAddition(readImmAddress(programCounter+1), true);
+                performAddition(getAbsAddress(programCounter+1), true);
                 break;
             case SBC_ABS_X:
-                performAddition(readImmAddress(programCounter+1)+registerX, true);
+                performAddition(getAbsAddress(programCounter+1)+registerX, true);
                 break;
             case SBC_ABS_Y:
-                performAddition(readImmAddress(programCounter+1)+registerY, true);
+                performAddition(getAbsAddress(programCounter+1)+registerY, true);
                 break;
             case SBC_IMM:
                 performAddition(programCounter+1, true);
                 break;
             case SBC_IND_X:
-                performAddition(readImmAddress(readMemory(programCounter+1)+registerX & 255), true);
+                performAddition(getAbsAddress(readMemory(programCounter+1)+registerX & 255), true);
                 break;
             case SBC_IND_Y:
-                performAddition(readImmAddress(readMemory(programCounter+1))+registerY, true);
+                performAddition(getAbsAddress(readMemory(programCounter+1))+registerY, true);
                 break;
             case SBC_ZP:
                 performAddition(readMemory(programCounter+1), true);
@@ -954,259 +1034,558 @@ public class TileEntityEmulator extends TileEntity implements IUpdatePlayerListB
                 flagInterrupt = true;
                 break;
             case STA_ABS:
-                writeMemory(readImmAddress(programCounter+1), registerA);
+                writeDynamic(getAbsAddress(programCounter + 1), registerA, false);
                 break;
             case STA_ABS_X:
-                writeMemory(readImmAddress(programCounter+1)+registerX, registerA);
+                writeDynamic(getAbsAddress(programCounter + 1) + registerX, registerA, false);
                 break;
             case STA_ABS_Y:
-                writeMemory(readImmAddress(programCounter+1)+registerY, registerA);
+                writeDynamic(getAbsAddress(programCounter + 1) + registerY, registerA, false);
                 break;
             case STA_IND_X:
-                writeMemory(readImmAddress(readMemory(programCounter+1)+registerX & 255), registerA);
+                writeDynamic(getAbsAddress(readMemory(programCounter + 1) + registerX & 255), registerA, false);
                 break;
             case STA_IND_Y:
-                writeMemory(readImmAddress(readMemory(programCounter+1))+registerY, registerA);
+                writeDynamic(getAbsAddress(readMemory(programCounter + 1)) + registerY, registerA, false);
                 break;
             case STA_ZP:
-                writeMemory(readMemory(programCounter+1), registerA);
+                writeDynamic(readMemory(programCounter + 1), registerA, false);
                 break;
             case STA_ZP_X:
-                writeMemory(readMemory(programCounter+1)+registerX & 255, registerA);
+                writeDynamic(readMemory(programCounter + 1) + registerX & 255, registerA, false);
                 break;
             case STP:
                 setRunning(false);
+
+                BlockPos topSide = pos.add(0, 1, 0);
+                if (worldObj.getBlockState(topSide).getBlock().getMaterial() == Material.air &&
+                        Blocks.fire.canPlaceBlockAt(worldObj, topSide)) {
+                    worldObj.setBlockState(topSide, Blocks.fire.getDefaultState());
+                }
                 break;
             case STX_ABS:
-                writeMemory(readImmAddress(programCounter+1), registerX);
+                writeDynamic(getAbsAddress(programCounter + 1), registerX, true);
                 break;
             case STX_ZP:
-                writeMemory(readMemory(programCounter+1), registerX);
+                writeDynamic(readMemory(programCounter + 1), registerX, true);
                 break;
             case STX_ZP_Y:
-                int stxZpYAddress = readImmAddress(readMemory(programCounter+1))+registerY;
-                writeMemory(stxZpYAddress, registerX);
+                writeDynamic(getAbsAddress(readMemory(programCounter+1))+registerY, registerX, true);
                 break;
             case STY_ABS:
-                writeMemory(readImmAddress(programCounter+1), registerY);
+                writeDynamic(getAbsAddress(programCounter+1), registerY, true);
                 break;
             case STY_ZP:
-                writeMemory(readMemory(programCounter+1), registerY);
+                writeDynamic(readMemory(programCounter+1), registerY, true);
                 break;
             case STY_ZP_X:
-                writeMemory(readMemory(programCounter+1)+registerX & 255, registerY);
+                writeDynamic(readMemory(programCounter+1)+registerX & 255, registerY, true);
                 break;
             case TAX:
                 registerX = registerA;
-                setSignZeroFlags(registerA);
+                if(isEightBit(true)) {registerX &= 255;}
+
+                setSignZeroDynamic(registerX, true);
                 break;
             case TAY:
                 registerY = registerA;
-                setSignZeroFlags(registerA);
+                if(isEightBit(true)) {registerY &= 255;}
+
+                setSignZeroDynamic(registerY, true);
                 break;
             case TSX:
                 registerX = pStackPointer;
-                setSignZeroFlags(pStackPointer);
+                setSignZeroDynamic(registerX, true);
                 break;
             case TXA:
-                registerA = registerX;
-                setSignZeroFlags(registerX);
+                if(isEightBit(false)) {
+                    registerA = (registerA&65280) | (registerX&255);
+                } else {
+                    registerA = registerX;
+                }
+
+                setSignZeroDynamic(registerA, false);
                 break;
             case TXS:
                 pStackPointer = registerX;
-                setSignZeroFlags(registerX);
+                pStackPointer &= 255;
+                setSignZero(pStackPointer);
                 break;
             case TYA:
-                registerA = registerY;
-                setSignZeroFlags(registerY);
+                if(isEightBit(false)) {
+                    registerA = (registerA&65280) | (registerY&255);
+                } else {
+                    registerA = registerY;
+                }
+
+                setSignZeroDynamic(registerA, false);
                 break;
             case RHI:
                 pushRStack(registerI);
+                pushRStack(registerI >>> 8);
                 break;
             case ORA_IND:
-                registerA |= readMemory(readImmAddress(readMemory(programCounter+1)));
-                setSignZeroFlags(registerA);
+                registerA |= readDynamic(getAbsAddress(readMemory(programCounter+1)), false);
+                setSignZeroDynamic(registerA, false);
                 break;
             case INC_A:
-                registerA++;
-                setSignZeroFlags(registerA);
+                if(isEightBit(false)) {
+                    registerA = (registerA&65280) | (++registerA&255);
+                } else {
+                    registerA++;
+                    registerA &= 65535;
+                }
+                setSignZeroDynamic(registerA, false);
                 break;
             case RHX:
                 pushRStack(registerX);
+                if(!isEightBit(true)) {pushRStack(registerX >>> 8);}
                 break;
             case RLI:
-                registerI = pullRStack();
-                setSignZeroFlags(registerI);
+                int rliLowByte = pullRStack();
+                int rliHighByte = pullRStack();
+                registerI = (rliHighByte << 8) | rliLowByte;
+                flagSign = registerI > 32767;
+                flagZero = registerI == 0;
                 break;
             case AND_IND:
-                registerA &= readMemory(readImmAddress(readMemory(programCounter+1)));
+                registerA &= readDynamic(getAbsAddress(readMemory(programCounter + 1)), false);
+                setSignZeroDynamic(registerA, false);
                 break;
             case BIT_ZP_X:
-                int bitZpXValue = readMemory(readMemory(programCounter+1)+registerX & 255);
+                int bitZpXValue = readDynamic(readMemory(programCounter + 1) + registerX & 255, false);
 
                 flagZero = (registerA & bitZpXValue) == 0;
-                flagSign = testBit(bitZpXValue, 6);
-                flagOverflow = bitZpXValue>127;
+                if(isEightBit(false)) {
+                    flagSign = bitZpXValue > 127;
+                    flagOverflow = testBit(bitZpXValue, 6);
+                } else {
+                    flagSign = bitZpXValue > 32767;
+                    flagOverflow = testBit(bitZpXValue, 14);
+                }
                 break;
             case DEC_A:
-                registerA--;
-                setSignZeroFlags(registerA);
+                if(isEightBit(false)) {
+                    registerA = (registerA&65280) | (--registerA&255);
+                } else {
+                    registerA--;
+                    registerA &= 65535;
+                }
+                setSignZeroDynamic(registerA, false);
                 break;
             case RLX:
                 registerX = pullRStack();
-                setSignZeroFlags(registerX);
+                if(!isEightBit(true)) {registerX |= (pullRStack() << 8);}
+                setSignZeroDynamic(registerX, true);
                 break;
             case BIT_ABS_X:
-                int bitAbsXValue = readMemory(readImmAddress(programCounter + 1)+registerX);
+                int bitAbsXValue = readDynamic(getAbsAddress(programCounter + 1)+registerX, false);
 
                 flagZero = (registerA & bitAbsXValue) == 0;
-                flagSign = testBit(bitAbsXValue, 6);
-                flagOverflow = bitAbsXValue>127;
+                if(isEightBit(false)) {
+                    flagSign = bitAbsXValue > 127;
+                    flagOverflow = testBit(bitAbsXValue, 6);
+                } else {
+                    flagSign = bitAbsXValue > 32767;
+                    flagOverflow = testBit(bitAbsXValue, 14);
+                }
                 break;
             case RHA:
                 pushRStack(registerA);
+                if(!isEightBit(false)) {pushRStack(registerA >>> 8);}
                 break;
             case EOR_IND:
-                registerA ^= readMemory(readImmAddress(readMemory(programCounter+1)));
-                setSignZeroFlags(registerA);
+                registerA ^= readDynamic(getAbsAddress(readMemory(programCounter+1)), false);
+                setSignZeroDynamic(registerA, false);
                 break;
             case PHY:
                 pushPStack(registerY);
+                if(!isEightBit(true)) {pushPStack(registerY >>> 8);}
                 break;
             case RHY:
                 pushRStack(registerY);
+                if(!isEightBit(true)) {pushRStack(registerY >>> 8);}
                 break;
             case TXI:
-                registerX = registerI;
-                setSignZeroFlags(registerI);
+                registerI = registerX;
+                flagSign = registerI > 32767;
+                flagZero = registerI == 0;
                 break;
             case STZ_ZP:
                 writeMemory(readMemory(programCounter+1), 0);
                 break;
             case RLA:
                 registerA = pullRStack();
-                setSignZeroFlags(registerA);
+                if(!isEightBit(false)) {registerA |= (pullRStack() << 8);}
+                setSignZeroDynamic(registerA, false);
                 break;
             case ADC_IND:
-                performAddition(readImmAddress(readMemory(programCounter+1)), false);
+                performAddition(getAbsAddress(readMemory(programCounter+1)), false);
                 break;
             case STZ_ZP_X:
                 writeMemory(readMemory(programCounter+1)+registerX & 255, 0);
                 break;
             case PLY:
                 registerY = pullPStack();
-                setSignZeroFlags(registerY);
+                if(!isEightBit(true)) {registerY |= (pullPStack() << 8);}
+                setSignZeroDynamic(registerY, true);
                 break;
             case RLY:
                 registerY = pullRStack();
-                setSignZeroFlags(registerY);
+                if(!isEightBit(true)) {registerY |= (pullRStack() << 8);}
+                setSignZeroDynamic(registerY, true);
                 break;
             case JMP_ABS_X:
-                setProgramCounter(readImmAddress(readImmAddress(programCounter+1)+registerX));
+                setProgramCounter(getAbsAddress(getAbsAddress(programCounter+1)+registerX));
                 break;
             case BRA_REL:
                 byte relValue = (byte) readMemory(programCounter+1);
                 setProgramCounter(programCounter + relValue);
                 break;
             case BIT_IMM:
-                flagZero = (registerA & readMemory(programCounter + 1)) == 0;
+                flagZero = (registerA & readDynamic(programCounter + 1, false)) == 0;
                 break;
             case TXR:
                 rStackPointer = registerX;
-                setSignZeroFlags(registerX);
+                rStackPointer &= 255;
+                setSignZero(rStackPointer);
                 break;
             case STA_IND:
-                writeMemory(readImmAddress(readMemory(programCounter+1)), registerA);
+                writeDynamic(getAbsAddress(readMemory(programCounter + 1)), registerA, false);
                 break;
             case TXY:
                 registerY = registerX;
-                setSignZeroFlags(registerX);
+                setSignZeroDynamic(registerY, true);
                 break;
             case STZ_ABS:
-                writeMemory(readImmAddress(programCounter+1), 0);
+                writeMemory(getAbsAddress(programCounter+1), 0);
                 break;
             case STZ_ABS_X:
-                writeMemory(readImmAddress(programCounter+1)+registerX, 0);
+                writeMemory(getAbsAddress(programCounter+1)+registerX, 0);
                 break;
             case TRX:
                 registerX = rStackPointer;
-                setSignZeroFlags(rStackPointer);
+                setSignZeroDynamic(registerX, true);
                 break;
             case TDA:
-                registerA = registerD;
-                setSignZeroFlags(registerD);
+                if(isEightBit(false)) {
+                    registerA = (registerA&65280) | (registerD&255);
+                } else {
+                    registerA = registerD;
+                }
+
+                setSignZeroDynamic(registerA, false);
                 break;
             case LDA_IND:
-                registerA = readMemory(readImmAddress(readMemory(programCounter+1)));
-                setSignZeroFlags(registerA);
+                registerA = readDynamic(getAbsAddress(readMemory(programCounter + 1)), false);
+                setSignZeroDynamic(registerA, false);
                 break;
             case TYX:
                 registerX = registerY;
-                setSignZeroFlags(registerY);
+                setSignZeroDynamic(registerX, true);
                 break;
             case TAD:
                 registerD = registerA;
-                setSignZeroFlags(registerA);
+                flagSign = registerD > 32767;
+                flagZero = registerD == 0;
                 break;
             case PLD:
-                registerD = pullPStack();
-                setSignZeroFlags(registerD);
+                int pldLowByte = pullPStack();
+                int pldHighByte = pullPStack();
+                registerD = (pldHighByte << 8) | pldLowByte;
+                flagSign = registerD > 32767;
+                flagZero = registerD == 0;
                 break;
             case CMP_IND:
-                performComparation(readImmAddress(readMemory(programCounter+1)), registerA);
+                performComparation(getAbsAddress(readMemory(programCounter+1)), registerA, false);
                 break;
             case PHX:
                 pushPStack(registerX);
+                if(!isEightBit(true)) {pushPStack(registerX >>> 8);}
                 break;
             case TIX:
                 registerX = registerI;
-                setSignZeroFlags(registerI);
+                if(isEightBit(true)) {registerX &= 255;}
+
+                setSignZeroDynamic(registerX, true);
                 break;
             case PHD:
                 pushPStack(registerD);
+                pushPStack(registerD >>> 8);
                 break;
             case SBC_IND:
-                performAddition(readImmAddress(readMemory(programCounter+1)), true);
+                performAddition(getAbsAddress(readMemory(programCounter+1)), true);
                 break;
             case PLX:
                 registerX = pullPStack();
-                setSignZeroFlags(registerX);
+                if(!isEightBit(true)) {registerX |= ((pullPStack() << 8)*255);}
+                setSignZeroDynamic(registerX, true);
                 break;
             case TSB_ZP:
                 int tsbZpAddress = readMemory(programCounter+1);
-                int tsbZpValue = readMemory(tsbZpAddress);
+                int tsbZpValue = readDynamic(tsbZpAddress, false);
+                int tsbZpCompValue = isEightBit(false) ? registerA&255 : registerA;
 
-                flagZero = (registerA & tsbZpValue) == 0;
-                tsbZpValue |= registerA;
+                flagZero = (tsbZpCompValue & tsbZpValue) == 0;
+                tsbZpValue |= tsbZpCompValue;
 
-                writeMemory(tsbZpAddress, tsbZpValue);
+                writeDynamic(tsbZpAddress, tsbZpValue, false);
                 break;
             case TSB_ABS:
-                int tsbAbsAddress = readImmAddress(programCounter + 1);
-                int tsbAbsValue = readMemory(tsbAbsAddress);
+                int tsbAbsAddress = getAbsAddress(programCounter + 1);
+                int tsbAbsValue = readDynamic(tsbAbsAddress, false);
+                int tsbAbsCompValue = isEightBit(false) ? registerA&255 : registerA;
 
-                flagZero = (registerA & tsbAbsValue) == 0;
-                tsbAbsValue |= registerA;
+                flagZero = (tsbAbsCompValue & tsbAbsValue) == 0;
+                tsbAbsValue |= tsbAbsCompValue;
 
-                writeMemory(tsbAbsAddress, tsbAbsValue);
+                writeDynamic(tsbAbsAddress, tsbAbsValue, false);
                 break;
             case TRB_ZP:
-                int trbZpAddress = readMemory(programCounter+1);
-                int trbZpValue = readMemory(trbZpAddress);
+                int trbZpAddress = readMemory(programCounter + 1);
+                int trbZpValue = readDynamic(trbZpAddress, false);
+                int trbZpCompValue = isEightBit(false) ? registerA&255 : registerA;
 
-                flagZero = (registerA & trbZpValue) == 0;
-                trbZpValue |= ~registerA;
+                flagZero = (trbZpCompValue & trbZpValue) == 0;
+                trbZpValue |= ~trbZpCompValue;
 
-                writeMemory(trbZpAddress, trbZpValue);
+                writeDynamic(trbZpAddress, trbZpValue, false);
                 break;
             case TRB_ABS:
-                int trbAbsAddress = readImmAddress(programCounter + 1);
+                int trbAbsAddress = getAbsAddress(programCounter + 1);
                 int trbAbsValue = readMemory(trbAbsAddress);
+                int trbAbsCompValue = isEightBit(false) ? registerA&255 : registerA;
 
-                flagZero = (registerA & trbAbsValue) == 0;
-                trbAbsValue |= ~registerA;
+                flagZero = (trbAbsCompValue & trbAbsValue) == 0;
+                trbAbsValue |= ~trbAbsCompValue;
 
                 writeMemory(trbAbsAddress, trbAbsValue);
+                break;
+            case NXT:
+                setProgramCounter(getAbsAddress(registerI));
+                registerI += 2;
+                registerI &= 65535;
+                break;
+            case ENT:
+                pushRStack(registerI);
+                registerI = programCounter + 3;
+                registerI &= 65535;
+                setProgramCounter(getAbsAddress(programCounter+1));
+                break;
+            case NXA:
+                registerA = readDynamic(registerI, false);
+                registerI += isEightBit(false) ? 1 : 2;
+                registerI &= 65535;
+                break;
+            case REA_ABS:
+                int reaAbsValue = getAbsAddress(programCounter+1);
+
+                pushRStack(reaAbsValue >>> 8);
+                pushRStack(reaAbsValue);
+                break;
+            case REI_IND:
+                int reiIndValue = getAbsAddress(readMemory(programCounter+1));
+
+                pushRStack(reiIndValue >>> 8);
+                pushRStack(reiIndValue);
+                break;
+            case PER_REL:
+                int perRelAddress = programCounter + ((byte) readMemory(programCounter+1)) + 2;
+                int perRelValue = getAbsAddress(perRelAddress);
+
+                pushPStack(perRelValue >>> 8);
+                pushPStack(perRelValue);
+                break;
+            case RER_REL:
+                int rerRelAddress = programCounter + ((byte) readMemory(programCounter+1)) + 2;
+                int rerRelValue = getAbsAddress(rerRelAddress);
+
+                pushRStack(rerRelValue >>> 8);
+                pushRStack(rerRelValue);
+                break;
+            case ZEA:
+                registerD = 0;
+                break;
+            case SEA:
+                if(isEightBit(false)) {
+                    registerD = registerA > 127 ? 65535 : 0;
+                } else {
+                    registerD = registerA > 32767 ? 65535 : 0;
+                }
+                break;
+            case REP_IMM:
+                int repImmValue = readMemory(programCounter+1);
+
+                flagCarry &= testBit(repImmValue, 0);
+                flagZero &= testBit(repImmValue, 1);
+                flagInterrupt &= testBit(repImmValue, 2);
+                flagDecimal &= testBit(repImmValue, 3);
+                flagBreak &= testBit(repImmValue, 4);
+                flagAccumulator &= testBit(repImmValue, 5);
+                flagOverflow &= testBit(repImmValue, 6);
+                flagSign &= testBit(repImmValue, 7);
+                break;
+            case PEI_IND:
+                int peiIndValue = getAbsAddress(readMemory(programCounter+1));
+
+                pushPStack(peiIndValue >>> 8);
+                pushPStack(peiIndValue);
+                break;
+            case SEP_IMM:
+                int sepImmValue = readMemory(programCounter+1);
+
+                flagCarry |= testBit(sepImmValue, 0);
+                flagZero |= testBit(sepImmValue, 1);
+                flagInterrupt |= testBit(sepImmValue, 2);
+                flagDecimal |= testBit(sepImmValue, 3);
+                flagBreak |= testBit(sepImmValue, 4);
+                flagAccumulator |= testBit(sepImmValue, 5);
+                flagOverflow |= testBit(sepImmValue, 6);
+                flagSign |= testBit(sepImmValue, 7);
+                break;
+            case XBA:
+                int lowByte = registerA & 255;
+                registerA = (lowByte << 8) | (registerA >>> 8);
+                break;
+            case PEA_ABS:
+                int peaAbsValue = getAbsAddress(programCounter+1);
+
+                pushPStack(peaAbsValue >>> 8);
+                pushPStack(peaAbsValue);
+                break;
+            case XCE:
+                boolean flagTemp = flagCarry;
+                flagCarry = flagEmulate;
+                flagEmulate = flagTemp;
+
+                if(flagEmulate) {
+                    registerX &= 255;
+                    registerY &= 255;
+                    flagBreak = false;
+                } else {
+                    flagBreak = true;
+                }
+                flagAccumulator = true;
+
+                break;
+            case JSR_ABS_X:
+                int jsrAbsXValue = programCounter + 2;
+                pushRStack(jsrAbsXValue >>> 8);
+                pushRStack(jsrAbsXValue);
+
+                setProgramCounter(getAbsAddress(getAbsAddress(programCounter+1)+registerX));
+                break;
+            case ORA_STK:
+                registerA |= readDynamic(256 + pStackPointer + ((byte) readMemory(programCounter + 1)), false);
+                setSignZeroDynamic(registerA, false);
+                break;
+            case ORA_RSTK:
+                registerA |= readDynamic(512 + rStackPointer + ((byte) readMemory(programCounter + 1)), false);
+                setSignZeroDynamic(registerA, false);
+                break;
+            case ORA_STK_Y:
+                registerA |= readDynamic(getAbsAddress(256 + pStackPointer + ((byte) readMemory(programCounter + 1)))+registerY, false);
+                setSignZeroDynamic(registerA, false);
+                break;
+            case ORA_RSTK_Y:
+                registerA |= readDynamic(getAbsAddress(512 + rStackPointer + ((byte) readMemory(programCounter + 1))) + registerY, false);
+                setSignZeroDynamic(registerA, false);
+                break;
+            case AND_STK:
+                registerA &= readDynamic(256 + pStackPointer + ((byte) readMemory(programCounter + 1)), false);
+                setSignZeroDynamic(registerA, false);
+                break;
+            case AND_RSTK:
+                registerA &= readDynamic(512 + rStackPointer + ((byte) readMemory(programCounter + 1)), false);
+                setSignZeroDynamic(registerA, false);
+                break;
+            case AND_STK_Y:
+                registerA &= readDynamic(getAbsAddress(256 + pStackPointer + ((byte) readMemory(programCounter + 1))) + registerY, false);
+                setSignZeroDynamic(registerA, false);
+                break;
+            case AND_RSTK_Y:
+                registerA &= readDynamic(getAbsAddress(512 + rStackPointer + ((byte) readMemory(programCounter + 1))) + registerY, false);
+                setSignZeroDynamic(registerA, false);
+                break;
+            case EOR_STK:
+                registerA ^= readDynamic(256 + pStackPointer + ((byte) readMemory(programCounter + 1)), false);
+                setSignZeroDynamic(registerA, false);
+                break;
+            case EOR_RSTK:
+                registerA ^= readDynamic(512 + rStackPointer + ((byte) readMemory(programCounter + 1)), false);
+                setSignZeroDynamic(registerA, false);
+                break;
+            case EOR_STK_Y:
+                registerA ^= readDynamic(getAbsAddress(256 + pStackPointer + ((byte) readMemory(programCounter + 1))) + registerY, false);
+                setSignZeroDynamic(registerA, false);
+                break;
+            case EOR_RSTK_Y:
+                registerA ^= readDynamic(getAbsAddress(512 + rStackPointer + ((byte) readMemory(programCounter + 1))) + registerY, false);
+                setSignZeroDynamic(registerA, false);
+                break;
+            case ADC_STK:
+                performAddition(256 + pStackPointer + ((byte) readMemory(programCounter + 1)), false);
+                break;
+            case ADC_RSTK:
+                performAddition(512 + rStackPointer + ((byte) readMemory(programCounter + 1)), false);
+                break;
+            case ADC_STK_Y:
+                performAddition(getAbsAddress(256 + pStackPointer + ((byte) readMemory(programCounter + 1)))+registerY, false);
+                break;
+            case ADC_RSTK_Y:
+                performAddition(getAbsAddress(512 + rStackPointer + ((byte) readMemory(programCounter + 1)))+registerY, false);
+                break;
+            case STA_STK:
+                writeDynamic(256 + pStackPointer + ((byte) readMemory(programCounter + 1)), registerA, false);
+                break;
+            case STA_RSTK:
+                writeDynamic(512 + rStackPointer + ((byte) readMemory(programCounter + 1)), registerA, false);
+                break;
+            case STA_STK_Y:
+                writeDynamic(getAbsAddress(256 + pStackPointer + ((byte) readMemory(programCounter + 1)))+registerY, registerA, false);
+                break;
+            case STA_RSTK_Y:
+                writeDynamic(getAbsAddress(512 + rStackPointer + ((byte) readMemory(programCounter + 1)))+registerY, registerA, false);
+                break;
+            case LDA_STK:
+                registerA = readDynamic(256 + pStackPointer + ((byte) readMemory(programCounter + 1)), false);
+                setSignZeroDynamic(registerA, false);
+                break;
+            case LDA_RSTK:
+                registerA = readDynamic(512 + rStackPointer + ((byte) readMemory(programCounter + 1)), false);
+                setSignZeroDynamic(registerA, false);
+                break;
+            case LDA_STK_Y:
+                registerA = readDynamic(getAbsAddress(256 + pStackPointer + ((byte) readMemory(programCounter + 1)))+ registerY, false);
+                setSignZeroDynamic(registerA, false);
+                break;
+            case LDA_RSTK_Y:
+                registerA = readDynamic(getAbsAddress(512 + rStackPointer + ((byte) readMemory(programCounter + 1)))+ registerY, false);
+                setSignZeroDynamic(registerA, false);
+                break;
+            case CMP_STK:
+                performComparation(256 + pStackPointer + ((byte) readMemory(programCounter + 1)), registerA, false);
+                break;
+            case CMP_RSTK:
+                performComparation(512 + rStackPointer + ((byte) readMemory(programCounter + 1)), registerA, false);
+                break;
+            case CMP_STK_Y:
+                performComparation(getAbsAddress(256 + pStackPointer + ((byte) readMemory(programCounter + 1)))+registerY, registerA, false);
+                break;
+            case CMP_RSTK_Y:
+                performComparation(getAbsAddress(512 + rStackPointer + ((byte) readMemory(programCounter + 1)))+registerY, registerA, false);
+                break;
+            case SBC_STK:
+                performAddition(256 + pStackPointer + ((byte) readMemory(programCounter + 1)), true);
+                break;
+            case SBC_RSTK:
+                performAddition(512 + rStackPointer + ((byte) readMemory(programCounter + 1)), true);
+                break;
+            case SBC_STK_Y:
+                performAddition(getAbsAddress(256 + pStackPointer + ((byte) readMemory(programCounter + 1)))+registerY, true);
+                break;
+            case SBC_RSTK_Y:
+                performAddition(getAbsAddress(512 + rStackPointer + ((byte) readMemory(programCounter + 1)))+registerY, true);
                 break;
             case MUL_ZP:
                 break;
@@ -1237,41 +1616,63 @@ public class TileEntityEmulator extends TileEntity implements IUpdatePlayerListB
         cyclesElapsed += instruction.getNumCycles();
     }
 
-    private int readImmAddress(int addressToRead) {
-        int low = readMemory(addressToRead);
-        int high = readMemory(addressToRead+1);
-        return (high << 8) | low;
+    private int getAbsAddress(int addressToRead) {
+        return (readMemory(addressToRead+1) << 8) | readMemory(addressToRead);
     }
 
     private int pullImmAddress() {
-        int low = pullRStack();
-        int high = pullRStack();
-        return (high << 8) | low;
+        return (pullRStack() << 8) | pullRStack();
     }
 
-    private void setSignZeroFlags(int testValue) {
-        flagSign = testValue>127;
-        flagZero = testValue==0;
+    private void setSignZeroDynamic(int testValue, boolean isIndexRegister) {
+        if(isEightBit(isIndexRegister)) {
+            testValue &= 255;
+            flagSign = testValue > 127;
+        } else {
+            flagSign = testValue > 32767;
+        }
+        flagZero = testValue == 0;
+    }
+
+    private void setSignZero(int testValue) {
+        flagSign = testValue > 127;
+        flagZero = testValue == 0;
     }
 
     private void performAddition(int addressOfValue, boolean subtract) {
-        int addValue = readMemory(addressOfValue);
-        int result = (flagCarry ? 256 : 0) + registerA + (subtract ? -addValue : addValue);
-        registerA = result & 255;
+        boolean isEightBit = isEightBit(false);
 
-        flagOverflow = (byte) result<-128 || (byte) result>127;
-        flagCarry = result>255;
-        setSignZeroFlags(registerA);
+        int addValue = readDynamic(addressOfValue, false);
+        int result = (flagCarry ? isEightBit ? 256 : 65536 : 0) + registerA + (subtract ? -addValue : addValue);
+
+        if(isEightBit) {
+            registerA = result & 255;
+            flagOverflow = (byte) result < -128 || (byte) result > 127;
+            flagCarry = result > 255;
+        } else {
+            registerA = result & 65535;
+            flagOverflow = (short) result < -32768 || (short) result > 32767;
+            flagCarry = result > 65535;
+        }
+        setSignZeroDynamic(registerA, false);
 
         if(flagDecimal) {cyclesElapsed++;}
     }
 
-    private void performComparation(int addressOfValue, int valueComparedTo) {
-        int compareValue = readMemory(addressOfValue);
-        int result = (256 + valueComparedTo) - compareValue;
+    private void performComparation(int addressOfValue, int valueComparedTo, boolean isIndexRegister) {
+        boolean isEightBit = isEightBit(isIndexRegister);
 
-        flagCarry = result>255;
-        setSignZeroFlags(result & 255);
+        int compareValue = readDynamic(addressOfValue, isIndexRegister);
+        int result = ((isEightBit ? 256 : 65536) + valueComparedTo) - compareValue;
+
+        if(isEightBit) {
+            flagCarry = result > 255;
+            result &= 255;
+        } else {
+            flagCarry = result > 65535;
+            result &= 65535;
+        }
+        setSignZeroDynamic(result, isIndexRegister);
     }
 
     private static boolean testBit(int target, int offset) {
@@ -1329,8 +1730,10 @@ public class TileEntityEmulator extends TileEntity implements IUpdatePlayerListB
         data.setBoolean("flagInterrupt", flagInterrupt);
         data.setBoolean("flagDecimal", flagDecimal);
         data.setBoolean("flagBreak", flagBreak);
+        data.setBoolean("flagAccumulator", flagAccumulator);
         data.setBoolean("flagOverflow", flagOverflow);
         data.setBoolean("flagSign", flagSign);
+        data.setBoolean("flagEmulator", flagEmulate);
 
         if(floppyFilename != null) {data.setString("floppyFilename", floppyFilename);}
 
@@ -1360,8 +1763,10 @@ public class TileEntityEmulator extends TileEntity implements IUpdatePlayerListB
         flagInterrupt = data.getBoolean("flagInterrupt");
         flagDecimal = data.getBoolean("flagDecimal");
         flagBreak = data.getBoolean("flagBreak");
+        flagAccumulator = data.getBoolean("flagAccumulator");
         flagOverflow = data.getBoolean("flagOverflow");
         flagSign = data.getBoolean("flagSign");
+        flagEmulate = data.getBoolean("flagEmulate");
 
         if(data.hasKey("floppyFilename")) {floppyFilename = data.getString("floppyFilename");}
 
