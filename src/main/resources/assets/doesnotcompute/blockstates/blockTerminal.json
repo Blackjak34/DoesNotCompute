@@ -1,0 +1,8 @@
+{
+  "variants": {
+    "facing=north": {"model":"doesnotcompute:terminal"},
+    "facing=east":  {"model":"doesnotcompute:terminal", "y":90},
+    "facing=south": {"model":"doesnotcompute:terminal", "y":180},
+    "facing=west":  {"model":"doesnotcompute:terminal", "y":270}
+  }
+}

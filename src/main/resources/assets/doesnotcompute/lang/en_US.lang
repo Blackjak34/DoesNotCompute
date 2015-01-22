@@ -1,2 +1,6 @@
-tile.blockConsole.name=Computer
+tile.blockTerminal.name=Terminal
+tile.blockCPU.name=Computer
+tile.blockDiskDrive.name=Disk Drive
+tile.blockCableRibbon.name=Ribbon Cable
+
 item.itemFloppy.name=Floppy Disk

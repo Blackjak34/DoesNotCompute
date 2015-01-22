@@ -19,8 +19,17 @@ public class ClientProxy extends CommonProxy {
 	@Override
     public void registerRenderers() {
         ItemModelMesher modelRegistry = Minecraft.getMinecraft().getRenderItem().getItemModelMesher();
-        modelRegistry.register(Item.getItemFromBlock(DoesNotCompute.console), 0, new ModelResourceLocation("doesnotcompute:blockConsole", "inventory"));
-        modelRegistry.register(DoesNotCompute.floppy, 0, new ModelResourceLocation("doesnotcompute:itemFloppy", "inventory"));
+        modelRegistry.register(Item.getItemFromBlock(DoesNotCompute.terminal), 0,
+                new ModelResourceLocation("doesnotcompute:blockTerminal", "inventory"));
+        modelRegistry.register(Item.getItemFromBlock(DoesNotCompute.cpu), 0,
+                new ModelResourceLocation("doesnotcompute:blockCPU", "inventory"));
+        modelRegistry.register(Item.getItemFromBlock(DoesNotCompute.diskDrive), 0,
+                new ModelResourceLocation("doesnotcompute:blockDiskDrive", "inventory"));
+        modelRegistry.register(Item.getItemFromBlock(DoesNotCompute.ribbonCable), 0,
+                new ModelResourceLocation("doesnotcompute:blockCableRibbon", "inventory"));
+
+        modelRegistry.register(DoesNotCompute.floppy, 0,
+                new ModelResourceLocation("doesnotcompute:itemFloppy", "inventory"));
     }
 	
 }

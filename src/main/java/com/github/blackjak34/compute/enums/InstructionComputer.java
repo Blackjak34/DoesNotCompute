@@ -276,7 +276,7 @@ public enum InstructionComputer {
 	CPX_ABS		(0xEC, 3, 4, false, false),
 	SBC_ABS		(0xED, 3, 4, false, false),
 	INC_ABS		(0xEE, 3, 6, false, false),
-	MMU			(0xEF, 1, 2, false, false),
+	MMU			(0xEF, 2, 2, false, false),
 	// This instruction changes the PC
 	BEQ_REL		(0xF0, 2, 2, true, false),
 	SBC_IND_Y	(0xF1, 2, 5, true, false),
@@ -292,11 +292,11 @@ public enum InstructionComputer {
 	SBC_ABS_Y	(0xF9, 3, 4, true, false),
 	PLX			(0xFA, 1, 4, false, false),
 	XCE			(0xFB, 1, 2, false, false),
-	JSR_ABS_X	(0xFC, 3, 8, false, false),
+	JSR_ABS_X	(0xFC, 0, 8, false, false),
 	// This instruction is indirect
 	SBC_ABS_X	(0xFD, 3, 4, true, false),
 	INC_ABS_X	(0xFE, 3, 7, false, false),
-	UNUSED		(0xFF, 0, 0, false, false);
+	UNUSED		(0xFF, 0, 3500, false, false);
 
 	private static final HashMap<Integer, InstructionComputer> instructions = new HashMap<Integer, InstructionComputer>();
 	

@@ -1,19 +1,27 @@
 package com.github.blackjak34.compute;
 
-import com.github.blackjak34.compute.block.BlockConsole;
-import com.github.blackjak34.compute.entity.tile.TileEntityConsole;
-import com.github.blackjak34.compute.entity.tile.TileEntityEmulator;
+import com.github.blackjak34.compute.block.BlockCPU;
+import com.github.blackjak34.compute.block.BlockCableRibbon;
+import com.github.blackjak34.compute.block.BlockDiskDrive;
+import com.github.blackjak34.compute.block.BlockTerminal;
+import com.github.blackjak34.compute.entity.tile.TileEntityCableRibbon;
+import com.github.blackjak34.compute.entity.tile.TileEntityDiskDrive;
+import com.github.blackjak34.compute.entity.tile.TileEntityTerminal;
+import com.github.blackjak34.compute.entity.tile.client.TileEntityCPUClient;
+import com.github.blackjak34.compute.entity.tile.client.TileEntityCableRibbonClient;
+import com.github.blackjak34.compute.entity.tile.client.TileEntityDiskDriveClient;
+import com.github.blackjak34.compute.entity.tile.client.TileEntityTerminalClient;
+import com.github.blackjak34.compute.entity.tile.TileEntityCPU;
 import com.github.blackjak34.compute.item.ItemFloppy;
 import com.github.blackjak34.compute.packet.MessageActionPerformed;
 import com.github.blackjak34.compute.packet.MessageKeyTyped;
-import com.github.blackjak34.compute.packet.MessageUpdateCursor;
 import com.github.blackjak34.compute.packet.MessageUpdateDisplay;
 import com.github.blackjak34.compute.packet.handler.HandlerActionPerformed;
 import com.github.blackjak34.compute.packet.handler.HandlerKeyTyped;
-import com.github.blackjak34.compute.packet.handler.HandlerUpdateCursor;
 import com.github.blackjak34.compute.packet.handler.HandlerUpdateDisplay;
 import com.github.blackjak34.compute.proxy.CommonProxy;
-import net.minecraft.block.material.Material;
+import com.google.common.io.Files;
+import net.minecraft.world.World;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.SidedProxy;
 import net.minecraftforge.fml.common.event.FMLInitializationEvent;
@@ -23,6 +31,9 @@ import net.minecraftforge.fml.common.network.NetworkRegistry;
 import net.minecraftforge.fml.common.network.simpleimpl.SimpleNetworkWrapper;
 import net.minecraftforge.fml.common.registry.GameRegistry;
 import net.minecraftforge.fml.relauncher.Side;
+
+import java.io.File;
+import java.io.IOException;
 
 @Mod(modid = DoesNotCompute.MODID, name = DoesNotCompute.NAME, version = DoesNotCompute.VERSION)
 public class DoesNotCompute {
@@ -35,7 +46,10 @@ public class DoesNotCompute {
     
     public static SimpleNetworkWrapper networkWrapper;
     
-    public static BlockConsole console;
+    public static BlockTerminal terminal;
+    public static BlockCPU cpu;
+    public static BlockDiskDrive diskDrive;
+    public static BlockCableRibbon ribbonCable;
     
     public static ItemFloppy floppy;
 
@@ -49,11 +63,23 @@ public class DoesNotCompute {
     @SuppressWarnings("unused")
 	@Mod.EventHandler
     public void preInit(FMLPreInitializationEvent event) {
-    	console = new BlockConsole(Material.iron);
+    	terminal = new BlockTerminal();
+        cpu = new BlockCPU();
+        diskDrive = new BlockDiskDrive();
+        ribbonCable = new BlockCableRibbon();
     	
-    	GameRegistry.registerBlock(console, "blockConsole");
-    	GameRegistry.registerTileEntity(TileEntityConsole.class, "tileEntityConsole");
-        GameRegistry.registerTileEntity(TileEntityEmulator.class, "tileEntityEmulator");
+    	GameRegistry.registerBlock(terminal, "blockTerminal");
+        GameRegistry.registerBlock(cpu, "blockCPU");
+        GameRegistry.registerBlock(diskDrive, "blockDiskDrive");
+        GameRegistry.registerBlock(ribbonCable, "blockCableRibbon");
+        GameRegistry.registerTileEntity(TileEntityTerminal.class, "tileEntityTerminal");
+    	GameRegistry.registerTileEntity(TileEntityTerminalClient.class, "tileEntityTerminalClient");
+        GameRegistry.registerTileEntity(TileEntityCPU.class, "tileEntityEmulator");
+        GameRegistry.registerTileEntity(TileEntityCPUClient.class, "tileEntityCPUClient");
+        GameRegistry.registerTileEntity(TileEntityDiskDrive.class, "tileEntityDiskDrive");
+        GameRegistry.registerTileEntity(TileEntityDiskDriveClient.class, "tileEntityDiskDriveClient");
+        GameRegistry.registerTileEntity(TileEntityCableRibbon.class, "tileEntityCableRibbon");
+        GameRegistry.registerTileEntity(TileEntityCableRibbonClient.class, "tileEntityCableRibbonClient");
     	
     	
     	floppy = new ItemFloppy();
@@ -64,7 +90,6 @@ public class DoesNotCompute {
     	networkWrapper.registerMessage(HandlerActionPerformed.class, MessageActionPerformed.class, 0, Side.SERVER);
         networkWrapper.registerMessage(HandlerKeyTyped.class, MessageKeyTyped.class, 1, Side.SERVER);
 
-        networkWrapper.registerMessage(HandlerUpdateCursor.class, MessageUpdateCursor.class, 2, Side.CLIENT);
         networkWrapper.registerMessage(HandlerUpdateDisplay.class, MessageUpdateDisplay.class, 3, Side.CLIENT);
     }
 
@@ -78,5 +103,64 @@ public class DoesNotCompute {
     @SuppressWarnings("unused")
 	@Mod.EventHandler
     public void postInit(FMLPostInitializationEvent event) {}
+
+    public static byte[] getFileAsArray(World world, String filename) {
+        File modDirectory = new File(world.getSaveHandler().getWorldDirectory(), "/doesnotcompute/");
+        File dataFile = new File(modDirectory, filename);
+
+        if(!modDirectory.exists() && !modDirectory.mkdir()) {
+            System.err.println("Could not generate the mod directory. Is the world folder read only?");
+            return new byte[0];
+        }
+
+        if(!dataFile.exists()) {
+            System.err.println("The requested file at " + dataFile.getAbsolutePath() + " does not exist.");
+            return new byte[0];
+        }
+
+        try {
+            return Files.toByteArray(dataFile);
+        } catch(IOException e) {
+            System.err.println("There was an error reading data from the file at" + dataFile.getAbsolutePath() + ":");
+            e.printStackTrace();
+            return new byte[0];
+        }
+    }
+
+    public static void copyFileIntoArray(World world, String filename, byte[] dest, int index, int maxLength) {
+        byte[] data = getFileAsArray(world, filename);
+
+        System.arraycopy(data, 0, dest, index, Math.min(data.length, maxLength));
+    }
+
+    public static boolean copyArrayIntoFile(World world, String filename, byte[] src) {
+        File modDirectory = new File(world.getSaveHandler().getWorldDirectory(), "/doesnotcompute/");
+        File dataFile = new File(modDirectory, filename);
+
+        if(!modDirectory.exists() && !modDirectory.mkdir()) {
+            System.err.println("Could not generate the mod directory. Is the world folder read only?");
+            return false;
+        }
+
+        try {
+            if(dataFile.createNewFile()) {
+                System.out.println("Generated a new data file at " + dataFile.getAbsolutePath() + ".");
+            }
+        } catch(IOException e) {
+            System.err.println("Could not generate a new data file at " + dataFile.getAbsolutePath() +
+                    ". Is the world folder read only?");
+            return false;
+        }
+
+        try {
+            Files.write(src, dataFile);
+        } catch(IOException e) {
+            System.err.println("There was an error writing data to the file at" + dataFile.getAbsolutePath() + ":");
+            e.printStackTrace();
+            return false;
+        }
+
+        return true;
+    }
     
 }

@@ -1,0 +1,12 @@
+{
+  "variants": {
+    "disk=true,facing=north":  {"model":"doesnotcompute:disk_drive_disk"},
+    "disk=true,facing=east":   {"model":"doesnotcompute:disk_drive_disk", "y":90},
+    "disk=true,facing=south":  {"model":"doesnotcompute:disk_drive_disk", "y":180},
+    "disk=true,facing=west":   {"model":"doesnotcompute:disk_drive_disk", "y":270},
+    "disk=false,facing=north": {"model":"doesnotcompute:disk_drive"},
+    "disk=false,facing=east":  {"model":"doesnotcompute:disk_drive", "y":90},
+    "disk=false,facing=south": {"model":"doesnotcompute:disk_drive", "y":180},
+    "disk=false,facing=west":  {"model":"doesnotcompute:disk_drive", "y":270}
+  }
+}
