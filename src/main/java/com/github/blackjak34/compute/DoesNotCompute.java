@@ -33,7 +33,7 @@ public class DoesNotCompute {
 
     public static final String NAME = "Does Not Compute";
 
-    public static final String VERSION = "1.0.0";
+    public static final String VERSION = "1.0.1";
     
     public static SimpleNetworkWrapper networkWrapper;
     
