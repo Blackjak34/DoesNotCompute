@@ -14,10 +14,6 @@ import org.lwjgl.opengl.GL11;
 
 import static com.github.blackjak34.compute.enums.GuiConstantCPU.*;
 
-/**
- * @author Blackjak34
- * @since 1.0.0
- */
 public class GuiCPU extends GuiContainer {
 
     public static final int GUIID = 24;

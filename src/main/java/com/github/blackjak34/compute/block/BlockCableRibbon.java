@@ -16,10 +16,6 @@ import net.minecraft.util.BlockPos;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.world.World;
 
-/**
- * @author Blackjak34
- * @since 1.0.0
- */
 public class BlockCableRibbon extends Block implements ITileEntityProvider {
 
     public static final PropertyBool NORTH = PropertyBool.create("north");

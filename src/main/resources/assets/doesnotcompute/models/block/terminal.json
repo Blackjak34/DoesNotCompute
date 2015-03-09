@@ -1,10 +1,21 @@
 {
-  "parent":"block/orientable",
   "textures": {
-    "front":"doesnotcompute:blocks/CPU_Side",
-    "back":"doesnotcompute:blocks/CPU_Back",
-    "top":"doesnotcompute:blocks/CPU_Side",
-    "bottom":"doesnotcompute:blocks/CPU_Side",
-    "side":"doesnotcompute:blocks/CPU_Side"
-  }
+    "top":"doesnotcompute:blocks/Terminal_Top",
+    "side":"doesnotcompute:blocks/Terminal_Side",
+    "front":"doesnotcompute:blocks/Terminal_Front",
+    "back":"doesnotcompute:blocks/CPU_Side",
+    "particle":"doesnotcompute:blocks/CPU_Side"
+  },
+  "elements": [
+    {
+      "from":[0, 0, 0], "to":[16, 16, 16], "faces": {
+      "down":  {"texture":"#top", "cullface":"down"},
+      "up":    {"texture":"#top", "cullface":"up"},
+      "north": {"texture":"#front", "cullface":"north"},
+      "south": {"texture":"#back", "cullface":"south"},
+      "west":  {"texture":"#side", "cullface":"west"},
+      "east":  {"uv":[16, 0, 0, 16], "texture":"#side", "cullface":"east"}
+    }
+    }
+  ]
 }

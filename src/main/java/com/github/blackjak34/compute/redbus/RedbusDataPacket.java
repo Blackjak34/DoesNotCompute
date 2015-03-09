@@ -8,10 +8,6 @@ import net.minecraft.world.World;
 import java.util.HashSet;
 import java.util.Set;
 
-/**
- * @author Blackjak34
- * @since 1.0.0
- */
 public class RedbusDataPacket {
 
     public final byte address;

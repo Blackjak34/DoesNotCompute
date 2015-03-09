@@ -14,10 +14,6 @@ import net.minecraft.util.BlockPos;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.world.World;
 
-/**
- * @author Blackjak34
- * @since 1.0.0
- */
 public class BlockCPU extends BlockBase implements ITileEntityProvider {
 
     public static final PropertyBool RUNNING = PropertyBool.create("running");

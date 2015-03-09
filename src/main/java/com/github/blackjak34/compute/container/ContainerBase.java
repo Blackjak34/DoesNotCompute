@@ -4,10 +4,6 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.Container;
 import net.minecraft.tileentity.TileEntity;
 
-/**
- * @author Blackjak34
- * @since 1.0.0
- */
 public class ContainerBase extends Container {
 
     private final TileEntity tileEntity;

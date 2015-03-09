@@ -8,10 +8,6 @@ import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.BlockPos;
 import net.minecraft.world.World;
 
-/**
- * @author Blackjak34
- * @since 1.0.0
- */
 public class TileEntityCPUClient extends TileEntity {
 
     private boolean running;

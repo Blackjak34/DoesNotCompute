@@ -2,6 +2,7 @@ package com.github.blackjak34.compute.entity.tile;
 
 import com.github.blackjak34.compute.DoesNotCompute;
 import com.github.blackjak34.compute.block.BlockCPU;
+import com.github.blackjak34.compute.enums.AddressingMode;
 import com.github.blackjak34.compute.enums.InstructionComputer;
 import com.github.blackjak34.compute.redbus.RedbusDataPacket;
 import com.github.blackjak34.compute.interfaces.IRedbusCompatible;
@@ -36,7 +37,6 @@ public class TileEntityCPU extends TileEntity implements IUpdatePlayerListBox, I
     private int redbusDevice = 0;
     private int redbusOffset = 0;
     private int addressBRK = 0;
-    private int addressPOR = 0;
 
     private boolean running = false;
     private boolean flagCarry = false;
@@ -50,7 +50,7 @@ public class TileEntityCPU extends TileEntity implements IUpdatePlayerListBox, I
     private boolean flagEmulate = true;
     private boolean redbusEnabled = false;
 
-    private byte[] memory = new byte[65536];
+    private byte[] memory = new byte[0x10000];
 
     public TileEntityCPU() {}
 
@@ -60,7 +60,7 @@ public class TileEntityCPU extends TileEntity implements IUpdatePlayerListBox, I
     }
 
     public void onPacketReceived(RedbusDataPacket dataPacket) {
-        if(!redbusEnabled || ((dataPacket.address&255) != BUS_ADDR && (dataPacket.address&255) != 255)) {return;}
+        if(!redbusEnabled || ((dataPacket.address&255) != BUS_ADDR)) {return;}
         markDirty();
 
         memory[redbusOffset+(dataPacket.index&255)] = dataPacket.data;
@@ -81,7 +81,7 @@ public class TileEntityCPU extends TileEntity implements IUpdatePlayerListBox, I
             Arrays.fill(memory, (byte) 0xFF);
             DoesNotCompute.copyFileIntoArray(worldObj, "bootloader", memory, 1024, 256);
         } else if(buttonId == BUTTON_DUMP.getValue()) {
-            DoesNotCompute.copyArrayIntoFile(worldObj, "memorydump", memory);
+            //DoesNotCompute.copyArrayIntoFile(worldObj, "memorydump", memory);
         } else {
             return;
         }
@@ -89,50 +89,21 @@ public class TileEntityCPU extends TileEntity implements IUpdatePlayerListBox, I
         worldObj.markBlockForUpdate(pos);
     }
 
-    private boolean isEightBit(boolean indexRegister) {
-        return flagEmulate || (!indexRegister && flagAccumulator) || (indexRegister && flagBreak);
-    }
-
-    private int readDynamic(int index, boolean isIndexRegister) {
-        if(isEightBit(isIndexRegister)) {
-            return readMemory(index);
-        } else {
-            return (readMemory(index+1) << 8) | readMemory(index);
-        }
-    }
-
-    private void writeDynamic(int index, int value, boolean isIndexRegister) {
-        if(isEightBit(isIndexRegister)) {
-            writeMemory(index, value);
-        } else {
-            writeMemory(index, value);
-            writeMemory(index+1, (value >>> 8));
-        }
-    }
-
     private int readMemory(int index) {
-        if(index < 0 || index > 65535) {return 255;}
-
-        return memory[index] & 255;
+        return memory[index&0x0FFFF] & 255;
     }
 
     private void writeMemory(int index, int value) {
-        if(index < 0 || index > 65535) {return;}
+        if(index < 0 || index > 0x0FFFF) {return;}
+        memory[index] = (byte) value;
 
         if(redbusEnabled && (index >= redbusOffset) && (index < redbusOffset+256)) {
             RedbusDataPacket.sendPacket(worldObj, pos, new RedbusDataPacket(redbusDevice, value, index-redbusOffset));
-            if(index-redbusOffset == 4 || index-redbusOffset == 5) {
-                memory[index] = (byte) (value & 15);
-                return;
-            }
         }
-
-        memory[index] = (byte) value;
-        //System.out.printf("Writing value %2X to location %4X\n", (byte) value, index);
     }
 
     private void setProgramCounter(int value) {
-        programCounter = value & 65535;
+        programCounter = value & 0x0FFFF;
     }
 
     private void setRunning(boolean value) {
@@ -149,856 +120,33 @@ public class TileEntityCPU extends TileEntity implements IUpdatePlayerListBox, I
         while(cyclesElapsed < 3500) {executeInstruction();}
     }
 
-    public void executeInstruction() {
+    private void executeInstruction() {
+        boolean eightBitAccumulator = flagEmulate || flagAccumulator;
+        boolean eightBitIndexRegs = flagEmulate || flagBreak;
+
         InstructionComputer instruction = InstructionComputer.getInstruction(readMemory(programCounter));
-        //System.out.printf("Executing instruction %s at location %4X\n", instruction.toString(), programCounter);
+        int operandAddress = getOperandLocation(instruction.getAddressingMode());
         switch(instruction) {
-            case ADC_ABS:
-                performAddition(getAbsAddress(programCounter+1), false);
-                break;
-            case ADC_ABS_X:
-                performAddition(getAbsAddress(programCounter+1)+registerX, false);
-                break;
-            case ADC_ABS_Y:
-                performAddition(getAbsAddress(programCounter+1)+registerY, false);
-                break;
-            case ADC_IMM:
-                performAddition(programCounter+1, false);
-                if(!isEightBit(false)) {setProgramCounter(programCounter+1);}
-                break;
-            case ADC_IND_X:
-                performAddition(getAbsAddress(readMemory(programCounter+1)+registerX & 255), false);
-                break;
-            case ADC_IND_Y:
-                performAddition(getAbsAddress(readMemory(programCounter+1))+registerY, false);
-                break;
-            case ADC_ZP:
-                performAddition(readMemory(programCounter+1), false);
-                break;
-            case ADC_ZP_X:
-                performAddition(readMemory(programCounter+1)+registerX & 255, false);
-                break;
-            case AND_ABS:
-                registerA &= readDynamic(getAbsAddress(programCounter+1), false);
-                setSignZeroDynamic(registerA, false);
-                break;
-            case AND_ABS_X:
-                registerA &= readDynamic(getAbsAddress(programCounter+1)+registerX, false);
-                setSignZeroDynamic(registerA, false);
-                break;
-            case AND_ABS_Y:
-                registerA &= readDynamic(getAbsAddress(programCounter+1)+registerY, false);
-                setSignZeroDynamic(registerA, false);
-                break;
-            case AND_IMM:
-                registerA &= readDynamic(programCounter + 1, false);
-                setSignZeroDynamic(registerA, false);
-                if(!isEightBit(false)) {setProgramCounter(programCounter+1);}
-                break;
-            case AND_IND_X:
-                registerA &= readDynamic(getAbsAddress(readMemory(programCounter+1)+registerX & 255), false);
-                setSignZeroDynamic(registerA, false);
-                break;
-            case AND_IND_Y:
-                registerA &= readDynamic(getAbsAddress(readMemory(programCounter+1))+registerY, false);
-                setSignZeroDynamic(registerA, false);
-                break;
-            case AND_ZP:
-                registerA &= readDynamic(readMemory(programCounter+1), false);
-                setSignZeroDynamic(registerA, false);
-                break;
-            case AND_ZP_X:
-                registerA &= readDynamic(readMemory(programCounter+1)+registerX & 255, false);
-                setSignZeroDynamic(registerA, false);
-                break;
-            case ASL_A:
-                if(isEightBit(false)) {
-                    int lowByte = registerA&255;
-                    flagCarry = lowByte > 127;
-                    registerA = (registerA&65280) | ((lowByte << 1)&255);
-                } else {
-                    flagCarry = registerA > 32767;
-                    registerA <<= 1;
-                    registerA &= 65535;
-                }
-
-                setSignZeroDynamic(registerA, false);
-                break;
-            case ASL_ABS:
-                int aslAbsAddress = getAbsAddress(programCounter+1);
-                int aslAbsValue = readMemory(aslAbsAddress);
-                flagCarry = aslAbsValue>127;
-
-                aslAbsValue <<= 1;
-                aslAbsValue &= 255;
-                setSignZero(aslAbsValue);
-
-                writeMemory(aslAbsAddress, aslAbsValue);
-                break;
-            case ASL_ABS_X:
-                int aslAbsXAddress = getAbsAddress(programCounter+1)+registerX;
-                int aslAbsXValue = readMemory(aslAbsXAddress);
-                flagCarry = aslAbsXValue>127;
-
-                aslAbsXValue <<= 1;
-                aslAbsXValue &= 255;
-                setSignZero(aslAbsXValue);
-
-                writeMemory(aslAbsXAddress, aslAbsXValue);
-                break;
-            case ASL_ZP:
-                int aslZpAddress = readMemory(programCounter+1);
-                int aslZpValue = readMemory(aslZpAddress);
-                flagCarry = aslZpValue>127;
-
-                aslZpValue <<= 1;
-                aslZpValue &= 255;
-                setSignZero(aslZpValue);
-
-                writeMemory(aslZpAddress, aslZpValue);
-                break;
-            case ASL_ZP_X:
-                int aslZpXAddress = readMemory(programCounter+1)+registerX & 255;
-                int aslZpXValue = readMemory(aslZpXAddress);
-                flagCarry = aslZpXValue>127;
-
-                aslZpXValue <<= 1;
-                aslZpXValue &= 255;
-                setSignZero(aslZpXValue);
-
-                writeMemory(aslZpXAddress, aslZpXValue);
-                break;
-            case BCC_REL:
-                if(!flagCarry) {
-                    byte relValue = (byte) readMemory(programCounter+1);
-                    setProgramCounter(programCounter + relValue);
-                    cyclesElapsed++;
-                }
-                break;
-            case BCS_REL:
-                if(flagCarry) {
-                    byte relValue = (byte) readMemory(programCounter+1);
-                    setProgramCounter(programCounter + relValue);
-                    cyclesElapsed++;
-                }
-                break;
-            case BEQ_REL:
-                if(flagZero) {
-                    byte relValue = (byte) readMemory(programCounter+1);
-                    setProgramCounter(programCounter + relValue);
-                    cyclesElapsed++;
-                }
-                break;
-            case BIT_ABS:
-                int bitAbsValue = readDynamic(getAbsAddress(programCounter + 1), false);
-
-                flagZero = (registerA & bitAbsValue) == 0;
-                if(isEightBit(false)) {
-                    flagSign = bitAbsValue > 127;
-                    flagOverflow = testBit(bitAbsValue, 6);
-                } else {
-                    flagSign = bitAbsValue > 32767;
-                    flagOverflow = testBit(bitAbsValue, 14);
-                }
-                break;
-            case BIT_ZP:
-                int bitZpValue = readDynamic(readMemory(programCounter + 1), false);
-
-                flagZero = (registerA & bitZpValue) == 0;
-                if(isEightBit(false)) {
-                    flagSign = bitZpValue > 127;
-                    flagOverflow = testBit(bitZpValue, 6);
-                } else {
-                    flagSign = bitZpValue > 32767;
-                    flagOverflow = testBit(bitZpValue, 14);
-                }
-                break;
-            case BMI_REL:
-                if(flagSign) {
-                    byte relValue = (byte) readMemory(programCounter+1);
-                    setProgramCounter(programCounter + relValue);
-                    cyclesElapsed++;
-                }
-                break;
-            case BNE_REL:
-                if(!flagZero) {
-                    byte relValue = (byte) readMemory(programCounter+1);
-                    setProgramCounter(programCounter + relValue);
-                    cyclesElapsed++;
-                }
-                break;
-            case BPL_REL:
-                if(!flagSign) {
-                    byte relValue = (byte) readMemory(programCounter+1);
-                    setProgramCounter(programCounter + relValue);
-                    cyclesElapsed++;
-                }
-                break;
             case BRK:
-                pushRStack(programCounter >>> 8);
-                pushRStack(programCounter);
+                pushPStack(programCounter >>> 8);
+                pushPStack(programCounter);
 
-                int pushFlags3 = flagCarry ? 1 : 0;
-                pushFlags3 += flagZero ? 2 : 0;
-                pushFlags3 += flagInterrupt ? 4 : 0;
-                pushFlags3 += flagDecimal ? 8 : 0;
-                pushFlags3 += flagBreak ? 16 : 0;
-                pushFlags3 += 32;
-                pushFlags3 += flagOverflow ? 64 : 0;
-                pushFlags3 += flagSign ? 128 : 0;
-                pushPStack(pushFlags3);
-
-                flagDecimal = false;
-                flagBreak = true;
+                pushFlags(flagEmulate);
                 flagInterrupt = true;
-                break;
-            case BVC_REL:
-                if(!flagOverflow) {
-                    byte relValue = (byte) readMemory(programCounter+1);
-                    setProgramCounter(programCounter + relValue);
-                    cyclesElapsed++;
-                }
-                break;
-            case BVS_REL:
-                if(flagOverflow) {
-                    byte relValue = (byte) readMemory(programCounter+1);
-                    setProgramCounter(programCounter + relValue);
-                    cyclesElapsed++;
-                }
-                break;
-            case CLC:
-                flagCarry = false;
-                break;
-            case CLD:
                 flagDecimal = false;
-                break;
-            case CLI:
-                flagInterrupt = false;
-                break;
-            case CLV:
-                flagOverflow = false;
-                break;
-            case CMP_ABS:
-                performComparation(getAbsAddress(programCounter+1), registerA, false);
-                break;
-            case CMP_ABS_X:
-                performComparation(getAbsAddress(programCounter+1)+registerX, registerA, false);
-                break;
-            case CMP_ABS_Y:
-                performComparation(getAbsAddress(programCounter+1)+registerY, registerA, false);
-                break;
-            case CMP_IMM:
-                performComparation(programCounter+1, registerA, false);
-                if(!isEightBit(false)) {setProgramCounter(programCounter+1);}
-                break;
-            case CMP_IND_X:
-                performComparation(getAbsAddress(readMemory(programCounter+1)+registerX & 255), registerA, false);
-                break;
-            case CMP_IND_Y:
-                performComparation(getAbsAddress(readMemory(programCounter+1))+registerY, registerA, false);
-                break;
-            case CMP_ZP:
-                performComparation(readMemory(programCounter+1), registerA, false);
-                break;
-            case CMP_ZP_X:
-                performComparation(readMemory(programCounter+1)+registerX & 255, registerA, false);
-                break;
-            case CPX_ABS:
-                performComparation(getAbsAddress(programCounter+1), registerX, true);
-                break;
-            case CPX_IMM:
-                performComparation(programCounter+1, registerX, true);
-                if(!isEightBit(true)) {setProgramCounter(programCounter+1);}
-                break;
-            case CPX_ZP:
-                performComparation(readMemory(programCounter+1), registerX, true);
-                break;
-            case CPY_ABS:
-                performComparation(getAbsAddress(programCounter+1), registerY, true);
-                break;
-            case CPY_IMM:
-                performComparation(programCounter+1, registerY, true);
-                if(!isEightBit(true)) {setProgramCounter(programCounter+1);}
-                break;
-            case CPY_ZP:
-                performComparation(readMemory(programCounter+1), registerY, true);
-                break;
-            case DEC_ABS:
-                int decAbsAddress = getAbsAddress(programCounter+1);
-                int decAbsValue = flagEmulate ? readMemory(decAbsAddress) :
-                        (readMemory(decAbsAddress+1) << 8) | readMemory(decAbsAddress);
-
-                decAbsValue--;
-                decAbsValue &= flagEmulate ? 255 : 65535;
-
-                flagSign = decAbsValue > (flagEmulate ? 127 : 32767);
-                flagZero = decAbsValue == 0;
-
-                writeMemory(decAbsAddress, decAbsValue);
-                if(!flagEmulate) {writeMemory(decAbsAddress+1, (decAbsValue >>> 8));}
-                break;
-            case DEC_ABS_X:
-                int decAbsXAddress = getAbsAddress(programCounter+1)+registerX;
-                int decAbsXValue = flagEmulate ? readMemory(decAbsXAddress) :
-                        (readMemory(decAbsXAddress+1) << 8) | readMemory(decAbsXAddress);
-
-                decAbsXValue--;
-                decAbsXValue &= flagEmulate ? 255 : 65535;
-
-                flagSign = decAbsXValue > (flagEmulate ? 127 : 32767);
-                flagZero = decAbsXValue == 0;
-
-                writeMemory(decAbsXAddress, decAbsXValue);
-                if(!flagEmulate) {writeMemory(decAbsXAddress+1, (decAbsXValue >>> 8));}
-                break;
-            case DEC_ZP:
-                int decZpAddress = readMemory(programCounter+1);
-                int decZpValue = flagEmulate ? readMemory(decZpAddress) :
-                        (readMemory(decZpAddress+1) << 8) | readMemory(decZpAddress);
-
-                decZpValue--;
-                decZpValue &= flagEmulate ? 255 : 65535;
-
-                flagSign = decZpValue > (flagEmulate ? 127 : 32767);
-                flagZero = decZpValue == 0;
-
-                writeMemory(decZpAddress, decZpValue);
-                if(!flagEmulate) {writeMemory(decZpAddress+1, (decZpValue >>> 8));}
-                break;
-            case DEC_ZP_X:
-                int decZpXAddress = readMemory(programCounter+1)+registerX & 255;
-                int decZpXValue = flagEmulate ? readMemory(decZpXAddress) :
-                        (readMemory(decZpXAddress+1) << 8) | readMemory(decZpXAddress);
-
-                decZpXValue--;
-                decZpXValue &= flagEmulate ? 255 : 65535;
-
-                flagSign = decZpXValue > (flagEmulate ? 127 : 32767);
-                flagZero = decZpXValue == 0;
-
-                writeMemory(decZpXAddress, decZpXValue);
-                if(!flagEmulate) {writeMemory(decZpXAddress+1, (decZpXValue >>> 8));}
-                break;
-            case DEX:
-                registerX--;
-                registerX &= (isEightBit(true) ? 255 : 65535);
-                setSignZeroDynamic(registerX, true);
-                break;
-            case DEY:
-                registerY--;
-                registerY &= (isEightBit(true) ? 255 : 65535);
-                setSignZeroDynamic(registerY, true);
-                break;
-            case EOR_ABS:
-                registerA ^= readDynamic(getAbsAddress(programCounter + 1), false);
-                setSignZeroDynamic(registerA, false);
-                break;
-            case EOR_ABS_X:
-                registerA ^= readDynamic(getAbsAddress(programCounter + 1) + registerX, false);
-                setSignZeroDynamic(registerA, false);
-                break;
-            case EOR_ABS_Y:
-                registerA ^= readDynamic(getAbsAddress(programCounter + 1) + registerY, false);
-                setSignZeroDynamic(registerA, false);
-                break;
-            case EOR_IMM:
-                registerA ^= readDynamic(programCounter + 1, false);
-                setSignZeroDynamic(registerA, false);
-                if(!isEightBit(false)) {setProgramCounter(programCounter+1);}
-                break;
-            case EOR_IND_X:
-                registerA ^= readDynamic(getAbsAddress(readMemory(programCounter + 1) + registerX & 255), false);
-                setSignZeroDynamic(registerA, false);
-                break;
-            case EOR_IND_Y:
-                registerA ^= readDynamic(getAbsAddress(readMemory(programCounter + 1)) + registerY, false);
-                setSignZeroDynamic(registerA, false);
-                break;
-            case EOR_ZP:
-                registerA ^= readDynamic(readMemory(programCounter + 1), false);
-                setSignZeroDynamic(registerA, false);
-                break;
-            case EOR_ZP_X:
-                registerA ^= readDynamic(readMemory(programCounter + 1) + registerX & 255, false);
-                setSignZeroDynamic(registerA, false);
-                break;
-            case INC_ABS:
-                int incAbsAddress = getAbsAddress(programCounter+1);
-                int incAbsValue = flagEmulate ? readMemory(incAbsAddress) :
-                        (readMemory(incAbsAddress+1) << 8) | readMemory(incAbsAddress);
-
-                incAbsValue++;
-                incAbsValue &= flagEmulate ? 255 : 65535;
-
-                flagSign = incAbsValue > (flagEmulate ? 127 : 32767);
-                flagZero = incAbsValue == 0;
-
-                writeMemory(incAbsAddress, incAbsValue);
-                if(!flagEmulate) {writeMemory(incAbsAddress+1, (incAbsValue >>> 8));}
-                break;
-            case INC_ABS_X:
-                int incAbsXAddress = getAbsAddress(programCounter+1)+registerX;
-                int incAbsXValue = flagEmulate ? readMemory(incAbsXAddress) :
-                        (readMemory(incAbsXAddress+1) << 8) | readMemory(incAbsXAddress);
-
-                incAbsXValue++;
-                incAbsXValue &= flagEmulate ? 255 : 65535;
-
-                flagSign = incAbsXValue > (flagEmulate ? 127 : 32767);
-                flagZero = incAbsXValue == 0;
-
-                writeMemory(incAbsXAddress, incAbsXValue);
-                if(!flagEmulate) {writeMemory(incAbsXAddress+1, (incAbsXValue >>> 8));}
-                break;
-            case INC_ZP:
-                int incZpAddress = readMemory(programCounter+1);
-                int incZpValue = flagEmulate ? readMemory(incZpAddress) :
-                        (readMemory(incZpAddress+1) << 8) | readMemory(incZpAddress);
-
-                incZpValue++;
-                incZpValue &= flagEmulate ? 255 : 65535;
-
-                flagSign = incZpValue > (flagEmulate ? 127 : 32767);
-                flagZero = incZpValue == 0;
-
-                writeMemory(incZpAddress, incZpValue);
-                if(!flagEmulate) {writeMemory(incZpAddress+1, (incZpValue >>> 8));}
-                break;
-            case INC_ZP_X:
-                int incZpXAddress = readMemory(programCounter+1)+registerX & 255;
-                int incZpXValue = flagEmulate ? readMemory(incZpXAddress) :
-                        (readMemory(incZpXAddress+1) << 8) | readMemory(incZpXAddress);
-
-                incZpXValue++;
-                incZpXValue &= flagEmulate ? 255 : 65535;
-
-                flagSign = incZpXValue > (flagEmulate ? 127 : 32767);
-                flagZero = incZpXValue == 0;
-
-                writeMemory(incZpXAddress, incZpXValue);
-                if(!flagEmulate) {writeMemory(incZpXAddress+1, (incZpXValue >>> 8));}
-                break;
-            case INX:
-                registerX++;
-                registerX &= (isEightBit(true) ? 255 : 65535);
-                setSignZeroDynamic(registerX, true);
-                break;
-            case INY:
-                registerY++;
-                registerY &= (isEightBit(true) ? 255 : 65535);
-                setSignZeroDynamic(registerY, true);
-                break;
-            case JMP_ABS:
-                int jmpAbsAddress = getAbsAddress(programCounter+1);
-                setProgramCounter(jmpAbsAddress);
-                System.out.printf("Jumping to address %4X\n", jmpAbsAddress);
-                break;
-            case JMP_IND:
-                int jmpIndAddress = getAbsAddress(getAbsAddress(programCounter+1));
-                setProgramCounter(jmpIndAddress);
-                System.out.printf("Jumping to address %4X\n", jmpIndAddress);
-                break;
-            case JSR_ABS:
-                int addressToPush = programCounter + 2;
-                pushRStack(addressToPush >>> 8);
-                pushRStack(addressToPush);
-
-                System.out.printf("Jumping to subroutine from %4X, pushing address %4X\n",
-                        programCounter, programCounter+2);
-                setProgramCounter(getAbsAddress(programCounter+1));
-                break;
-            case LDA_ABS:
-                registerA = readDynamic(getAbsAddress(programCounter + 1), false);
-                setSignZeroDynamic(registerA, false);
-                break;
-            case LDA_ABS_X:
-                registerA = readDynamic(getAbsAddress(programCounter + 1) + registerX, false);
-                setSignZeroDynamic(registerA, false);
-                break;
-            case LDA_ABS_Y:
-                registerA = readDynamic(getAbsAddress(programCounter + 1) + registerY, false);
-                setSignZeroDynamic(registerA, false);
-                break;
-            case LDA_IMM:
-                registerA = readDynamic(programCounter + 1, false);
-                setSignZeroDynamic(registerA, false);
-                if(!isEightBit(false)) {setProgramCounter(programCounter+1);}
-                break;
-            case LDA_IND_X:
-                registerA = readDynamic(getAbsAddress(readMemory(programCounter + 1) + registerX & 255), false);
-                setSignZeroDynamic(registerA, false);
-                break;
-            case LDA_IND_Y:
-                registerA = readDynamic(getAbsAddress(readMemory(programCounter + 1)) + registerY, false);
-                setSignZeroDynamic(registerA, false);
-                break;
-            case LDA_ZP:
-                registerA = readDynamic(readMemory(programCounter + 1), false);
-                setSignZeroDynamic(registerA, false);
-                break;
-            case LDA_ZP_X:
-                registerA = readDynamic(readMemory(programCounter + 1) + registerX & 255, false);
-                setSignZeroDynamic(registerA, false);
-                break;
-            case LDX_ABS:
-                registerX = readDynamic(getAbsAddress(programCounter + 1), true);
-                setSignZeroDynamic(registerX, true);
-                break;
-            case LDX_ABS_Y:
-                registerX = readDynamic(getAbsAddress(programCounter + 1) + registerY, true);
-                setSignZeroDynamic(registerX, true);
-                break;
-            case LDX_IMM:
-                registerX = readDynamic(programCounter + 1, true);
-                setSignZeroDynamic(registerX, true);
-                if(!isEightBit(true)) {setProgramCounter(programCounter+1);}
-                break;
-            case LDX_ZP:
-                registerX = readDynamic(readMemory(programCounter + 1), true);
-                setSignZeroDynamic(registerX, true);
-                break;
-            case LDX_ZP_Y:
-                registerX = readDynamic(readMemory(programCounter + 1) + registerY & 255, true);
-                setSignZeroDynamic(registerX, true);
-                break;
-            case LDY_ABS:
-                registerY = readDynamic(getAbsAddress(programCounter + 1), true);
-                setSignZeroDynamic(registerY, true);
-                break;
-            case LDY_ABS_X:
-                registerY = readDynamic(getAbsAddress(programCounter + 1) + registerX, true);
-                setSignZeroDynamic(registerY, true);
-                break;
-            case LDY_IMM:
-                registerY = readDynamic(programCounter + 1, true);
-                setSignZeroDynamic(registerY, true);
-                if(!isEightBit(true)) {setProgramCounter(programCounter+1);}
-                break;
-            case LDY_ZP:
-                registerY = readDynamic(readMemory(programCounter + 1), true);
-                setSignZeroDynamic(registerY, true);
-                break;
-            case LDY_ZP_X:
-                registerY = readDynamic(readMemory(programCounter + 1) + registerX & 255, true);
-                setSignZeroDynamic(registerY, true);
-                break;
-            case LSR_A:
-                flagCarry = testBit(registerA, 0);
-                if(isEightBit(false)) {
-                    registerA = (registerA&65280) | (registerA&255 >>> 1);
-                } else {
-                    registerA >>>= 1;
-                }
-
-                setSignZeroDynamic(registerA, false);
-                break;
-            case LSR_ABS:
-                int lsrAbsAddress = getAbsAddress(programCounter+1);
-                int lsrAbsValue = readMemory(lsrAbsAddress);
-
-                flagCarry = testBit(lsrAbsValue, 0);
-
-                lsrAbsValue >>>= 1;
-                setSignZero(lsrAbsValue);
-
-                writeMemory(lsrAbsAddress, lsrAbsValue);
-                break;
-            case LSR_ABS_X:
-                int lsrAbsXAddress = getAbsAddress(programCounter+1)+registerX;
-                int lsrAbsXValue = readMemory(lsrAbsXAddress);
-
-                flagCarry = testBit(lsrAbsXValue, 0);
-
-                lsrAbsXValue >>>= 1;
-                setSignZero(lsrAbsXValue);
-
-                writeMemory(lsrAbsXAddress, lsrAbsXValue);
-                break;
-            case LSR_ZP:
-                int lsrZpAddress = readMemory(programCounter+1);
-                int lsrZpValue = readMemory(lsrZpAddress);
-
-                lsrZpValue >>>= 1;
-                setSignZero(lsrZpValue);
-
-                writeMemory(lsrZpAddress, lsrZpValue);
-                break;
-            case LSR_ZP_X:
-                int lsrZpXAddress = readMemory(programCounter+1)+registerX & 255;
-                int lsrZpXValue = readMemory(lsrZpXAddress);
-
-                lsrZpXValue >>>= 1;
-                setSignZero(lsrZpXValue);
-
-                writeMemory(lsrZpXAddress, lsrZpXValue);
-                break;
-            case NOP:
-                break;
-            case ORA_ABS:
-                registerA |= readDynamic(getAbsAddress(programCounter+1), false);
-                setSignZeroDynamic(registerA, false);
-                break;
-            case ORA_ABS_X:
-                registerA |= readDynamic(getAbsAddress(programCounter+1)+registerX, false);
-                setSignZeroDynamic(registerA, false);
-                break;
-            case ORA_ABS_Y:
-                registerA |= readDynamic(getAbsAddress(programCounter+1)+registerY, false);
-                setSignZeroDynamic(registerA, false);
-                break;
-            case ORA_IMM:
-                registerA |= readDynamic(programCounter + 1, false);
-                setSignZeroDynamic(registerA, false);
-                if(!isEightBit(false)) {setProgramCounter(programCounter+1);}
-                break;
-            case ORA_IND_X:
-                registerA |= readDynamic(getAbsAddress(readMemory(programCounter+1)+registerX & 255), false);
-                setSignZeroDynamic(registerA, false);
-                break;
-            case ORA_IND_Y:
-                registerA |= readDynamic(getAbsAddress(readMemory(programCounter+1))+registerY, false);
-                setSignZeroDynamic(registerA, false);
-                break;
-            case ORA_ZP:
-                registerA |= readDynamic(readMemory(programCounter+1), false);
-                setSignZeroDynamic(registerA, false);
-                break;
-            case ORA_ZP_X:
-                registerA |= readDynamic(readMemory(programCounter+1)+registerX & 255, false);
-                setSignZeroDynamic(registerA, false);
-                break;
-            case PHA:
-                pushPStack(registerA);
-                if(!isEightBit(false)) {pushPStack(registerA >>> 8);}
-                break;
-            case PHP:
-                int pushFlags = flagCarry ? 1 : 0;
-                pushFlags += flagZero ? 2 : 0;
-                pushFlags += flagInterrupt ? 4 : 0;
-                pushFlags += flagDecimal ? 8 : 0;
-                pushFlags += flagBreak ? 16 : 0;
-                pushFlags += flagEmulate||flagAccumulator ? 32 : 0;
-                pushFlags += flagOverflow ? 64 : 0;
-                pushFlags += flagSign ? 128 : 0;
-
-                pushPStack(pushFlags);
-                break;
-            case PLA:
-                registerA = pullPStack();
-                if(!isEightBit(false)) {registerA |= (pullPStack() << 8);}
-                break;
-            case PLP:
-                int pullFlags = pullPStack();
-
-                flagCarry = testBit(pullFlags, 0);
-                flagZero = testBit(pullFlags, 1);
-                flagInterrupt = testBit(pullFlags, 2);
-                flagDecimal = testBit(pullFlags, 3);
-                flagBreak = testBit(pullFlags, 4);
-                flagAccumulator = testBit(pullFlags, 5);
-                flagOverflow = testBit(pullFlags, 6);
-                flagSign = testBit(pullFlags, 7);
-                break;
-            case ROL_A:
-                boolean rolATemp;
-                if(isEightBit(false)) {
-                    int lowByte = registerA&255;
-                    rolATemp = lowByte > 127;
-                    registerA = (registerA&65280) | ((lowByte << 1)&255);
-                } else {
-                    rolATemp = registerA > 32767;
-                    registerA <<= 1;
-                    registerA &= 65535;
-                }
-                registerA += (flagCarry ? 1 : 0);
-                flagCarry = rolATemp;
-
-                setSignZeroDynamic(registerA, false);
-                break;
-            case ROL_ABS:
-                int rolAbsAddress = getAbsAddress(programCounter+1);
-                int rolAbsValue = readMemory(rolAbsAddress);
-
-                boolean rolAbsTemp = rolAbsValue>127;
-                rolAbsValue <<= 1;
-                rolAbsValue &= 255;
-                rolAbsValue += flagCarry ? 1 : 0;
-                flagCarry = rolAbsTemp;
-
-                setSignZero(rolAbsValue);
-                writeMemory(rolAbsAddress, rolAbsValue);
-                break;
-            case ROL_ABS_X:
-                int rolAbsXAddress = getAbsAddress(programCounter+1)+registerX;
-                int rolAbsXValue = readMemory(rolAbsXAddress);
-
-                boolean rolAbsXTemp = rolAbsXValue>127;
-                rolAbsXValue <<= 1;
-                rolAbsXValue &= 255;
-                rolAbsXValue += flagCarry ? 1 : 0;
-                flagCarry = rolAbsXTemp;
-
-                setSignZero(rolAbsXValue);
-                writeMemory(rolAbsXAddress, rolAbsXValue);
-                break;
-            case ROL_ZP:
-                int rolZpAddress = readMemory(readMemory(programCounter+1));
-                int rolZpValue = readMemory(rolZpAddress);
-
-                boolean rolZpTemp = rolZpValue>127;
-                rolZpValue <<= 1;
-                rolZpValue &= 255;
-                rolZpValue += flagCarry ? 1 : 0;
-                flagCarry = rolZpTemp;
-
-                setSignZero(rolZpValue);
-                writeMemory(rolZpAddress, rolZpValue);
-                break;
-            case ROL_ZP_X:
-                int rolZpXAddress = readMemory(readMemory(programCounter+1)+registerX & 255);
-                int rolZpXValue = readMemory(rolZpXAddress);
-
-                boolean rolZpXTemp = rolZpXValue>127;
-                rolZpXValue <<= 1;
-                rolZpXValue &= 255;
-                rolZpXValue += flagCarry ? 1 : 0;
-                flagCarry = rolZpXTemp;
-
-                setSignZero(rolZpXValue);
-                writeMemory(rolZpXAddress, rolZpXValue);
-                break;
-            case ROR_A:
-                boolean rorATemp = testBit(registerA, 0);
-                if(isEightBit(false)) {
-                    registerA = (registerA&65280) | (registerA&255 >>> 1);
-                    registerA += (flagCarry ? 128 : 0);
-                } else {
-                    registerA >>>= 1;
-                    registerA += (flagCarry ? 32768 : 0);
-                }
-                flagCarry = rorATemp;
-
-                setSignZeroDynamic(registerA, false);
-                break;
-            case ROR_ABS:
-                int rorAbsAddress = getAbsAddress(programCounter+1);
-                int rorAbsValue = readMemory(rorAbsAddress);
-
-                boolean rorAbsTemp = testBit(rorAbsValue, 0);
-                rorAbsValue >>>= 1;
-                rorAbsValue += flagCarry ? 128 : 0;
-                flagCarry = rorAbsTemp;
-
-                setSignZero(rorAbsValue);
-                writeMemory(rorAbsAddress, rorAbsValue);
-                break;
-            case ROR_ABS_X:
-                int rorAbsXAddress = getAbsAddress(programCounter+1)+registerX;
-                int rorAbsXValue = readMemory(rorAbsXAddress);
-
-                boolean rorAbsXTemp = testBit(rorAbsXValue, 0);
-                rorAbsXValue >>>= 1;
-                rorAbsXValue += flagCarry ? 128 : 0;
-                flagCarry = rorAbsXTemp;
-
-                setSignZero(rorAbsXValue);
-                writeMemory(rorAbsXAddress, rorAbsXValue);
-                break;
-            case ROR_ZP:
-                int rorZpAddress = readMemory(programCounter+1);
-                int rorZpValue = readMemory(rorZpAddress);
-
-                boolean rorZpTemp = testBit(rorZpValue, 0);
-                rorZpValue >>>= 1;
-                rorZpValue += flagCarry ? 128 : 0;
-                flagCarry = rorZpTemp;
-
-                setSignZero(rorZpValue);
-                writeMemory(rorZpAddress, rorZpValue);
-                break;
-            case ROR_ZP_X:
-                int rorZpXAddress = readMemory(programCounter+1)+registerX & 255;
-                int rorZpXValue = readMemory(rorZpXAddress);
-
-                boolean rorZpXTemp = testBit(rorZpXValue, 0);
-                rorZpXValue >>>= 1;
-                rorZpXValue += flagCarry ? 128 : 0;
-                flagCarry = rorZpXTemp;
-
-                setSignZero(rorZpXValue);
-                writeMemory(rorZpXAddress, rorZpXValue);
                 break;
             case RTI:
-                int pullFlags2 = pullPStack();
+            {
+                popFlags();
+                if(flagEmulate) {flagBreak = false;}
 
-                flagCarry = testBit(pullFlags2, 0);
-                flagZero = testBit(pullFlags2, 1);
-                flagInterrupt = testBit(pullFlags2, 2);
-                flagDecimal = testBit(pullFlags2, 3);
-                flagBreak = testBit(pullFlags2, 4);
-                flagAccumulator = testBit(pullFlags2, 5);
-                flagOverflow = testBit(pullFlags2, 6);
-                flagSign = testBit(pullFlags2, 7);
-
-                setProgramCounter(pullAbsAddress());
-                break;
-            case RTS:
-                setProgramCounter(pullAbsAddress());
-                System.out.printf("Returning from subroutine, setting program counter to %4X\n", programCounter+1);
-                break;
-            case SBC_ABS:
-                performAddition(getAbsAddress(programCounter+1), true);
-                break;
-            case SBC_ABS_X:
-                performAddition(getAbsAddress(programCounter+1)+registerX, true);
-                break;
-            case SBC_ABS_Y:
-                performAddition(getAbsAddress(programCounter+1)+registerY, true);
-                break;
-            case SBC_IMM:
-                performAddition(programCounter+1, true);
-                break;
-            case SBC_IND_X:
-                performAddition(getAbsAddress(readMemory(programCounter+1)+registerX & 255), true);
-                break;
-            case SBC_IND_Y:
-                performAddition(getAbsAddress(readMemory(programCounter+1))+registerY, true);
-                break;
-            case SBC_ZP:
-                performAddition(readMemory(programCounter+1), true);
-                break;
-            case SBC_ZP_X:
-                performAddition(readMemory(programCounter+1)+registerX & 255, true);
-                break;
-            case SEC:
-                flagCarry = true;
-                break;
-            case SED:
-                flagDecimal = true;
-                break;
-            case SEI:
-                flagInterrupt = true;
-                break;
-            case STA_ABS:
-                writeDynamic(getAbsAddress(programCounter + 1), registerA, false);
-                break;
-            case STA_ABS_X:
-                writeDynamic(getAbsAddress(programCounter + 1) + registerX, registerA, false);
-                break;
-            case STA_ABS_Y:
-                writeDynamic(getAbsAddress(programCounter + 1) + registerY, registerA, false);
-                break;
-            case STA_IND_X:
-                writeDynamic(getAbsAddress(readMemory(programCounter + 1) + registerX & 255), registerA, false);
-                break;
-            case STA_IND_Y:
-                writeDynamic(getAbsAddress(readMemory(programCounter + 1)) + registerY, registerA, false);
-                break;
-            case STA_ZP:
-                writeDynamic(readMemory(programCounter + 1), registerA, false);
-                break;
-            case STA_ZP_X:
-                writeDynamic(readMemory(programCounter + 1) + registerX & 255, registerA, false);
+                int programCounterLB = pullPStack();
+                int programCounterHB = pullPStack();
+                setProgramCounter(to16Bit(programCounterHB, programCounterLB));
+            }
+            break;
+            case WAI:
+                cyclesElapsed += 3500;
                 break;
             case STP:
                 setRunning(false);
@@ -1009,570 +157,1110 @@ public class TileEntityCPU extends TileEntity implements IUpdatePlayerListBox, I
                     worldObj.setBlockState(topSide, Blocks.fire.getDefaultState());
                 }
                 break;
-            case STX_ABS:
-                writeDynamic(getAbsAddress(programCounter + 1), registerX, true);
+            case NOP:
                 break;
-            case STX_ZP:
-                writeDynamic(readMemory(programCounter + 1), registerX, true);
+            case XBA:
+                registerA = ((registerA&255) << 8) | (registerA >>> 8);
                 break;
-            case STX_ZP_Y:
-                writeDynamic(getAbsAddress(readMemory(programCounter+1))+registerY, registerX, true);
-                break;
-            case STY_ABS:
-                writeDynamic(getAbsAddress(programCounter+1), registerY, true);
-                break;
-            case STY_ZP:
-                writeDynamic(readMemory(programCounter+1), registerY, true);
-                break;
-            case STY_ZP_X:
-                writeDynamic(readMemory(programCounter+1)+registerX & 255, registerY, true);
-                break;
-            case TAX:
-                registerX = registerA;
-                if(isEightBit(true)) {registerX &= 255;}
-
-                setSignZeroDynamic(registerX, true);
-                break;
-            case TAY:
-                registerY = registerA;
-                if(isEightBit(true)) {registerY &= 255;}
-
-                setSignZeroDynamic(registerY, true);
-                break;
-            case TSX:
-                registerX = pStackPointer;
-                setSignZeroDynamic(registerX, true);
-                break;
-            case TXA:
-                if(isEightBit(false)) {
-                    registerA = (registerA&65280) | (registerX&255);
-                } else {
-                    registerA = registerX;
-                }
-
-                setSignZeroDynamic(registerA, false);
-                break;
-            case TXS:
-                pStackPointer = registerX;
-                pStackPointer &= 255;
-                setSignZero(pStackPointer);
-                break;
-            case TYA:
-                if(isEightBit(false)) {
-                    registerA = (registerA&65280) | (registerY&255);
-                } else {
-                    registerA = registerY;
-                }
-
-                setSignZeroDynamic(registerA, false);
-                break;
-            case RHI:
-                pushRStack(registerI);
-                pushRStack(registerI >>> 8);
-                break;
+            case ORA_IMM:
+                if(!eightBitAccumulator) {setProgramCounter(programCounter + 1);}
+            case ORA_ZP:
+            case ORA_ZP_X:
+            case ORA_ABS:
+            case ORA_ABS_X:
+            case ORA_ABS_Y:
             case ORA_IND:
-                registerA |= readDynamic(getAbsAddress(readMemory(programCounter+1)), false);
-                setSignZeroDynamic(registerA, false);
-                break;
-            case INC_A:
-                if(isEightBit(false)) {
-                    registerA = (registerA&65280) | (++registerA&255);
+            case ORA_IND_X:
+            case ORA_IND_Y:
+            case ORA_STK:
+            case ORA_RSTK:
+            case ORA_STK_Y:
+            case ORA_RSTK_Y:
+                if(eightBitAccumulator) {
+                    registerA |= readMemory(operandAddress);
+                    setSignZero8(registerA);
                 } else {
-                    registerA++;
+                    registerA |= getIndirectAddress(operandAddress, 0, 0);
+                    setSignZero16(registerA);
+                }
+                break;
+            case TSB_ZP:
+            case TSB_ABS:
+                if(eightBitAccumulator) {
+                    int operand = readMemory(operandAddress);
+                    flagZero = (operand & registerA&255) == 0;
+                    writeMemory(operandAddress, operand | (registerA&255));
+                } else {
+                    int operand = getIndirectAddress(operandAddress, 0, 0);
+                    flagZero = (operand & registerA) == 0;
+                    operand |= registerA;
+                    writeMemory(operandAddress, operand);
+                    writeMemory(operandAddress+1, operand >>> 8);
+                }
+                break;
+            case TRB_ZP:
+            case TRB_ABS:
+                if(eightBitAccumulator) {
+                    int operand = readMemory(operandAddress);
+                    flagZero = (operand & registerA&255) == 0;
+                    writeMemory(operandAddress, operand & ((~registerA)&255));
+                } else {
+                    int operand = getIndirectAddress(operandAddress, 0, 0);
+                    flagZero = (operand & registerA) == 0;
+                    operand &= (~registerA) & 65535;
+                    writeMemory(operandAddress, operand);
+                    writeMemory(operandAddress+1, operand >>> 8);
+                }
+                break;
+            case ADC_IMM:
+                if(!eightBitAccumulator) {setProgramCounter(programCounter + 1);}
+            case ADC_ZP:
+            case ADC_ZP_X:
+            case ADC_ABS:
+            case ADC_ABS_X:
+            case ADC_ABS_Y:
+            case ADC_IND:
+            case ADC_IND_X:
+            case ADC_IND_Y:
+            case ADC_STK:
+            case ADC_RSTK:
+            case ADC_STK_Y:
+            case ADC_RSTK_Y:
+                if(eightBitAccumulator) {
+                    registerA = (registerA&0xFF00) | performAddition(registerA, operandAddress, false, true, false);
+                } else {
+                    registerA = performAddition(registerA, operandAddress, false, false, false);
+                }
+                break;
+            case SBC_IMM:
+                if(!eightBitAccumulator) {setProgramCounter(programCounter + 1);}
+            case SBC_ZP:
+            case SBC_ZP_X:
+            case SBC_ABS:
+            case SBC_ABS_X:
+            case SBC_ABS_Y:
+            case SBC_IND:
+            case SBC_IND_X:
+            case SBC_IND_Y:
+            case SBC_STK:
+            case SBC_RSTK:
+            case SBC_STK_Y:
+            case SBC_RSTK_Y:
+                if(eightBitAccumulator) {
+                    registerA = (registerA&0xFF00) | performAddition(registerA, operandAddress, true, true, false);
+                } else {
+                    registerA = performAddition(registerA, operandAddress, true, false, false);
+                }
+                break;
+            case ASL_ZP:
+            case ASL_ZP_X:
+            case ASL_ABS:
+            case ASL_ABS_X:
+            {
+                if(eightBitAccumulator) {
+                    int operand = readMemory(operandAddress);
+                    flagCarry = (operand & 128) != 0;
+
+                    operand <<= 1;
+                    setSignZero8(operand);
+
+                    writeMemory(operandAddress, operand);
+                } else {
+                    int operand = getIndirectAddress(operandAddress, 0, 0);
+                    flagCarry = (operand & 32768) != 0;
+
+                    operand <<= 1;
+                    setSignZero16(operand);
+
+                    writeMemory(operandAddress, operand);
+                    writeMemory(operandAddress+1, operand >>> 8);
+                }
+            }
+            break;
+            case ASL_A:
+                if(eightBitAccumulator) {
+                    int accumulatorLB = registerA & 255;
+                    flagCarry = (accumulatorLB & 128) != 0;
+
+                    accumulatorLB <<= 1;
+                    setSignZero8(accumulatorLB);
+
+                    registerA = (registerA & 0xFF00) | (accumulatorLB & 255);
+                } else {
+                    flagCarry = (registerA & 32768) != 0;
+
+                    registerA <<= 1;
+                    setSignZero16(registerA);
+
                     registerA &= 65535;
                 }
-                setSignZeroDynamic(registerA, false);
                 break;
-            case RHX:
-                pushRStack(registerX);
-                if(!isEightBit(true)) {pushRStack(registerX >>> 8);}
-                break;
-            case RLI:
-                int rliLowByte = pullRStack();
-                int rliHighByte = pullRStack();
-                registerI = (rliHighByte << 8) | rliLowByte;
-                flagSign = registerI > 32767;
-                flagZero = registerI == 0;
-                break;
+            case AND_IMM:
+                if(!eightBitAccumulator) {setProgramCounter(programCounter + 1);}
+            case AND_ZP:
+            case AND_ZP_X:
+            case AND_ABS:
+            case AND_ABS_X:
+            case AND_ABS_Y:
             case AND_IND:
-                registerA &= readDynamic(getAbsAddress(readMemory(programCounter + 1)), false);
-                setSignZeroDynamic(registerA, false);
-                break;
-            case BIT_ZP_X:
-                int bitZpXValue = readDynamic(readMemory(programCounter + 1) + registerX & 255, false);
-
-                flagZero = (registerA & bitZpXValue) == 0;
-                if(isEightBit(false)) {
-                    flagSign = bitZpXValue > 127;
-                    flagOverflow = testBit(bitZpXValue, 6);
+            case AND_IND_X:
+            case AND_IND_Y:
+            case AND_STK:
+            case AND_RSTK:
+            case AND_STK_Y:
+            case AND_RSTK_Y:
+                if(eightBitAccumulator) {
+                    registerA &= 0xFF00 | readMemory(operandAddress);
+                    setSignZero8(registerA);
                 } else {
-                    flagSign = bitZpXValue > 32767;
-                    flagOverflow = testBit(bitZpXValue, 14);
+                    registerA &= getIndirectAddress(operandAddress, 0, 0);
+                    setSignZero16(registerA);
+                }
+                break;
+            case ROL_ZP:
+            case ROL_ZP_X:
+            case ROL_ABS:
+            case ROL_ABS_X:
+                if(eightBitAccumulator) {
+                    int operand = readMemory(operandAddress);
+
+                    operand <<= 1;
+                    operand += flagCarry ? 1 : 0;
+                    flagCarry = (operand & 256) != 0;
+
+                    setSignZero8(operand);
+                    writeMemory(operandAddress, operand);
+                } else {
+                    int operand = getIndirectAddress(operandAddress, 0, 0);
+
+                    operand <<= 1;
+                    operand += flagCarry ? 1 : 0;
+                    flagCarry = (operand & 65536) != 0;
+
+                    setSignZero16(operand);
+                    writeMemory(operandAddress, operand);
+                    writeMemory(operandAddress+1, operand >>> 8);
+                }
+                break;
+            case ROL_A:
+                if(eightBitAccumulator) {
+                    int accumulatorLB = registerA & 255;
+
+                    accumulatorLB <<= 1;
+                    accumulatorLB += flagCarry ? 1 : 0;
+                    flagCarry = (accumulatorLB & 256) != 0;
+
+                    setSignZero8(accumulatorLB);
+                    registerA = (registerA&0xFF00) | (accumulatorLB&255);
+                } else {
+                    registerA <<= 1;
+                    registerA += flagCarry ? 1 : 0;
+                    flagCarry = (registerA & 65536) != 0;
+
+                    setSignZero16(registerA);
+                    registerA &= 65535;
+                }
+                break;
+            case ROR_ZP:
+            case ROR_ZP_X:
+            case ROR_ABS:
+            case ROR_ABS_X:
+                if(eightBitAccumulator) {
+                    int operand = readMemory(operandAddress);
+
+                    boolean tempCarry = (operand & 1) != 0;
+                    operand >>>= 1;
+                    operand += flagCarry ? 128 : 0;
+                    flagCarry = tempCarry;
+
+                    setSignZero8(operand);
+                    writeMemory(operandAddress, operand);
+                } else {
+                    int operand = getIndirectAddress(operandAddress, 0, 0);
+
+                    boolean tempCarry = (operand & 1) != 0;
+                    operand >>>= 1;
+                    operand += flagCarry ? 32768 : 0;
+                    flagCarry = tempCarry;
+
+                    setSignZero16(operand);
+                    writeMemory(operandAddress, operand);
+                    writeMemory(operandAddress+1, operand >>> 8);
+                }
+                break;
+            case ROR_A:
+                if(eightBitAccumulator) {
+                    int accumulatorLB = registerA & 255;
+
+                    boolean tempCarry = (accumulatorLB & 1) != 0;
+                    accumulatorLB >>>= 1;
+                    accumulatorLB += flagCarry ? 128 : 0;
+                    flagCarry = tempCarry;
+
+                    setSignZero8(accumulatorLB);
+                    registerA = (registerA&0xFF00) | accumulatorLB;
+                } else {
+                    boolean tempCarry = (registerA & 1) != 0;
+                    registerA >>>= 1;
+                    registerA += flagCarry ? 32768 : 0;
+                    flagCarry = tempCarry;
+
+                    setSignZero16(registerA);
+                }
+                break;
+            case LSR_ZP:
+            case LSR_ZP_X:
+            case LSR_ABS:
+            case LSR_ABS_X:
+                if(eightBitAccumulator) {
+                    int operand = readMemory(operandAddress);
+
+                    flagCarry = (operand & 1) != 0;
+                    operand >>>= 1;
+                    setSignZero8(operand);
+
+                    writeMemory(operandAddress, operand);
+                } else {
+                    int operand = getIndirectAddress(operandAddress, 0, 0);
+
+                    flagCarry = (operand & 1) != 0;
+                    operand >>>= 1;
+                    setSignZero16(operand);
+
+                    writeMemory(operandAddress, operand);
+                    writeMemory(operandAddress+1, operand >>> 8);
+                }
+                break;
+            case LSR_A:
+                if(eightBitAccumulator) {
+                    flagCarry = (registerA & 1) != 0;
+                    registerA = (registerA&0xFF00) | ((registerA&255) >>> 1);
+                } else {
+                    flagCarry = (registerA & 1) != 0;
+                    registerA >>>= 1;
+                }
+                break;
+            case EOR_IMM:
+                if(!eightBitAccumulator) {setProgramCounter(programCounter + 1);}
+            case EOR_ZP:
+            case EOR_ZP_X:
+            case EOR_ABS:
+            case EOR_ABS_X:
+            case EOR_ABS_Y:
+            case EOR_IND:
+            case EOR_IND_X:
+            case EOR_IND_Y:
+            case EOR_STK:
+            case EOR_RSTK:
+            case EOR_STK_Y:
+            case EOR_RSTK_Y:
+                if(eightBitAccumulator) {
+                    registerA = (registerX&0xFF00) | ((registerA ^ readMemory(operandAddress)) & 255);
+                    setSignZero8(registerA);
+                } else {
+                    registerA ^= getIndirectAddress(operandAddress, 0, 0);
+                    setSignZero16(registerA);
+                    registerA &= 65535;
+                }
+                break;
+            case BIT_ZP:
+            case BIT_ABS:
+            case BIT_ZP_X:
+            case BIT_ABS_X:
+                if(eightBitAccumulator) {
+                    int operand = readMemory(operandAddress);
+
+                    flagZero = ((registerA&255) & operand) == 0;
+                    flagSign = (operand & 128) != 0;
+                    flagOverflow = (operand & 64) != 0;
+                } else {
+                    int operand = getIndirectAddress(operandAddress, 0, 0);
+
+                    flagZero = (registerA & operand) == 0;
+                    flagSign = (operand & 32768) != 0;
+                    flagOverflow = (operand & 16384) != 0;
+                }
+                break;
+            case BIT_IMM:
+                if(eightBitAccumulator) {
+                    flagZero = ((registerA&255) & readMemory(operandAddress)) == 0;
+                } else {
+                    flagZero = (registerA & getIndirectAddress(operandAddress, 0, 0)) == 0;
+
+                    setProgramCounter(programCounter + 1);
+                }
+                break;
+            case INC_ZP:
+            case INC_ABS:
+            case INC_ZP_X:
+            case INC_ABS_X:
+                if(eightBitAccumulator) {
+                    int operand = readMemory(operandAddress);
+
+                    ++operand;
+                    operand &= 255;
+
+                    flagSign = (operand & 128) != 0;
+                    flagZero = operand == 0;
+
+                    writeMemory(operandAddress, operand);
+                } else {
+                    int operand = getIndirectAddress(operandAddress, 0, 0);
+
+                    ++operand;
+                    operand &= 65535;
+
+                    flagSign = (operand & 32768) != 0;
+                    flagZero = operand == 0;
+
+                    writeMemory(operandAddress, operand);
+                    writeMemory(operandAddress+1, operand >>> 8);
+                }
+                break;
+            case INC_A:
+                if(eightBitAccumulator) {
+                    registerA = (registerA & 0xFF00) | (((registerA&255)+1)&255);
+                    setSignZero8(registerA);
+                } else {
+                    ++registerA;
+                    registerA &= 65535;
+                    setSignZero16(registerA);
+                }
+                break;
+            case INX:
+                if(eightBitIndexRegs) {
+                    ++registerX;
+                    registerX &= 255;
+                    setSignZero8(registerX);
+                } else {
+                    ++registerX;
+                    registerX &= 65535;
+                    setSignZero16(registerX);
+                }
+                break;
+            case INY:
+                if(eightBitIndexRegs) {
+                    ++registerY;
+                    registerY &= 255;
+                    setSignZero8(registerY);
+                } else {
+                    ++registerY;
+                    registerY &= 65535;
+                    setSignZero16(registerY);
+                }
+                break;
+            case DEC_ZP:
+            case DEC_ZP_X:
+            case DEC_ABS:
+            case DEC_ABS_X:
+                if(eightBitAccumulator) {
+                    int operand = readMemory(operandAddress);
+
+                    --operand;
+                    operand &= 255;
+
+                    flagSign = (operand & 128) != 0;
+                    flagZero = operand == 0;
+
+                    writeMemory(operandAddress, operand);
+                } else {
+                    int operand = getIndirectAddress(operandAddress, 0, 0);
+
+                    --operand;
+                    operand &= 65535;
+
+                    flagSign = (operand & 32768) != 0;
+                    flagZero = operand == 0;
+
+                    writeMemory(operandAddress, operand);
+                    writeMemory(operandAddress+1, operand >>> 8);
                 }
                 break;
             case DEC_A:
-                if(isEightBit(false)) {
-                    registerA = (registerA&65280) | (--registerA&255);
+                if(eightBitAccumulator) {
+                    registerA = (registerA & 0xFF00) | (((registerA&255)-1)&255);
+                    setSignZero8(registerA);
                 } else {
-                    registerA--;
+                    --registerA;
                     registerA &= 65535;
+                    setSignZero16(registerA);
                 }
-                setSignZeroDynamic(registerA, false);
+                break;
+            case DEX:
+                if(eightBitIndexRegs) {
+                    --registerX;
+                    registerX &= 255;
+                    setSignZero8(registerX);
+                } else {
+                    --registerX;
+                    registerX &= 65535;
+                    setSignZero16(registerX);
+                }
+                break;
+            case DEY:
+                if(eightBitIndexRegs) {
+                    --registerY;
+                    registerY &= 255;
+                    setSignZero8(registerY);
+                } else {
+                    --registerY;
+                    registerY &= 65535;
+                    setSignZero16(registerY);
+                }
+                break;
+            case PHP:
+                pushFlags(false);
+                break;
+            case PLP:
+                popFlags();
+                break;
+            case PHA:
+                if(eightBitAccumulator) {
+                    pushPStack(registerA);
+                } else {
+                    pushPStack(registerA >>> 8);
+                    pushPStack(registerA);
+                }
+                break;
+            case PLA:
+                if(eightBitAccumulator) {
+                    registerA = (registerX&0xFF00) | pullPStack();
+                    setSignZero8(registerA);
+                } else {
+                    int regALB = pullPStack();
+                    int regAHB = pullPStack();
+
+                    registerA = to16Bit(regAHB, regALB);
+                    setSignZero16(registerA);
+                }
+                break;
+            case PHY:
+                if(eightBitIndexRegs) {
+                    pushPStack(registerY);
+                } else {
+                    pushPStack(registerY >>> 8);
+                    pushPStack(registerY);
+                }
+                break;
+            case PLY:
+                if(eightBitIndexRegs) {
+                    registerY = pullPStack();
+                    setSignZero8(registerY);
+                } else {
+                    int regYLB = pullPStack();
+                    int regYHB = pullPStack();
+
+                    registerY = to16Bit(regYHB, regYLB);
+                    setSignZero16(registerY);
+                }
+                break;
+            case PHX:
+                if(eightBitIndexRegs) {
+                    pushPStack(registerX);
+                } else {
+                    pushPStack(registerX >>> 8);
+                    pushPStack(registerX);
+                }
+                break;
+            case PLX:
+                if(eightBitIndexRegs) {
+                    registerX = pullPStack();
+                    setSignZero8(registerX);
+                } else {
+                    int regXLB = pullPStack();
+                    int regXHB = pullPStack();
+
+                    registerX = to16Bit(regXHB, regXLB);
+                    setSignZero16(registerX);
+                }
+                break;
+            case PHD:
+                pushPStack(registerD >>> 8);
+                pushPStack(registerD);
+                break;
+            case PLD:
+            {
+                int regDLB = pullPStack();
+                int regDHB = pullPStack();
+
+                registerD = to16Bit(regDHB, regDLB);
+                setSignZero16(registerD);
+            }
+            break;
+            case RHI:
+                pushRStack(registerI >>> 8);
+                pushRStack(registerI);
+                break;
+            case RLI:
+            {
+                int regILB = pullRStack();
+                int regIHB = pullRStack();
+
+                registerI = to16Bit(regIHB, regILB);
+                setSignZero16(registerI);
+            }
+            break;
+            case RHX:
+                if(eightBitIndexRegs) {
+                    pushRStack(registerX);
+                } else {
+                    pushRStack(registerX >>> 8);
+                    pushRStack(registerX);
+                }
                 break;
             case RLX:
-                registerX = pullRStack();
-                if(!isEightBit(true)) {registerX |= (pullRStack() << 8);}
-                setSignZeroDynamic(registerX, true);
-                break;
-            case BIT_ABS_X:
-                int bitAbsXValue = readDynamic(getAbsAddress(programCounter + 1)+registerX, false);
-
-                flagZero = (registerA & bitAbsXValue) == 0;
-                if(isEightBit(false)) {
-                    flagSign = bitAbsXValue > 127;
-                    flagOverflow = testBit(bitAbsXValue, 6);
+                if(eightBitIndexRegs) {
+                    registerX = pullRStack();
+                    setSignZero8(registerX);
                 } else {
-                    flagSign = bitAbsXValue > 32767;
-                    flagOverflow = testBit(bitAbsXValue, 14);
+                    int regXLB = pullRStack();
+                    int regXHB = pullRStack();
+
+                    registerX = to16Bit(regXHB, regXLB);
+                    setSignZero16(registerX);
                 }
                 break;
             case RHA:
-                pushRStack(registerA);
-                if(!isEightBit(false)) {pushRStack(registerA >>> 8);}
+                if(eightBitAccumulator) {
+                    pushRStack(registerA);
+                } else {
+                    pushRStack(registerA >>> 8);
+                    pushRStack(registerA);
+                }
                 break;
-            case EOR_IND:
-                registerA ^= readDynamic(getAbsAddress(readMemory(programCounter+1)), false);
-                setSignZeroDynamic(registerA, false);
-                break;
-            case PHY:
-                pushPStack(registerY);
-                if(!isEightBit(true)) {pushPStack(registerY >>> 8);}
+            case RLA:
+                if(eightBitAccumulator) {
+                    registerA = (registerA&0xFF00) | pullRStack();
+                    setSignZero8(registerA);
+                } else {
+                    int regALB = pullRStack();
+                    int regAHB = pullRStack();
+
+                    registerA = to16Bit(regAHB, regALB);
+                    setSignZero16(registerA);
+                }
                 break;
             case RHY:
-                pushRStack(registerY);
-                if(!isEightBit(true)) {pushRStack(registerY >>> 8);}
+                if(eightBitIndexRegs) {
+                    pushRStack(registerY);
+                } else {
+                    pushRStack(registerY >>> 8);
+                    pushRStack(registerY);
+                }
+                break;
+            case RLY:
+                if(eightBitIndexRegs) {
+                    registerY = pullRStack();
+                    setSignZero8(registerY);
+                } else {
+                    int regYLB = pullRStack();
+                    int regYHB = pullRStack();
+
+                    registerY = to16Bit(regYHB, regYLB);
+                    setSignZero16(registerY);
+                }
+                break;
+            case LDA_IMM:
+                if(!eightBitAccumulator) {setProgramCounter(programCounter + 1);}
+            case LDA_ABS:
+            case LDA_ABS_X:
+            case LDA_ABS_Y:
+            case LDA_ZP:
+            case LDA_ZP_X:
+            case LDA_IND:
+            case LDA_IND_X:
+            case LDA_IND_Y:
+            case LDA_STK:
+            case LDA_RSTK:
+            case LDA_STK_Y:
+            case LDA_RSTK_Y:
+                if(eightBitAccumulator) {
+                    registerA = (registerX&0xFF00) | readMemory(operandAddress);
+                    setSignZero8(registerA);
+                } else {
+                    registerA = getIndirectAddress(operandAddress, 0, 0);
+                    setSignZero16(registerA);
+                }
+                break;
+            case LDX_IMM:
+                if(!eightBitIndexRegs) {setProgramCounter(programCounter + 1);}
+            case LDX_ZP:
+            case LDX_ZP_Y:
+            case LDX_ABS:
+            case LDX_ABS_Y:
+                if(eightBitIndexRegs) {
+                    registerX = readMemory(operandAddress);
+                    setSignZero8(registerX);
+                } else {
+                    registerX = getIndirectAddress(operandAddress, 0, 0);
+                    setSignZero16(registerX);
+                }
+                break;
+            case LDY_IMM:
+                if(!eightBitIndexRegs) {setProgramCounter(programCounter + 1);}
+            case LDY_ZP:
+            case LDY_ZP_X:
+            case LDY_ABS:
+            case LDY_ABS_X:
+                if(eightBitIndexRegs) {
+                    registerY = readMemory(operandAddress);
+                    setSignZero8(registerY);
+                } else {
+                    registerY = getIndirectAddress(operandAddress, 0, 0);
+                    setSignZero16(registerY);
+                }
+                break;
+            case STA_ZP:
+            case STA_ZP_X:
+            case STA_ABS:
+            case STA_ABS_X:
+            case STA_ABS_Y:
+            case STA_IND:
+            case STA_IND_X:
+            case STA_IND_Y:
+            case STA_STK:
+            case STA_RSTK:
+            case STA_STK_Y:
+            case STA_RSTK_Y:
+                if(eightBitAccumulator) {
+                    writeMemory(operandAddress, registerA);
+                } else {
+                    writeMemory(operandAddress, registerA);
+                    writeMemory(operandAddress+1, registerA >>> 8);
+                }
+                break;
+            case STX_ZP:
+            case STX_ZP_Y:
+            case STX_ABS:
+                if(eightBitIndexRegs) {
+                    writeMemory(operandAddress, registerX);
+                } else {
+                    writeMemory(operandAddress, registerX);
+                    writeMemory(operandAddress+1, registerX >>> 8);
+                }
+                break;
+            case STY_ZP:
+            case STY_ZP_X:
+            case STY_ABS:
+                if(eightBitIndexRegs) {
+                    writeMemory(operandAddress, registerY);
+                } else {
+                    writeMemory(operandAddress, registerY);
+                    writeMemory(operandAddress+1, registerY >>> 8);
+                }
+                break;
+            case STZ_ZP:
+            case STZ_ZP_X:
+            case STZ_ABS:
+            case STZ_ABS_X:
+                if(eightBitAccumulator) {
+                    writeMemory(operandAddress, 0);
+                } else {
+                    writeMemory(operandAddress, 0);
+                    writeMemory(operandAddress+1, 0);
+                }
                 break;
             case TXI:
                 registerI = registerX;
-                flagSign = registerI > 32767;
-                flagZero = registerI == 0;
+                setSignZero16(registerI);
                 break;
-            case STZ_ZP:
-                int stzZpAddress = readMemory(programCounter+1);
-                writeMemory(stzZpAddress, 0);
-                if(!flagEmulate) {writeMemory(stzZpAddress+1, 0);}
-                break;
-            case RLA:
-                registerA = pullRStack();
-                if(!isEightBit(false)) {registerA |= (pullRStack() << 8);}
-                setSignZeroDynamic(registerA, false);
-                break;
-            case ADC_IND:
-                performAddition(getAbsAddress(readMemory(programCounter+1)), false);
-                break;
-            case STZ_ZP_X:
-                int stzZpXAddress = readMemory(programCounter+1)+registerX & 255;
-                writeMemory(stzZpXAddress, 0);
-                if(!flagEmulate) {writeMemory(stzZpXAddress+1, 0);}
-                break;
-            case PLY:
-                registerY = pullPStack();
-                if(!isEightBit(true)) {registerY |= (pullPStack() << 8);}
-                setSignZeroDynamic(registerY, true);
-                break;
-            case RLY:
-                registerY = pullRStack();
-                if(!isEightBit(true)) {registerY |= (pullRStack() << 8);}
-                setSignZeroDynamic(registerY, true);
-                break;
-            case JMP_ABS_X:
-                int jmpAbsXAddress = getAbsAddress(getAbsAddress(programCounter+1)+registerX);
-                setProgramCounter(jmpAbsXAddress);
-                System.out.printf("Jumping to address %4X\n", jmpAbsXAddress);
-                break;
-            case BRA_REL:
-                byte relValue = (byte) readMemory(programCounter+1);
-                setProgramCounter(programCounter + relValue);
-                break;
-            case BIT_IMM:
-                flagZero = (registerA & readDynamic(programCounter + 1, false)) == 0;
-                if(!isEightBit(false)) {setProgramCounter(programCounter+1);}
-                break;
-            case TXR:
-                rStackPointer = registerX;
-                rStackPointer &= 255;
-                setSignZero(rStackPointer);
-                break;
-            case STA_IND:
-                writeDynamic(getAbsAddress(readMemory(programCounter + 1)), registerA, false);
-                break;
-            case TXY:
-                registerY = registerX;
-                setSignZeroDynamic(registerY, true);
-                break;
-            case STZ_ABS:
-                int stzAbsAddress = getAbsAddress(programCounter+1);
-                writeMemory(stzAbsAddress, 0);
-                if(!flagEmulate) {writeMemory(stzAbsAddress+1, 0);}
-                break;
-            case STZ_ABS_X:
-                int stzAbsXAddress = getAbsAddress(programCounter+1)+registerX;
-                writeMemory(stzAbsXAddress, 0);
-                if(!flagEmulate) {writeMemory(stzAbsXAddress+1, 0);}
-                break;
-            case TRX:
-                registerX = rStackPointer;
-                setSignZeroDynamic(registerX, true);
+            case TIX:
+                if(eightBitIndexRegs) {
+                    registerX = registerI & 255;
+                    setSignZero8(registerX);
+                } else {
+                    registerX = registerI;
+                    setSignZero16(registerX);
+                }
                 break;
             case TDA:
-                if(isEightBit(false)) {
-                    registerA = (registerA&65280) | (registerD&255);
+                if(eightBitAccumulator) {
+                    registerA = (registerX&0xFF00) | (registerD&255);
+                    setSignZero8(registerA);
                 } else {
                     registerA = registerD;
+                    setSignZero16(registerA);
                 }
-
-                setSignZeroDynamic(registerA, false);
-                break;
-            case LDA_IND:
-                registerA = readDynamic(getAbsAddress(readMemory(programCounter + 1)), false);
-                setSignZeroDynamic(registerA, false);
-                break;
-            case TYX:
-                registerX = registerY;
-                setSignZeroDynamic(registerX, true);
                 break;
             case TAD:
                 registerD = registerA;
-                flagSign = registerD > 32767;
-                flagZero = registerD == 0;
+                setSignZero16(registerD);
                 break;
-            case PLD:
-                int pldLowByte = pullPStack();
-                int pldHighByte = pullPStack();
-                registerD = (pldHighByte << 8) | pldLowByte;
-                flagSign = registerD > 32767;
-                flagZero = registerD == 0;
+            case TXA:
+                if(eightBitAccumulator) {
+                    registerA = (registerA&0xFF00) | (registerX&255);
+                    setSignZero8(registerA);
+                } else {
+                    registerA = registerX;
+                    setSignZero16(registerA);
+                }
                 break;
+            case TYA:
+                if(eightBitAccumulator) {
+                    registerA = (registerA&0xFF00) | (registerY&255);
+                    setSignZero8(registerA);
+                } else {
+                    registerA = registerY;
+                    setSignZero16(registerA);
+                }
+                break;
+            case TAY:
+                if(eightBitAccumulator) {
+                    registerY = registerA&255;
+                    if(eightBitIndexRegs) {
+                        setSignZero8(registerY);
+                    } else {
+                        setSignZero16(registerY);
+                    }
+                } else {
+                    if(eightBitIndexRegs) {
+                        registerY = registerA&255;
+                        setSignZero8(registerY);
+                    } else {
+                        registerY = registerA;
+                        setSignZero16(registerY);
+                    }
+                }
+                break;
+            case TAX:
+                if(eightBitAccumulator) {
+                    registerX = registerA&255;
+                    if(eightBitIndexRegs) {
+                        setSignZero8(registerX);
+                    } else {
+                        setSignZero16(registerX);
+                    }
+                } else {
+                    if(eightBitIndexRegs) {
+                        registerX = registerA&255;
+                        setSignZero8(registerX);
+                    } else {
+                        registerX = registerA;
+                        setSignZero16(registerX);
+                    }
+                }
+                break;
+            case TXY:
+                registerY = registerX;
+                if(eightBitIndexRegs) {
+                    setSignZero8(registerY);
+                } else {
+                    setSignZero16(registerY);
+                }
+                break;
+            case TYX:
+                registerX = registerY;
+                if(eightBitIndexRegs) {
+                    setSignZero8(registerX);
+                } else {
+                    setSignZero16(registerX);
+                }
+                break;
+            case TXS:
+                pStackPointer = registerX&255;
+                setSignZero8(pStackPointer);
+                break;
+            case TSX:
+                if(eightBitIndexRegs) {
+                    registerX = pStackPointer;
+                    setSignZero8(registerX);
+                } else {
+                    registerX = pStackPointer + 256;
+                    setSignZero16(registerX);
+                }
+                break;
+            case TXR:
+                rStackPointer = registerX&255;
+                setSignZero8(rStackPointer);
+                break;
+            case TRX:
+                if(eightBitIndexRegs) {
+                    registerX = rStackPointer;
+                    setSignZero8(registerX);
+                } else {
+                    registerX = rStackPointer + 512;
+                    setSignZero16(registerX);
+                }
+                break;
+            case BPL_REL:
+                if(!flagSign) {
+                    int newProgramCounter = programCounter + ((byte) readMemory(operandAddress));
+
+                    if((programCounter&0xFF00) != (newProgramCounter&0xFF00)) {++cyclesElapsed;}
+                    setProgramCounter(newProgramCounter);
+                    ++cyclesElapsed;
+                }
+                break;
+            case BMI_REL:
+                if(flagSign) {
+                    int newProgramCounter = programCounter + ((byte) readMemory(operandAddress));
+
+                    if((programCounter&0xFF00) != (newProgramCounter&0xFF00)) {++cyclesElapsed;}
+                    setProgramCounter(newProgramCounter);
+                    ++cyclesElapsed;
+                }
+                break;
+            case BVC_REL:
+                if(!flagOverflow) {
+                    int newProgramCounter = programCounter + ((byte) readMemory(operandAddress));
+
+                    if((programCounter&0xFF00) != (newProgramCounter&0xFF00)) {++cyclesElapsed;}
+                    setProgramCounter(newProgramCounter);
+                    ++cyclesElapsed;
+                }
+                break;
+            case BVS_REL:
+                if(flagOverflow) {
+                    int newProgramCounter = programCounter + ((byte) readMemory(operandAddress));
+
+                    if((programCounter&0xFF00) != (newProgramCounter&0xFF00)) {++cyclesElapsed;}
+                    setProgramCounter(newProgramCounter);
+                    ++cyclesElapsed;
+                }
+                break;
+            case BCC_REL:
+                if(!flagCarry) {
+                    int newProgramCounter = programCounter + ((byte) readMemory(operandAddress));
+
+                    if((programCounter&0xFF00) != (newProgramCounter&0xFF00)) {++cyclesElapsed;}
+                    setProgramCounter(newProgramCounter);
+                    ++cyclesElapsed;
+                }
+                break;
+            case BCS_REL:
+                if(flagCarry) {
+                    int newProgramCounter = programCounter + ((byte) readMemory(operandAddress));
+
+                    if((programCounter&0xFF00) != (newProgramCounter&0xFF00)) {++cyclesElapsed;}
+                    setProgramCounter(newProgramCounter);
+                    ++cyclesElapsed;
+                }
+                break;
+            case BNE_REL:
+                if(!flagZero) {
+                    int newProgramCounter = programCounter + ((byte) readMemory(operandAddress));
+
+                    if((programCounter&0xFF00) != (newProgramCounter&0xFF00)) {++cyclesElapsed;}
+                    setProgramCounter(newProgramCounter);
+                    ++cyclesElapsed;
+                }
+                break;
+            case BEQ_REL:
+                if(flagZero) {
+                    int newProgramCounter = programCounter + ((byte) readMemory(operandAddress));
+
+                    if((programCounter&0xFF00) != (newProgramCounter&0xFF00)) {++cyclesElapsed;}
+                    setProgramCounter(newProgramCounter);
+                    ++cyclesElapsed;
+                }
+                break;
+            case BRA_REL:
+            {
+                int newProgramCounter = programCounter + ((byte) readMemory(operandAddress));
+
+                if((programCounter&0xFF00) != (newProgramCounter&0xFF00)) {++cyclesElapsed;}
+                setProgramCounter(newProgramCounter);
+                ++cyclesElapsed;
+            }
+            break;
+            case CMP_IMM:
+                if(!eightBitAccumulator) {setProgramCounter(programCounter + 1);}
+            case CMP_ZP:
+            case CMP_ZP_X:
+            case CMP_ABS:
+            case CMP_ABS_X:
+            case CMP_ABS_Y:
             case CMP_IND:
-                performComparation(getAbsAddress(readMemory(programCounter+1)), registerA, false);
+            case CMP_IND_X:
+            case CMP_IND_Y:
+            case CMP_STK:
+            case CMP_RSTK:
+            case CMP_STK_Y:
+            case CMP_RSTK_Y:
+                if(eightBitAccumulator) {
+                    performAddition(registerA, operandAddress, false, true, true);
+                } else {
+                    performAddition(registerA, operandAddress, false, false, true);
+                }
                 break;
-            case PHX:
-                pushPStack(registerX);
-                if(!isEightBit(true)) {pushPStack(registerX >>> 8);}
+            case CPX_IMM:
+                if(!eightBitIndexRegs) {setProgramCounter(programCounter + 1);}
+            case CPX_ZP:
+            case CPX_ABS:
+                if(eightBitIndexRegs) {
+                    performAddition(registerX, operandAddress, false, true, true);
+                } else {
+                    performAddition(registerX, operandAddress, false, false, true);
+                }
                 break;
-            case TIX:
-                registerX = registerI;
-                if(isEightBit(true)) {registerX &= 255;}
+            case CPY_IMM:
+                if(!eightBitIndexRegs) {setProgramCounter(programCounter + 1);}
+            case CPY_ZP:
+            case CPY_ABS:
+                if(eightBitIndexRegs) {
+                    performAddition(registerY, operandAddress, false, true, true);
+                } else {
+                    performAddition(registerY, operandAddress, false, false, true);
+                }
+                break;
+            case JSR_ABS:
+            case JSR_ABS_X:
+                pushPStack(programCounter+2 >>> 8);
+                pushPStack(programCounter+2);
 
-                setSignZeroDynamic(registerX, true);
+                setProgramCounter(operandAddress);
                 break;
-            case PHD:
-                pushPStack(registerD);
-                pushPStack(registerD >>> 8);
-                break;
-            case SBC_IND:
-                performAddition(getAbsAddress(readMemory(programCounter+1)), true);
-                break;
-            case PLX:
-                registerX = pullPStack();
-                if(!isEightBit(true)) {registerX |= ((pullPStack() << 8)*255);}
-                setSignZeroDynamic(registerX, true);
-                break;
-            case TSB_ZP:
-                int tsbZpAddress = readMemory(programCounter+1);
-                int tsbZpValue = readDynamic(tsbZpAddress, false);
-                int tsbZpCompValue = isEightBit(false) ? registerA&255 : registerA;
+            case RTS:
+            {
+                int programCounterLB = pullPStack();
+                int programCounterHB = pullPStack();
 
-                flagZero = (tsbZpCompValue & tsbZpValue) == 0;
-                tsbZpValue |= tsbZpCompValue;
-
-                writeDynamic(tsbZpAddress, tsbZpValue, false);
+                setProgramCounter(to16Bit(programCounterHB, programCounterLB)+1);
+            }
+            break;
+            case JMP_ABS:
+            case JMP_ABS_X:
+            case JMP_IND:
+                setProgramCounter(operandAddress);
                 break;
-            case TSB_ABS:
-                int tsbAbsAddress = getAbsAddress(programCounter + 1);
-                int tsbAbsValue = readDynamic(tsbAbsAddress, false);
-                int tsbAbsCompValue = isEightBit(false) ? registerA&255 : registerA;
-
-                flagZero = (tsbAbsCompValue & tsbAbsValue) == 0;
-                tsbAbsValue |= tsbAbsCompValue;
-
-                writeDynamic(tsbAbsAddress, tsbAbsValue, false);
+            case CLC:
+                flagCarry = false;
                 break;
-            case TRB_ZP:
-                int trbZpAddress = readMemory(programCounter + 1);
-                int trbZpValue = readDynamic(trbZpAddress, false);
-                int trbZpCompValue = isEightBit(false) ? registerA&255 : registerA;
+            case SEC:
+                flagCarry = true;
+                break;
+            case CLI:
+                flagInterrupt = false;
+                break;
+            case SEI:
+                flagInterrupt = true;
+                break;
+            case CLV:
+                flagOverflow = false;
+                break;
+            case SED:
+                flagDecimal = true;
+                break;
+            case CLD:
+                flagDecimal = false;
+                break;
+            case PEA_ABS:
+            {
+                int operand = getIndirectAddress(operandAddress, 0, 0);
 
-                flagZero = (trbZpCompValue & trbZpValue) == 0;
-                trbZpValue |= ~trbZpCompValue;
-
-                writeDynamic(trbZpAddress, trbZpValue, false);
-                break;
-            case TRB_ABS:
-                int trbAbsAddress = getAbsAddress(programCounter + 1);
-                int trbAbsValue = readMemory(trbAbsAddress);
-                int trbAbsCompValue = isEightBit(false) ? registerA&255 : registerA;
-
-                flagZero = (trbAbsCompValue & trbAbsValue) == 0;
-                trbAbsValue |= ~trbAbsCompValue;
-
-                writeMemory(trbAbsAddress, trbAbsValue);
-                break;
-            case NXT:
-                setProgramCounter(getAbsAddress(registerI));
-                registerI += 2;
-                registerI &= 65535;
-                break;
-            case ENT:
-                pushRStack(registerI);
-                registerI = programCounter + 3;
-                registerI &= 65535;
-                setProgramCounter(getAbsAddress(programCounter+1));
-                break;
-            case NXA:
-                registerA = readDynamic(registerI, false);
-                registerI += isEightBit(false) ? 1 : 2;
-                registerI &= 65535;
-                break;
+                pushPStack(operand >>> 8);
+                pushPStack(operand);
+            }
+            break;
             case REA_ABS:
-                int reaAbsValue = getAbsAddress(programCounter+1);
+            {
+                int operand = getIndirectAddress(operandAddress, 0, 0);
 
-                pushRStack(reaAbsValue >>> 8);
-                pushRStack(reaAbsValue);
-                break;
+                pushRStack(operand >>> 8);
+                pushRStack(operand);
+            }
+            break;
+            case PEI_IND:
+            {
+                int operand = getIndirectAddress(operandAddress, 0, 0);
+
+                pushPStack(operand >>> 8);
+                pushPStack(operand);
+            }
+            break;
             case REI_IND:
-                int reiIndValue = getAbsAddress(readMemory(programCounter+1));
+            {
+                int operand = getIndirectAddress(operandAddress, 0, 0);
 
-                pushRStack(reiIndValue >>> 8);
-                pushRStack(reiIndValue);
-                break;
+                pushRStack(operand >>> 8);
+                pushRStack(operand);
+            }
+            break;
             case PER_REL:
-                int perRelAddress = programCounter + ((byte) readMemory(programCounter+1)) + 2;
-                int perRelValue = getAbsAddress(perRelAddress);
+            {
+                int operand = getIndirectAddress(programCounter+2, (byte) readMemory(operandAddress), 0);
 
-                pushPStack(perRelValue >>> 8);
-                pushPStack(perRelValue);
-                break;
+                pushPStack(operand >>> 8);
+                pushPStack(operand);
+            }
+            break;
             case RER_REL:
-                int rerRelAddress = programCounter + ((byte) readMemory(programCounter+1)) + 2;
-                int rerRelValue = getAbsAddress(rerRelAddress);
+            {
+                int operand = getIndirectAddress(programCounter+2, (byte) readMemory(operandAddress), 0);
 
-                pushRStack(rerRelValue >>> 8);
-                pushRStack(rerRelValue);
-                break;
+                pushRStack(operand >>> 8);
+                pushRStack(operand);
+            }
+            break;
+            case REP_IMM:
+            {
+                int operand = readMemory(operandAddress);
+
+                flagCarry &= (operand & 1) == 0;
+                flagZero &= (operand & 2) == 0;
+                flagInterrupt &= (operand & 4) == 0;
+                flagDecimal &= (operand & 8) == 0;
+                flagBreak &= (operand & 16) == 0;
+                flagAccumulator &= (operand & 32) == 0;
+                flagOverflow &= (operand & 64) == 0;
+                flagSign &= (operand & 128) == 0;
+            }
+            break;
+            case SEP_IMM:
+            {
+                int operand = readMemory(operandAddress);
+
+                flagCarry |= (operand & 1) != 0;
+                flagZero |= (operand & 2) != 0;
+                flagInterrupt |= (operand & 4) != 0;
+                flagDecimal |= (operand & 8) != 0;
+                flagBreak |= (operand & 16) != 0;
+                flagAccumulator |= (operand & 32) != 0;
+                flagOverflow |= (operand & 64) != 0;
+                flagSign |= (operand & 128) != 0;
+            }
+            break;
             case ZEA:
+                if(eightBitAccumulator) {registerA &= 255;}
                 registerD = 0;
                 break;
             case SEA:
-                if(isEightBit(false)) {
-                    registerD = registerA > 127 ? 65535 : 0;
-                } else {
-                    registerD = registerA > 32767 ? 65535 : 0;
-                }
-                break;
-            case REP_IMM:
-                int repImmValue = readMemory(programCounter+1);
-
-                flagCarry &= !testBit(repImmValue, 0);
-                flagZero &= !testBit(repImmValue, 1);
-                flagInterrupt &= !testBit(repImmValue, 2);
-                flagDecimal &= !testBit(repImmValue, 3);
-                flagBreak &= !testBit(repImmValue, 4);
-                flagAccumulator &= !testBit(repImmValue, 5);
-                flagOverflow &= !testBit(repImmValue, 6);
-                flagSign &= !testBit(repImmValue, 7);
-                break;
-            case PEI_IND:
-                int peiIndValue = getAbsAddress(readMemory(programCounter+1));
-
-                pushPStack(peiIndValue >>> 8);
-                pushPStack(peiIndValue);
-                break;
-            case SEP_IMM:
-                int sepImmValue = readMemory(programCounter+1);
-
-                flagCarry |= testBit(sepImmValue, 0);
-                flagZero |= testBit(sepImmValue, 1);
-                flagInterrupt |= testBit(sepImmValue, 2);
-                flagDecimal |= testBit(sepImmValue, 3);
-                flagBreak |= testBit(sepImmValue, 4);
-                flagAccumulator |= testBit(sepImmValue, 5);
-                flagOverflow |= testBit(sepImmValue, 6);
-                flagSign |= testBit(sepImmValue, 7);
-                break;
-            case XBA:
-                int lowByte = registerA & 255;
-                registerA = (lowByte << 8) | (registerA >>> 8);
-                break;
-            case PEA_ABS:
-                int peaAbsValue = getAbsAddress(programCounter+1);
-
-                pushPStack(peaAbsValue >>> 8);
-                pushPStack(peaAbsValue);
+                if(eightBitAccumulator) {registerA |= 0xFF00;}
+                registerD = (registerA&32768) == 0 ? 0 : 65535;
                 break;
             case XCE:
-                boolean flagTemp = flagCarry;
-                flagCarry = flagEmulate;
-                flagEmulate = flagTemp;
-
-                if(flagEmulate) {
-                    registerX &= 255;
-                    registerY &= 255;
-                    flagBreak = false;
-                } else {
-                    flagBreak = true;
-                }
-                flagAccumulator = true;
-
-                break;
-            case JSR_ABS_X:
-                int jsrAbsXValue = programCounter + 2;
-                pushRStack(jsrAbsXValue >>> 8);
-                pushRStack(jsrAbsXValue);
-
-                System.out.printf("Jumping to subroutine from %4X, pushing address %4X\n",
-                        programCounter, programCounter+2);
-                setProgramCounter(getAbsAddress(getAbsAddress(programCounter+1)+registerX));
-                break;
-            case ORA_STK:
-                registerA |= readDynamic(256 + pStackPointer + ((byte) readMemory(programCounter + 1)), false);
-                setSignZeroDynamic(registerA, false);
-                break;
-            case ORA_RSTK:
-                registerA |= readDynamic(512 + rStackPointer + ((byte) readMemory(programCounter + 1)), false);
-                setSignZeroDynamic(registerA, false);
-                break;
-            case ORA_STK_Y:
-                registerA |= readDynamic(getAbsAddress(256 + pStackPointer + ((byte) readMemory(programCounter + 1)))+registerY, false);
-                setSignZeroDynamic(registerA, false);
-                break;
-            case ORA_RSTK_Y:
-                registerA |= readDynamic(getAbsAddress(512 + rStackPointer + ((byte) readMemory(programCounter + 1))) + registerY, false);
-                setSignZeroDynamic(registerA, false);
-                break;
-            case AND_STK:
-                registerA &= readDynamic(256 + pStackPointer + ((byte) readMemory(programCounter + 1)), false);
-                setSignZeroDynamic(registerA, false);
-                break;
-            case AND_RSTK:
-                registerA &= readDynamic(512 + rStackPointer + ((byte) readMemory(programCounter + 1)), false);
-                setSignZeroDynamic(registerA, false);
-                break;
-            case AND_STK_Y:
-                registerA &= readDynamic(getAbsAddress(256 + pStackPointer + ((byte) readMemory(programCounter + 1))) + registerY, false);
-                setSignZeroDynamic(registerA, false);
-                break;
-            case AND_RSTK_Y:
-                registerA &= readDynamic(getAbsAddress(512 + rStackPointer + ((byte) readMemory(programCounter + 1))) + registerY, false);
-                setSignZeroDynamic(registerA, false);
-                break;
-            case EOR_STK:
-                registerA ^= readDynamic(256 + pStackPointer + ((byte) readMemory(programCounter + 1)), false);
-                setSignZeroDynamic(registerA, false);
-                break;
-            case EOR_RSTK:
-                registerA ^= readDynamic(512 + rStackPointer + ((byte) readMemory(programCounter + 1)), false);
-                setSignZeroDynamic(registerA, false);
-                break;
-            case EOR_STK_Y:
-                registerA ^= readDynamic(getAbsAddress(256 + pStackPointer + ((byte) readMemory(programCounter + 1))) + registerY, false);
-                setSignZeroDynamic(registerA, false);
-                break;
-            case EOR_RSTK_Y:
-                registerA ^= readDynamic(getAbsAddress(512 + rStackPointer + ((byte) readMemory(programCounter + 1))) + registerY, false);
-                setSignZeroDynamic(registerA, false);
-                break;
-            case ADC_STK:
-                performAddition(256 + pStackPointer + ((byte) readMemory(programCounter + 1)), false);
-                break;
-            case ADC_RSTK:
-                performAddition(512 + rStackPointer + ((byte) readMemory(programCounter + 1)), false);
-                break;
-            case ADC_STK_Y:
-                performAddition(getAbsAddress(256 + pStackPointer + ((byte) readMemory(programCounter + 1)))+registerY, false);
-                break;
-            case ADC_RSTK_Y:
-                performAddition(getAbsAddress(512 + rStackPointer + ((byte) readMemory(programCounter + 1)))+registerY, false);
-                break;
-            case STA_STK:
-                writeDynamic(256 + pStackPointer + ((byte) readMemory(programCounter + 1)), registerA, false);
-                break;
-            case STA_RSTK:
-                writeDynamic(512 + rStackPointer + ((byte) readMemory(programCounter + 1)), registerA, false);
-                break;
-            case STA_STK_Y:
-                writeDynamic(getAbsAddress(256 + pStackPointer + ((byte) readMemory(programCounter + 1)))+registerY, registerA, false);
-                break;
-            case STA_RSTK_Y:
-                writeDynamic(getAbsAddress(512 + rStackPointer + ((byte) readMemory(programCounter + 1)))+registerY, registerA, false);
-                break;
-            case LDA_STK:
-                registerA = readDynamic(256 + pStackPointer + ((byte) readMemory(programCounter + 1)), false);
-                setSignZeroDynamic(registerA, false);
-                break;
-            case LDA_RSTK:
-                registerA = readDynamic(512 + rStackPointer + ((byte) readMemory(programCounter + 1)), false);
-                setSignZeroDynamic(registerA, false);
-                break;
-            case LDA_STK_Y:
-                registerA = readDynamic(getAbsAddress(256 + pStackPointer + ((byte) readMemory(programCounter + 1)))+ registerY, false);
-                setSignZeroDynamic(registerA, false);
-                break;
-            case LDA_RSTK_Y:
-                registerA = readDynamic(getAbsAddress(512 + rStackPointer + ((byte) readMemory(programCounter + 1)))+ registerY, false);
-                setSignZeroDynamic(registerA, false);
-                break;
-            case CMP_STK:
-                performComparation(256 + pStackPointer + ((byte) readMemory(programCounter + 1)), registerA, false);
-                break;
-            case CMP_RSTK:
-                performComparation(512 + rStackPointer + ((byte) readMemory(programCounter + 1)), registerA, false);
-                break;
-            case CMP_STK_Y:
-                performComparation(getAbsAddress(256 + pStackPointer + ((byte) readMemory(programCounter + 1)))+registerY, registerA, false);
-                break;
-            case CMP_RSTK_Y:
-                performComparation(getAbsAddress(512 + rStackPointer + ((byte) readMemory(programCounter + 1)))+registerY, registerA, false);
-                break;
-            case SBC_STK:
-                performAddition(256 + pStackPointer + ((byte) readMemory(programCounter + 1)), true);
-                break;
-            case SBC_RSTK:
-                performAddition(512 + rStackPointer + ((byte) readMemory(programCounter + 1)), true);
-                break;
-            case SBC_STK_Y:
-                performAddition(getAbsAddress(256 + pStackPointer + ((byte) readMemory(programCounter + 1)))+registerY, true);
-                break;
-            case SBC_RSTK_Y:
-                performAddition(getAbsAddress(512 + rStackPointer + ((byte) readMemory(programCounter + 1)))+registerY, true);
-                break;
+            {
+                boolean tempCarry = flagEmulate;
+                flagEmulate = flagCarry;
+                flagCarry = tempCarry;
+            }
+            break;
             case MMU:
-                switch(readMemory(programCounter+1)) {
+                switch(readMemory(operandAddress)) {
                     case 0:
-                        redbusDevice = registerA;
+                        redbusDevice = registerA&255;
+                        RedbusDataPacket.sendPacket(worldObj, pos, new RedbusDataPacket(redbusDevice, 0xFF, 0xFF));
                         break;
                     case 128:
-                        registerA = redbusDevice;
+                        if(eightBitAccumulator) {
+                            registerA = (registerA&0xFF00) | redbusDevice;
+                        } else {
+                            registerA = redbusDevice;
+                        }
                         break;
                     case 1:
                         redbusOffset = registerA;
+                        RedbusDataPacket.sendPacket(worldObj, pos, new RedbusDataPacket(redbusDevice, 0xFF, 0xFF));
                         break;
                     case 129:
                         registerA = redbusOffset;
                         break;
                     case 2:
                         redbusEnabled = true;
+                        RedbusDataPacket.sendPacket(worldObj, pos, new RedbusDataPacket(redbusDevice, 0xFF, 0xFF));
                         break;
                     case 130:
                         redbusEnabled = false;
-                        break;
-                    case 3:
-                        break;
-                    case 131:
-                        break;
-                    case 4:
-                        break;
-                    case 132:
                         break;
                     case 5:
                         addressBRK = registerA;
@@ -1580,35 +1268,65 @@ public class TileEntityCPU extends TileEntity implements IUpdatePlayerListBox, I
                     case 133:
                         registerA = addressBRK;
                         break;
-                    case 6:
-                        addressPOR = registerA;
-                        break;
-                    case 134:
-                        registerA = addressPOR;
-                        break;
                     case 255:
                         System.out.println(toString());
                         break;
                 }
                 break;
             case MUL_ZP:
-                break;
             case MUL_ZP_X:
-                break;
             case MUL_ABS:
-                break;
             case MUL_ABS_X:
-                break;
+            {
+                int operand = getIndirectAddress(operandAddress, 0, 0);
+                int result = ((short) registerA) * ((short) operand);
+
+                flagSign = result < 0;
+                flagZero = result == 0;
+                flagOverflow = (registerA&0x8000) == (operand&0x8000) && (operand&0x8000) != (result&0x80000000);
+
+                registerD = result >>> 16;
+                registerA = result & 65535;
+            }
+            break;
             case DIV_ZP:
-                break;
             case DIV_ZP_X:
-                break;
             case DIV_ABS:
-                break;
             case DIV_ABS_X:
+            {
+                int dividend = (registerD << 16) | registerA;
+                int divisor = getIndirectAddress(operandAddress, 0, 0);
+                if(divisor == 0) {divisor = 1;}
+
+                registerA = (dividend / ((short) divisor))&65535;
+                registerD = (dividend % ((short) divisor))&65535;
+
+                flagSign = (registerA&0x8000) != 0;
+                flagZero = registerA == 0;
+                flagOverflow = ((dividend>>>16)&0x8000) == (divisor&0x8000) && (divisor&0x8000) != (registerA&0x8000);
+            }
+            break;
+            case NXA:
+                if(eightBitAccumulator) {
+                    registerA = (registerA&0xFF00) | readMemory(registerI);
+                    ++registerI;
+                    registerI &= 65535;
+                } else {
+                    registerA = getIndirectAddress(registerI, 0, 0);
+                    registerI += 2;
+                    registerI &= 65535;
+                }
                 break;
-            case WAI:
-                cyclesElapsed += 3500;
+            case NXT:
+                setProgramCounter(getIndirectAddress(registerI, 0, 0));
+                registerI += 2;
+                break;
+            case ENT:
+                pushRStack(registerI >>> 8);
+                pushRStack(registerI);
+
+                registerI = (programCounter+3) & 65535;
+                setProgramCounter(operandAddress);
                 break;
             case UNUSED:
                 setRunning(false);
@@ -1619,87 +1337,201 @@ public class TileEntityCPU extends TileEntity implements IUpdatePlayerListBox, I
         cyclesElapsed += instruction.getNumCycles();
     }
 
-    private int getAbsAddress(int addressToRead) {
-        return (readMemory(addressToRead+1) << 8) | readMemory(addressToRead);
-    }
-
-    private int pullAbsAddress() {
-        int low = pullRStack();
-        int high = pullRStack();
-
-        return (high << 8) | low;
-    }
-
-    private void setSignZeroDynamic(int testValue, boolean isIndexRegister) {
-        if(isEightBit(isIndexRegister)) {
-            testValue &= 255;
-            flagSign = testValue > 127;
-        } else {
-            testValue &= 65535;
-            flagSign = testValue > 32767;
+    private int getOperandLocation(AddressingMode mode) {
+        switch(mode) {
+            case IMPLIED:
+                return programCounter;
+            case RELATIVE:case IMMEDIATE:
+                return programCounter+1;
+            case ZERO_PAGE:
+                return readMemory(programCounter+1);
+            case ZERO_PAGE_X:
+                return readMemory(programCounter+1)+registerX; //& 255;
+            case ZERO_PAGE_Y:
+                return readMemory(programCounter+1)+registerY; //& 255;
+            case ABSOLUTE:
+                return getIndirectAddress(programCounter, 1, 0);
+            case ABSOLUTE_X:
+                return getIndirectAddress(programCounter, 1, registerX);
+            case ABSOLUTE_Y:
+                return getIndirectAddress(programCounter, 1, registerY);
+            case INDIRECT:
+                return getIndirectAddress(readMemory(programCounter+1), 0, 0);
+            case INDIRECT_16:
+                return getIndirectAddress(getIndirectAddress(programCounter, 1, 0), 0, 0);
+            case INDIRECT_INDEXED:
+                return getIndirectAddress(readMemory(programCounter+1), 0, registerY);
+            case INDEXED_INDIRECT:
+                return getIndirectAddress(readMemory(programCounter+1)+registerX & 255, 0, 0);
+            case PUSH_P_STACK:case POP_P_STACK:
+                return 256 + pStackPointer;
+            case PUSH_R_STACK:case POP_R_STACK:
+                return 512 + rStackPointer;
+            case P_STACK_INDEXED:
+                return 256 + ((pStackPointer+readMemory(programCounter+1)) & 255);
+            case R_STACK_INDEXED:
+                return 512 + ((rStackPointer+readMemory(programCounter+1)) & 255);
+            case P_STACK_INDIRECT:
+                return getIndirectAddress(256, (pStackPointer-readMemory(programCounter+1)) & 255, registerY);
+            case R_STACK_INDIRECT:
+                return getIndirectAddress(512, (rStackPointer-readMemory(programCounter+1)) & 255, registerY);
+            default:
+                return 0;
         }
-        flagZero = testValue == 0;
     }
 
-    private void setSignZero(int testValue) {
-        flagSign = testValue > 127;
-        flagZero = testValue == 0;
+    private static int to16Bit(int a, int b) {
+        return (a << 8) | b;
     }
 
-    private void performAddition(int addressOfValue, boolean subtract) {
-        boolean isEightBit = isEightBit(false);
+    private int getIndirectAddress(int a, int b, int c) {
+        return to16Bit(readMemory(a+b+1), readMemory(a+b)) + c;
+    }
 
-        int addValue = readDynamic(addressOfValue, false);
-        int result = (flagCarry ? isEightBit ? 256 : 65536 : 0) + registerA + (subtract ? -addValue : addValue);
+    private static int binaryToBCD(int value) {
+        String asString = String.valueOf(value);
 
-        if(isEightBit) {
-            registerA = result & 255;
-            flagOverflow = (byte) result < -128 || (byte) result > 127;
-            flagCarry = result > 255;
-        } else {
-            registerA = result & 65535;
-            flagOverflow = (short) result < -32768 || (short) result > 32767;
-            flagCarry = result > 65535;
+        int returnValue = 0;
+        for(int i=Math.min(7,asString.length()-1);i>=0;--i) {
+            returnValue |= Character.getNumericValue(asString.charAt(i)) << (i * 4);
         }
-        setSignZeroDynamic(registerA, false);
-
-        if(flagDecimal) {cyclesElapsed++;}
+        return returnValue;
     }
 
-    private void performComparation(int addressOfValue, int valueComparedTo, boolean isIndexRegister) {
-        boolean isEightBit = isEightBit(isIndexRegister);
+    private static int BCDToBinary(int value) {
+        int length = (int) (((32 - Integer.numberOfLeadingZeros(value)) / 4.0) + 0.76);
 
-        int compareValue = readDynamic(addressOfValue, isIndexRegister);
-        int result = ((isEightBit ? 256 : 65536) + valueComparedTo) - compareValue;
-
-        flagCarry = result > (isEightBit ? 255 : 65535);
-        setSignZeroDynamic(result, isIndexRegister);
-
-        System.out.printf("Comparing, EB:%b CT:%2X AD:%4X CV:%2X RS:%2X\n", isEightBit, valueComparedTo, addressOfValue, compareValue, result&255);
+        String asString = "";
+        for(int i=length-1;i>=0;--i) {
+            asString = Character.forDigit((value >> (i * 4)) & 0xF, 10) + asString;
+        }
+        return Integer.parseInt(asString);
     }
 
-    private static boolean testBit(int target, int offset) {
-        return (target&(1<<offset)) != 0;
+    private int performAddition(int a, int addressOfB, boolean subtract, boolean eightBit, boolean compare) {
+        boolean compareOrSubtract = compare || subtract;
+        if(flagDecimal) {++cyclesElapsed;}
+
+        if(eightBit) {
+            a &= 255;
+            int b = readMemory(addressOfB);
+            if(flagDecimal) {
+                a = BCDToBinary(a);
+                b = BCDToBinary(b);
+            }
+
+            b = (compare || flagCarry ? 1 : 0) + (compareOrSubtract ? (~b)&255 : b);
+            int result = a + b;
+
+            if(!compare) {flagOverflow = (a&128) == (b&128) && (b&128) != (result&128);}
+            flagCarry = (result & 256) != 0;
+            setSignZero8(result);
+
+            result &= 255;
+            if(flagDecimal) {result = binaryToBCD(result) & 255;}
+            return result;
+        } else {
+            int b = getIndirectAddress(addressOfB, 0, 0);
+            if(flagDecimal) {
+                a = BCDToBinary(a);
+                b = BCDToBinary(b);
+            }
+
+            b = (compare || flagCarry ? 1 : 0) + (compareOrSubtract ? (~b)&65535 : b);
+            int result = a + b;
+
+            if(!compare) {flagOverflow = (a&32768) == (b&32768) && (b&32768) != (result&32768);}
+            flagCarry = (result & 65536) != 0;
+            setSignZero16(result);
+
+            result &= 65535;
+            if(flagDecimal) {result = binaryToBCD(result) & 65535;}
+            return result;
+        }
+    }
+
+    private void setSignZero8(int value) {
+        value &= 255;
+
+        flagSign = (value & 128) != 0;
+        flagZero = value == 0;
+    }
+
+    private void setSignZero16(int value) {
+        value &= 65535;
+
+        flagSign = (value & 32768) != 0;
+        flagZero = value == 0;
+    }
+
+    private void pushFlags(boolean setBreak) {
+        int serializedFlags = flagCarry ? 1 : 0;
+        serializedFlags += flagZero ? 2 : 0;
+        serializedFlags += flagInterrupt ? 4 : 0;
+        serializedFlags += flagDecimal ? 8 : 0;
+        serializedFlags += flagBreak || setBreak ? 16 : 0;
+        serializedFlags += flagAccumulator ? 32 : 0;
+        serializedFlags += flagOverflow ? 64 : 0;
+        serializedFlags += flagSign ? 128 : 0;
+        pushPStack(serializedFlags);
+    }
+
+    private void popFlags() {
+        int serializedFlags = pullPStack();
+        flagCarry = (serializedFlags & 1) != 0;
+        flagZero = (serializedFlags & 2) != 0;
+        flagInterrupt = (serializedFlags & 4) != 0;
+        flagDecimal = (serializedFlags & 8) != 0;
+        flagBreak = (serializedFlags & 16) != 0;
+        flagAccumulator = (serializedFlags & 32) != 0;
+        flagOverflow = (serializedFlags & 64) != 0;
+        flagSign = (serializedFlags & 128) != 0;
     }
 
     private void pushPStack(int value) {
-        memory[256 + pStackPointer] = (byte) value;
+        // This is the correct implementation, however to match RP Control we need to make it incorrect
+        //memory[256 + pStackPointer] = (byte) value;
+        //pStackPointer--;
+        //pStackPointer &= 255;
+
         pStackPointer--;
+        pStackPointer &= 255;
+        memory[256 + pStackPointer] = (byte) value;
     }
 
     private void pushRStack(int value) {
-        memory[512 + rStackPointer] = (byte) value;
+        // This is the correct implementation, however to match RP Control we need to make it incorrect
+        //memory[512 + rStackPointer] = (byte) value;
+        //rStackPointer--;
+        //rStackPointer &= 255;
+
         rStackPointer--;
+        rStackPointer &= 255;
+        memory[512 + rStackPointer] = (byte) value;
     }
 
     private int pullPStack() {
+        // This is the correct implementation, however to match RP Control we need to make it incorrect
+        //pStackPointer++;
+        //pStackPointer &= 255;
+        //return memory[256 + pStackPointer] & 255;
+
+        int value = memory[256 + pStackPointer] & 255;
         pStackPointer++;
-        return memory[256 + pStackPointer]&255;
+        pStackPointer &= 255;
+        return value;
     }
 
     private int pullRStack() {
+        // This is the correct implementation, however to match RP Control we need to make it incorrect
+        //rStackPointer++;
+        //rStackPointer &= 255;
+        //return memory[512 + rStackPointer] & 255;
+
+        int value = memory[512 + rStackPointer] & 255;
         rStackPointer++;
-        return memory[512 + rStackPointer]&255;
+        rStackPointer &= 255;
+        return value;
     }
 
     @Override

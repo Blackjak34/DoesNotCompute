@@ -92,12 +92,12 @@ public class GuiTerminal extends GuiContainer {
 				if(cursorMode != 0 && screenColumn == cursorX && screenRow == cursorY &&
 						(((time >> 2)&1L) > 0L || cursorMode == 1)) {
 					GL11.glDisable(GL11.GL_TEXTURE_2D);
-					worldRenderer.startDrawingQuads();
-					worldRenderer.addVertex(screenPositionX, screenPositionY, zLevel);
-					worldRenderer.addVertex(screenPositionX, screenPositionY+3, zLevel);
-					worldRenderer.addVertex(screenPositionX+3, screenPositionY+3, zLevel);
-					worldRenderer.addVertex(screenPositionX+3, screenPositionY, zLevel);
-					tessellator.draw();
+                    worldRenderer.startDrawingQuads();
+                    worldRenderer.addVertex(screenPositionX, screenPositionY, zLevel);
+                    worldRenderer.addVertex(screenPositionX, screenPositionY+3, zLevel);
+                    worldRenderer.addVertex(screenPositionX+3, screenPositionY+3, zLevel);
+                    worldRenderer.addVertex(screenPositionX+3, screenPositionY, zLevel);
+                    tessellator.draw();
 					GL11.glEnable(GL11.GL_TEXTURE_2D);
 				}
 			}

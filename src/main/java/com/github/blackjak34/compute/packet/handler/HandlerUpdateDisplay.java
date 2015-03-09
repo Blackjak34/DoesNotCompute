@@ -7,10 +7,6 @@ import net.minecraftforge.fml.common.network.simpleimpl.IMessage;
 import net.minecraftforge.fml.common.network.simpleimpl.IMessageHandler;
 import net.minecraftforge.fml.common.network.simpleimpl.MessageContext;
 
-/**
- * @author Blackjak34
- * @since 1.0.0
- */
 public class HandlerUpdateDisplay implements IMessageHandler<MessageUpdateDisplay,IMessage> {
 
     public IMessage onMessage(MessageUpdateDisplay message, MessageContext context) {

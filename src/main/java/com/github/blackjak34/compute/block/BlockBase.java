@@ -53,7 +53,7 @@ public class BlockBase extends Block implements ITileEntityProvider {
     @Override
     public IBlockState onBlockPlaced(World worldInIn, BlockPos pos, EnumFacing facing,
                                      float hitX, float hitY, float hitZ, int meta, EntityLivingBase placer) {
-        return getDefaultState().withProperty(FACING, EnumFacing.fromAngle(placer.getRotationYawHead()));
+        return getDefaultState().withProperty(FACING, EnumFacing.fromAngle(placer.getRotationYawHead()).getOpposite());
     }
 
     @Override

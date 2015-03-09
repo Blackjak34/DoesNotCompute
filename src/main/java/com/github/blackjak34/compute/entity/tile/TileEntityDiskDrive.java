@@ -18,10 +18,6 @@ import java.nio.charset.Charset;
 import java.util.Arrays;
 import java.util.UUID;
 
-/**
- * @author Blackjak34
- * @since 1.0.0
- */
 public class TileEntityDiskDrive extends TileEntity implements IUpdatePlayerListBox, IRedbusCompatible {
 
     public static final int BUS_ADDR = 2;
@@ -173,9 +169,15 @@ public class TileEntityDiskDrive extends TileEntity implements IUpdatePlayerList
     }
 
     public void onPacketReceived(RedbusDataPacket dataPacket) {
-        if(dataPacket.address != BUS_ADDR && (dataPacket.address&255) != 0xFF) {return;}
-        //System.out.printf("Received RedBus packet: address %X, index %X, data %X\n",
-                //dataPacket.address, dataPacket.index, dataPacket.data);
+        if(dataPacket.address != BUS_ADDR) {return;}
+        markDirty();
+
+        if(dataPacket.index == (byte) 0xFF && dataPacket.data == (byte) 0xFF) {
+            for(int i=0;i<256;++i) {
+                RedbusDataPacket.sendPacket(worldObj, pos, new RedbusDataPacket(TileEntityCPU.BUS_ADDR, redbusWindow[i], i));
+            }
+            return;
+        }
 
         redbusWindow[dataPacket.index&255] = dataPacket.data;
         if((dataPacket.index&255) == 130 && dataPacket.data > 0 && dataPacket.data < 6) {

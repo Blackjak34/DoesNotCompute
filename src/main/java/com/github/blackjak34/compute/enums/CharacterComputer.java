@@ -2,16 +2,6 @@ package com.github.blackjak34.compute.enums;
 
 import java.util.HashMap;
 
-/**
- * An enum used for mapping ascii char code values returned
- * from keypresses into uv coords that are used to find the
- * corresponding character on the charset. Helper functions
- * are included to allow retrieving ascii indexes/uv coords
- * from the enums and retrieving enums from ascii codes.
- * 
- * @author Blackjak34
- * @since 1.0.1
- */
 public enum CharacterComputer {
 	SPACE				(32, 2, 0),
 	EXCLAMATION			(33, 2, 1),
@@ -110,12 +100,7 @@ public enum CharacterComputer {
 	TILDE				(126, 2, 0),
 	DELETE				(127, 1, 15),
 	INVALID				(-1, 2, 0);
-	
-	/**
-	 * A HashMap containing the character code for each
-	 * character and its corresponding enum. Used for the
-	 * getCharacter helper function.
-	 */
+
 	private final static HashMap<Integer, CharacterComputer> characters = new HashMap<Integer, CharacterComputer>();
 	
 	static {
@@ -123,79 +108,29 @@ public enum CharacterComputer {
 			characters.put(character.getCharCode(), character);
 		}
 	}
-	
-	/**
-	 * The ascii code that corresponds to this character.
-	 */
+
 	private final int charCode;
-	
-	/**
-	 * The u (x) element of the image's location on the
-	 * charset texture. Divide this value by 16 to get a
-	 * standard range from 0 to 1.
-	 */
 	private final int uValue;
-	
-	/**
-	 * The v (y) element of the image's location on the
-	 * charset texture. Divide this value by 16 to get a
-	 * standard range from 0 to 1.
-	 */
 	private final int vValue;
-	
-	/**
-	 * This constructor only serves to assign the character
-	 * codes and uv coords to the enums at initialization.
-	 * 
-	 * @param charCode The ascii code for this character
-	 * @param uValue The u aspect for this character's texture
-	 * @param vValue The v aspect for this character's texture
-	 */
+
 	private CharacterComputer(int charCode, int uValue, int vValue) {
 		this.charCode = charCode;
 		this.uValue = uValue;
 		this.vValue = vValue;
 	}
-	
-	/**
-	 * Returns the ascii code for this character.
-	 * 
-	 * @return The ascii code for this character
-	 */
+
 	public int getCharCode() {
 		return charCode;
 	}
-	
-	/**
-	 * Returns the u (x) element of the upper left corner
-	 * of this character's texture. Divide this value by 16
-	 * to get a standard range from 0 to 1.
-	 * 
-	 * @return The u element of this character's texture
-	 */
+
 	public int getUValue() {
 		return uValue;
 	}
-	
-	/**
-	 * Returns the v (y) element of the upper left corner
-	 * of this character's texture. Divide this value by 16
-	 * to get a standard range from 0 to 1.
-	 * 
-	 * @return The v element of this character's texture
-	 */
+
 	public int getVValue() {
 		return vValue;
 	}
-	
-	/**
-	 * Returns the character that corresponds to the given
-	 * ascii code. If no character exists, the enum INVALID
-	 * is returned instead.
-	 * 
-	 * @param charCode An ascii code to get the enum for
-	 * @return The enum corresponding to the given char code
-	 */
+
 	public static CharacterComputer getCharacter(int charCode) {
 		CharacterComputer character = characters.get(charCode);
 		if(character == null) {return INVALID;}

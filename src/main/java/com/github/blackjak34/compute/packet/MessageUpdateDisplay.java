@@ -4,10 +4,6 @@ import io.netty.buffer.ByteBuf;
 import net.minecraft.util.BlockPos;
 import net.minecraftforge.fml.common.network.simpleimpl.IMessage;
 
-/**
- * @author Blackjak34
- * @since 1.0.0
- */
 public class MessageUpdateDisplay implements IMessage {
 
     private int coordX;
@@ -26,20 +22,20 @@ public class MessageUpdateDisplay implements IMessage {
         this.location = location;
     }
 
-    public void fromBytes(ByteBuf buffer) {
-        coordX = buffer.readInt();
-        coordY = buffer.readInt();
-        value = buffer.readByte();
-        location = new BlockPos(buffer.readInt(), buffer.readInt(), buffer.readInt());
+    public void fromBytes(ByteBuf buf) {
+        coordX = buf.readInt();
+        coordY = buf.readInt();
+        value = buf.readByte();
+        location = new BlockPos(buf.readInt(), buf.readInt(), buf.readInt());
     }
 
-    public void toBytes(ByteBuf buffer) {
-        buffer.writeInt(coordX);
-        buffer.writeInt(coordY);
-        buffer.writeByte(value);
-        buffer.writeInt(location.getX());
-        buffer.writeInt(location.getY());
-        buffer.writeInt(location.getZ());
+    public void toBytes(ByteBuf buf) {
+        buf.writeInt(coordX);
+        buf.writeInt(coordY);
+        buf.writeByte(value);
+        buf.writeInt(location.getX());
+        buf.writeInt(location.getY());
+        buf.writeInt(location.getZ());
     }
 
     public int getCoordX() {

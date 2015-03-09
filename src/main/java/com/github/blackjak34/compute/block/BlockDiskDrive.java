@@ -13,10 +13,6 @@ import net.minecraft.util.BlockPos;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.world.World;
 
-/**
- * @author Blackjak34
- * @since 1.0.0
- */
 public class BlockDiskDrive extends BlockBase implements ITileEntityProvider {
 
     public static final PropertyBool DISK = PropertyBool.create("disk");

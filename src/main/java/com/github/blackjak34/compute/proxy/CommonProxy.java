@@ -12,15 +12,6 @@ import net.minecraft.util.BlockPos;
 import net.minecraft.world.World;
 import net.minecraftforge.fml.common.network.IGuiHandler;
 
-/**
- * The common proxy class. This contains code to return
- * GUI elements to clients/servers based on a given
- * mod-specific id number, specified within the GUI's
- * class.
- * 
- * @author Blackjak34
- * @since 1.0
- */
 public class CommonProxy implements IGuiHandler {
 	
     public void registerRenderers() {}

@@ -1,17 +1,8 @@
 package com.github.blackjak34.compute;
 
-import com.github.blackjak34.compute.block.BlockCPU;
-import com.github.blackjak34.compute.block.BlockCableRibbon;
-import com.github.blackjak34.compute.block.BlockDiskDrive;
-import com.github.blackjak34.compute.block.BlockTerminal;
-import com.github.blackjak34.compute.entity.tile.TileEntityCableRibbon;
-import com.github.blackjak34.compute.entity.tile.TileEntityDiskDrive;
-import com.github.blackjak34.compute.entity.tile.TileEntityTerminal;
-import com.github.blackjak34.compute.entity.tile.client.TileEntityCPUClient;
-import com.github.blackjak34.compute.entity.tile.client.TileEntityCableRibbonClient;
-import com.github.blackjak34.compute.entity.tile.client.TileEntityDiskDriveClient;
-import com.github.blackjak34.compute.entity.tile.client.TileEntityTerminalClient;
-import com.github.blackjak34.compute.entity.tile.TileEntityCPU;
+import com.github.blackjak34.compute.block.*;
+import com.github.blackjak34.compute.entity.tile.*;
+import com.github.blackjak34.compute.entity.tile.client.*;
 import com.github.blackjak34.compute.item.ItemFloppy;
 import com.github.blackjak34.compute.packet.MessageActionPerformed;
 import com.github.blackjak34.compute.packet.MessageKeyTyped;
@@ -42,7 +33,7 @@ public class DoesNotCompute {
 
     public static final String NAME = "Does Not Compute";
 
-    public static final String VERSION = "1.1.1";
+    public static final String VERSION = "1.0.0";
     
     public static SimpleNetworkWrapper networkWrapper;
     
@@ -90,7 +81,7 @@ public class DoesNotCompute {
     	networkWrapper.registerMessage(HandlerActionPerformed.class, MessageActionPerformed.class, 0, Side.SERVER);
         networkWrapper.registerMessage(HandlerKeyTyped.class, MessageKeyTyped.class, 1, Side.SERVER);
 
-        networkWrapper.registerMessage(HandlerUpdateDisplay.class, MessageUpdateDisplay.class, 3, Side.CLIENT);
+        networkWrapper.registerMessage(HandlerUpdateDisplay.class, MessageUpdateDisplay.class, 2, Side.CLIENT);
     }
 
     @SuppressWarnings("unused")
