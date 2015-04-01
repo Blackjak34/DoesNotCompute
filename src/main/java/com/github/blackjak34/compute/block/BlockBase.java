@@ -21,9 +21,9 @@ public class BlockBase extends Block implements ITileEntityProvider {
     private final Class<? extends TileEntity> clientTE;
     private final Class<? extends TileEntity> serverTE;
 
-    public BlockBase(Class<? extends TileEntity> clientTE, Class<? extends TileEntity> serverTE,
-                     IProperty... addlProps) {
-        super(Material.iron);
+    public BlockBase(Material material, Class<? extends TileEntity> clientTE,
+                     Class<? extends TileEntity> serverTE, IProperty... addlProps) {
+        super(material);
         setHarvestLevel("pickaxe", 1);
 
         this.clientTE = clientTE;

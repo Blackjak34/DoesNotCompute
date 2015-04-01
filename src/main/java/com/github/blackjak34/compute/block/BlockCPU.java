@@ -5,6 +5,7 @@ import com.github.blackjak34.compute.entity.tile.TileEntityCPU;
 import com.github.blackjak34.compute.entity.tile.client.TileEntityCPUClient;
 import com.github.blackjak34.compute.gui.GuiCPU;
 import net.minecraft.block.ITileEntityProvider;
+import net.minecraft.block.material.Material;
 import net.minecraft.block.properties.PropertyBool;
 import net.minecraft.block.state.BlockState;
 import net.minecraft.block.state.IBlockState;
@@ -19,7 +20,7 @@ public class BlockCPU extends BlockBase implements ITileEntityProvider {
     public static final PropertyBool RUNNING = PropertyBool.create("running");
 
     public BlockCPU() {
-        super(TileEntityCPUClient.class, TileEntityCPU.class, RUNNING);
+        super(Material.iron, TileEntityCPUClient.class, TileEntityCPU.class, RUNNING);
 
         setCreativeTab(CreativeTabs.tabMisc);
         setUnlocalizedName("blockCPU");

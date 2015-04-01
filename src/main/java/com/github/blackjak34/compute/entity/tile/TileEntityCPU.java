@@ -14,7 +14,7 @@ import net.minecraft.world.World;
 
 import static com.github.blackjak34.compute.enums.GuiConstantCPU.*;
 
-public class TileEntityCPU extends RedbusDevice implements IUpdatePlayerListBox, IRedbusCompatible, IEmulatorIO {
+public class TileEntityCPU extends RedbusMaster implements IUpdatePlayerListBox, IRedbusCompatible, IEmulatorIO {
 
     public static final int BUS_ADDR = 0;
 

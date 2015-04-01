@@ -1,9 +1,10 @@
 package com.github.blackjak34.compute.block;
 
-import com.github.blackjak34.compute.entity.tile.RedbusCable;
 import com.github.blackjak34.compute.entity.tile.TileEntityDiskDrive;
 import com.github.blackjak34.compute.entity.tile.client.TileEntityDiskDriveClient;
+import com.github.blackjak34.compute.utils.TernaryTree;
 import net.minecraft.block.ITileEntityProvider;
+import net.minecraft.block.material.Material;
 import net.minecraft.block.properties.PropertyBool;
 import net.minecraft.block.state.BlockState;
 import net.minecraft.block.state.IBlockState;
@@ -14,12 +15,12 @@ import net.minecraft.util.BlockPos;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.world.World;
 
-public class BlockDiskDrive extends BlockBase implements ITileEntityProvider {
+public class BlockDiskDrive extends BlockPeripheral implements ITileEntityProvider {
 
     public static final PropertyBool DISK = PropertyBool.create("disk");
 
     public BlockDiskDrive() {
-        super(TileEntityDiskDriveClient.class, TileEntityDiskDrive.class, DISK);
+        super(Material.iron, TileEntityDiskDriveClient.class, TileEntityDiskDrive.class, DISK);
 
         setCreativeTab(CreativeTabs.tabMisc);
         setUnlocalizedName("blockDiskDrive");
@@ -81,15 +82,9 @@ public class BlockDiskDrive extends BlockBase implements ITileEntityProvider {
 
     @Override
     public void breakBlock(World worldIn, BlockPos pos, IBlockState state) {
-        if(!worldIn.isRemote) {((TileEntityDiskDrive) worldIn.getTileEntity(pos)).onDiskUsed(null);}
+        if(!worldIn.isRemote) {((TileEntityDiskDrive) worldIn.getTileEntity(pos)).ejectFloppyDisk();}
         worldIn.removeTileEntity(pos);
-        if(!worldIn.isRemote) {RedbusCable.updateSurroundingNetworks(worldIn, pos);}
-    }
-
-    @Override
-    public void onBlockAdded(World worldIn, BlockPos pos, IBlockState state) {
-        if(worldIn.isRemote) {return;}
-        RedbusCable.updateSurroundingNetworks(worldIn, pos);
+        if(!worldIn.isRemote) {TernaryTree.updateSurroundingNetworks(worldIn, pos);}
     }
 
 }

@@ -6,15 +6,12 @@ import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.BlockPos;
 import net.minecraft.world.World;
-import net.minecraftforge.common.util.Constants;
 
-public class RedbusDevice extends TileEntity {
+public class RedbusMaster extends TileEntity {
 
     private TernaryTree redbusNetwork;
 
-    public RedbusDevice() {}
-
-    public RedbusDevice(World worldIn) {}
+    public RedbusMaster() {}
 
     // TODO: get some better function names
     public int readRedbus(int address, int index) {

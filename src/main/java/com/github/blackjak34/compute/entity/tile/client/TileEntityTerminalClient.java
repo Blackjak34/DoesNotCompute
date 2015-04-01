@@ -50,34 +50,7 @@ public class TileEntityTerminalClient extends TileEntity {
     }
 
     @Override
-    public void writeToNBT(NBTTagCompound data) {
-        data.setInteger("cursorX", cursorX);
-        data.setInteger("cursorY", cursorY);
-        data.setInteger("cursorMode", cursorMode);
-
-        for(int i=0;i<displayBuffer.length;i++) {
-            data.setByteArray("displayBuffer_row" + i, displayBuffer[i]);
-        }
-
-        super.writeToNBT(data);
-    }
-
-    @Override
-    public void readFromNBT(NBTTagCompound data) {
-        cursorX = data.getInteger("cursorX");
-        cursorY = data.getInteger("cursorY");
-        cursorMode = data.getInteger("cursorMode");
-
-        for(int i=0;i<displayBuffer.length;i++) {
-            displayBuffer[i] = data.getByteArray("displayBuffer_row" + i);
-        }
-
-        super.readFromNBT(data);
-    }
-
-    @Override
-    public boolean shouldRefresh(World world, BlockPos coords, IBlockState oldState, IBlockState newState)
-    {
+    public boolean shouldRefresh(World world, BlockPos coords, IBlockState oldState, IBlockState newState) {
         return oldState.getBlock() != newState.getBlock();
     }
 

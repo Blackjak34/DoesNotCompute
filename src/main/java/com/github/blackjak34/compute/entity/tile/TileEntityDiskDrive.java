@@ -4,10 +4,13 @@ import com.github.blackjak34.compute.DoesNotCompute;
 import com.github.blackjak34.compute.block.BlockDiskDrive;
 import com.github.blackjak34.compute.interfaces.IRedbusCompatible;
 import com.github.blackjak34.compute.item.ItemFloppy;
+import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.item.EntityItem;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.server.gui.IUpdatePlayerListBox;
+import net.minecraft.tileentity.TileEntity;
+import net.minecraft.util.BlockPos;
 import net.minecraft.world.World;
 
 import java.io.IOException;
@@ -16,7 +19,7 @@ import java.nio.ByteBuffer;
 import java.nio.charset.Charset;
 import java.util.UUID;
 
-public class TileEntityDiskDrive extends RedbusCable implements IUpdatePlayerListBox, IRedbusCompatible {
+public class TileEntityDiskDrive extends TileEntity implements IUpdatePlayerListBox, IRedbusCompatible {
 
     public static final int BUS_ADDR = 2;
 
@@ -128,19 +131,11 @@ public class TileEntityDiskDrive extends RedbusCable implements IUpdatePlayerLis
     }
 
     public boolean onDiskUsed(ItemStack itemStack) {
-        // TODO fix exception thrown when a drive is broken while containing a floppy; blockstate can't be changed
         if(itemStack == null) {
             if(!diskInDrive) {return false;}
             markDirty();
 
-            ItemStack ejectedStack = new ItemStack(DoesNotCompute.floppy);
-
-            NBTTagCompound stackData = new NBTTagCompound();
-            stackData.setString("diskPath", diskPath);
-            ejectedStack.setTagCompound(stackData);
-            if(diskName != DEFAULT_DISK_NAME) {ejectedStack.setStackDisplayName(diskName);}
-
-            worldObj.spawnEntityInWorld(new EntityItem(worldObj, pos.getX(), pos.getY(), pos.getZ(), ejectedStack));
+            ejectFloppyDisk();
 
             setDiskInDrive(false);
             diskPath = null;
@@ -162,6 +157,19 @@ public class TileEntityDiskDrive extends RedbusCable implements IUpdatePlayerLis
         }
 
         return false;
+    }
+
+    // This should only be called externally when the block gets broken
+    public void ejectFloppyDisk() {
+        if(!diskInDrive) {return;}
+        ItemStack ejectedStack = new ItemStack(DoesNotCompute.floppy);
+
+        NBTTagCompound stackData = new NBTTagCompound();
+        stackData.setString("diskPath", diskPath);
+        ejectedStack.setTagCompound(stackData);
+        if(diskName != DEFAULT_DISK_NAME) {ejectedStack.setStackDisplayName(diskName);}
+
+        worldObj.spawnEntityInWorld(new EntityItem(worldObj, pos.getX(), pos.getY(), pos.getZ(), ejectedStack));
     }
 
     public boolean isDevice() {
@@ -227,6 +235,11 @@ public class TileEntityDiskDrive extends RedbusCable implements IUpdatePlayerLis
         sectorBuffer = data.getByteArray("sectorBuffer");
 
         super.readFromNBT(data);
+    }
+
+    @Override
+    public boolean shouldRefresh(World world, BlockPos coords, IBlockState oldState, IBlockState newState) {
+        return oldState.getBlock() != newState.getBlock();
     }
 
     private void setDiskInDrive(boolean value) {

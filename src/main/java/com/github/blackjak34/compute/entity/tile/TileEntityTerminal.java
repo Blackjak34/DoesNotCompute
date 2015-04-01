@@ -3,12 +3,15 @@ package com.github.blackjak34.compute.entity.tile;
 import com.github.blackjak34.compute.DoesNotCompute;
 import com.github.blackjak34.compute.interfaces.IRedbusCompatible;
 import com.github.blackjak34.compute.packet.MessageUpdateDisplay;
+import net.minecraft.block.state.IBlockState;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.network.Packet;
 import net.minecraft.network.play.server.S35PacketUpdateTileEntity;
+import net.minecraft.tileentity.TileEntity;
+import net.minecraft.util.BlockPos;
 import net.minecraft.world.World;
 
-public class TileEntityTerminal extends RedbusCable implements IRedbusCompatible {
+public class TileEntityTerminal extends TileEntity implements IRedbusCompatible {
 
     public static final int BUS_ADDR = 1;
 
@@ -142,6 +145,15 @@ public class TileEntityTerminal extends RedbusCable implements IRedbusCompatible
         }
     }
 
+    public void updateClient() {
+        for(int i=0;i<displayBuffer.length;++i) {
+            for(int j=0;j<displayBuffer[0].length;++j) {
+                DoesNotCompute.networkWrapper.sendToDimension(new MessageUpdateDisplay(j, i, displayBuffer[i][j], pos),
+                        worldObj.provider.getDimensionId());
+            }
+        }
+    }
+
     @Override
     public Packet getDescriptionPacket() {
         NBTTagCompound data = new NBTTagCompound();
@@ -191,21 +203,25 @@ public class TileEntityTerminal extends RedbusCable implements IRedbusCompatible
         blitYOffset = data.getInteger("blitYOffset");
         blitWidth = data.getInteger("blitWidth");
         blitHeight = data.getInteger("blitHeight");
-        for(int i=0;i<displayBuffer.length;i++) {
+
+        for(int i=0;i<displayBuffer.length;++i) {
             displayBuffer[i] = data.getByteArray("displayBuffer_row" + i);
         }
 
         super.readFromNBT(data);
     }
 
+    @Override
+    public boolean shouldRefresh(World world, BlockPos coords, IBlockState oldState, IBlockState newState) {
+        return oldState.getBlock() != newState.getBlock();
+    }
 
-    // TODO: fix blitter; trying to fill only the bottom row seems to fail
     private void runBlitter(int operation) {
         int xStart, endX, endY;
         switch(operation) {
             case 1:
-                endX = Math.min(79, blitXOffset+blitWidth);
-                endY = Math.min(49, blitYOffset+blitHeight);
+                endX = Math.min(80, blitXOffset+blitWidth);
+                endY = Math.min(50, blitYOffset+blitHeight);
                 for(int i=blitYOffset;i<endY;++i) {
                     for(int j=blitXOffset;j<endX;++j) {
                         writeToDisplayBuffer(j, i, blitXStart);
@@ -214,8 +230,8 @@ public class TileEntityTerminal extends RedbusCable implements IRedbusCompatible
                 break;
             case 2:
                 xStart = Math.min(79, blitXStart);
-                endX = Math.min(79, xStart+blitWidth);
-                endY = Math.min(49, blitYStart+blitHeight);
+                endX = Math.min(80, xStart+blitWidth);
+                endY = Math.min(50, blitYStart+blitHeight);
                 for(int i=blitYStart;i<endY;++i) {
                     for(int j=xStart;j<endX;++j) {
                         writeToDisplayBuffer(j, i, (displayBuffer[i][j]&255)+128);

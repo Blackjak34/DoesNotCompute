@@ -58,7 +58,15 @@ public class TernaryTree {
 
     public void writeToNBT(NBTTagCompound data) {
         NBTTagCompound treeData = new NBTTagCompound();
+
         writeNode(treeData, baseNode);
+        NBTTagCompound deviceData = new NBTTagCompound();
+        for(int busAddress : devices.keySet()) {
+            BlockPos pos = devices.get(busAddress);
+            deviceData.setIntArray(String.valueOf(busAddress), new int[] {pos.getX(), pos.getY(), pos.getZ()});
+        }
+        treeData.setTag("deviceData", deviceData);
+
         treeData.setInteger("dimensionID", world.provider.getDimensionId());
         data.setTag("treeData", treeData);
     }
@@ -90,7 +98,15 @@ public class TernaryTree {
 
     public void readFromNBT(NBTTagCompound data) {
         NBTTagCompound treeData = (NBTTagCompound) data.getTag("treeData");
+
         readNode(treeData, baseNode);
+        NBTTagCompound deviceData = (NBTTagCompound) treeData.getTag("deviceData");
+        for(Object key : deviceData.getKeySet()) {
+            int busAddress = Integer.parseInt((String) key);
+            int[] pos = deviceData.getIntArray((String) key);
+            devices.put(busAddress, new BlockPos(pos[0], pos[1], pos[2]));
+        }
+
         world = DimensionManager.getWorld(treeData.getInteger("dimensionID"));
     }
 
@@ -141,6 +157,15 @@ public class TernaryTree {
             if(!tree.baseNode.containsPos(pos)) {itr.remove();}
         }
         return containingTrees;
+    }
+
+    public static void updateSurroundingNetworks(World worldIn, BlockPos pos) {
+        Set<TernaryTree> treesToUpdate = TernaryTree.getTreesContainingPos(worldIn, pos.offsetNorth());
+        treesToUpdate.addAll(TernaryTree.getTreesContainingPos(worldIn, pos.offsetEast()));
+        treesToUpdate.addAll(TernaryTree.getTreesContainingPos(worldIn, pos.offsetSouth()));
+        treesToUpdate.addAll(TernaryTree.getTreesContainingPos(worldIn, pos.offsetWest()));
+
+        for(TernaryTree tree : treesToUpdate) {tree.evaluateTree();}
     }
 
     private class TernaryNode {
