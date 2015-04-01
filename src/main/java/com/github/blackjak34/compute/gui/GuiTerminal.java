@@ -90,7 +90,7 @@ public class GuiTerminal extends GuiContainer {
 
 				// Draws in the cursor on the screen as a solid blinking block of green
 				if(cursorMode != 0 && screenColumn == cursorX && screenRow == cursorY &&
-						(((time >> 2)&1L) > 0L || cursorMode == 1)) {
+						((time&4)!=0 || cursorMode == 1)) {
 					GL11.glDisable(GL11.GL_TEXTURE_2D);
                     worldRenderer.startDrawingQuads();
                     worldRenderer.addVertex(screenPositionX, screenPositionY, zLevel);
@@ -106,6 +106,7 @@ public class GuiTerminal extends GuiContainer {
 
 	@Override
 	protected void keyTyped(char charTyped, int lwjglCode) {
+        // TODO don't send modifier keys to the server
 		if(lwjglCode == 1) {mc.thePlayer.closeScreen();}
 		
 		DoesNotCompute.networkWrapper.sendToServer(new MessageKeyTyped(charTyped));

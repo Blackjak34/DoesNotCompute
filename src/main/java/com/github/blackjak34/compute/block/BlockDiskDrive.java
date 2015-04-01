@@ -1,5 +1,6 @@
 package com.github.blackjak34.compute.block;
 
+import com.github.blackjak34.compute.entity.tile.RedbusCable;
 import com.github.blackjak34.compute.entity.tile.TileEntityDiskDrive;
 import com.github.blackjak34.compute.entity.tile.client.TileEntityDiskDriveClient;
 import net.minecraft.block.ITileEntityProvider;
@@ -80,11 +81,15 @@ public class BlockDiskDrive extends BlockBase implements ITileEntityProvider {
 
     @Override
     public void breakBlock(World worldIn, BlockPos pos, IBlockState state) {
-        if(!worldIn.isRemote) {
-            ((TileEntityDiskDrive) worldIn.getTileEntity(pos)).onDiskUsed(null);
-        }
-
+        if(!worldIn.isRemote) {((TileEntityDiskDrive) worldIn.getTileEntity(pos)).onDiskUsed(null);}
         worldIn.removeTileEntity(pos);
+        if(!worldIn.isRemote) {RedbusCable.updateSurroundingNetworks(worldIn, pos);}
+    }
+
+    @Override
+    public void onBlockAdded(World worldIn, BlockPos pos, IBlockState state) {
+        if(worldIn.isRemote) {return;}
+        RedbusCable.updateSurroundingNetworks(worldIn, pos);
     }
 
 }

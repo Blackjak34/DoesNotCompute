@@ -1,19 +1,14 @@
 package com.github.blackjak34.compute.block;
 
 import com.github.blackjak34.compute.DoesNotCompute;
+import com.github.blackjak34.compute.entity.tile.RedbusCable;
 import com.github.blackjak34.compute.entity.tile.TileEntityTerminal;
 import com.github.blackjak34.compute.entity.tile.client.TileEntityTerminalClient;
 import com.github.blackjak34.compute.gui.GuiTerminal;
-import net.minecraft.block.Block;
 import net.minecraft.block.ITileEntityProvider;
-import net.minecraft.block.material.Material;
-import net.minecraft.block.properties.PropertyDirection;
-import net.minecraft.block.state.BlockState;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.creativetab.CreativeTabs;
-import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.BlockPos;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.world.World;
@@ -61,5 +56,17 @@ public class BlockTerminal extends BlockBase implements ITileEntityProvider {
 		player.openGui(DoesNotCompute.instance, GuiTerminal.GUIID, worldIn, pos.getX(), pos.getY(), pos.getZ());
 		return true;
 	}
+
+    @Override
+    public void onBlockAdded(World worldIn, BlockPos pos, IBlockState state) {
+        if(worldIn.isRemote) {return;}
+        RedbusCable.updateSurroundingNetworks(worldIn, pos);
+    }
+
+    @Override
+    public void breakBlock(World worldIn, BlockPos pos, IBlockState state) {
+        worldIn.removeTileEntity(pos);
+        if(!worldIn.isRemote) {RedbusCable.updateSurroundingNetworks(worldIn, pos);}
+    }
 
 }

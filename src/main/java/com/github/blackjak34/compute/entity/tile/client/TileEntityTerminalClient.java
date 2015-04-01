@@ -8,8 +8,6 @@ import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.BlockPos;
 import net.minecraft.world.World;
 
-import java.util.Arrays;
-
 public class TileEntityTerminalClient extends TileEntity {
 
     private int cursorX = 0;

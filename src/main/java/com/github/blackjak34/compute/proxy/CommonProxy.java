@@ -1,10 +1,8 @@
 package com.github.blackjak34.compute.proxy;
 
 import com.github.blackjak34.compute.container.ContainerBase;
-import com.github.blackjak34.compute.entity.tile.TileEntityTerminal;
 import com.github.blackjak34.compute.entity.tile.client.TileEntityCPUClient;
 import com.github.blackjak34.compute.entity.tile.client.TileEntityTerminalClient;
-import com.github.blackjak34.compute.entity.tile.TileEntityCPU;
 import com.github.blackjak34.compute.gui.GuiCPU;
 import com.github.blackjak34.compute.gui.GuiTerminal;
 import net.minecraft.entity.player.EntityPlayer;

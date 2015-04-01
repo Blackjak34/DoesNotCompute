@@ -4,7 +4,6 @@ import com.github.blackjak34.compute.DoesNotCompute;
 import com.github.blackjak34.compute.container.ContainerBase;
 import com.github.blackjak34.compute.entity.tile.client.TileEntityCPUClient;
 import com.github.blackjak34.compute.packet.MessageActionPerformed;
-import com.github.blackjak34.compute.packet.MessageKeyTyped;
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.gui.inventory.GuiContainer;
 import net.minecraft.client.renderer.Tessellator;

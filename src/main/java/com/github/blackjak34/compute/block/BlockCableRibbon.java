@@ -1,5 +1,6 @@
 package com.github.blackjak34.compute.block;
 
+import com.github.blackjak34.compute.entity.tile.RedbusCable;
 import com.github.blackjak34.compute.entity.tile.TileEntityCableRibbon;
 import com.github.blackjak34.compute.interfaces.IRedbusCompatible;
 import net.minecraft.block.Block;
@@ -10,7 +11,6 @@ import net.minecraft.block.state.BlockState;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.entity.EntityLivingBase;
-import net.minecraft.init.Blocks;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.BlockPos;
 import net.minecraft.util.EnumFacing;
@@ -122,6 +122,7 @@ public class BlockCableRibbon extends Block implements ITileEntityProvider {
 
     @Override
     public void onNeighborBlockChange(World world, BlockPos pos, IBlockState state, Block neighborBlock) {
+        // TODO drop block if block underneath is broken
         world.setBlockState(pos, updateState(world, pos));
     }
 
@@ -137,6 +138,19 @@ public class BlockCableRibbon extends Block implements ITileEntityProvider {
     @Override
     public boolean canPlaceBlockAt(World worldIn, BlockPos pos) {
         return worldIn.getBlockState(pos.offsetDown()).getBlock().isOpaqueCube();
+    }
+
+    // TODO merge these two functions into some class to eliminate duplicating them in every block w/ a TE extending RedbusCable
+    @Override
+    public void onBlockAdded(World worldIn, BlockPos pos, IBlockState state) {
+        if(worldIn.isRemote) {return;}
+        RedbusCable.updateSurroundingNetworks(worldIn, pos);
+    }
+
+    @Override
+    public void breakBlock(World worldIn, BlockPos pos, IBlockState state) {
+        worldIn.removeTileEntity(pos);
+        if(!worldIn.isRemote) {RedbusCable.updateSurroundingNetworks(worldIn, pos);}
     }
 
 }

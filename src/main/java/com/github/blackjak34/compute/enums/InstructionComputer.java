@@ -1,8 +1,8 @@
 package com.github.blackjak34.compute.enums;
 
-import static com.github.blackjak34.compute.enums.AddressingMode.*;
-
 import java.util.HashMap;
+
+import static com.github.blackjak34.compute.enums.AddressingMode.*;
 
 /*
  * All branches have a listed cycle number of two; branches require three cycles if they are taken and four cycles if

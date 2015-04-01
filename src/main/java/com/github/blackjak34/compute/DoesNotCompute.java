@@ -1,8 +1,17 @@
 package com.github.blackjak34.compute;
 
-import com.github.blackjak34.compute.block.*;
-import com.github.blackjak34.compute.entity.tile.*;
-import com.github.blackjak34.compute.entity.tile.client.*;
+import com.github.blackjak34.compute.block.BlockCPU;
+import com.github.blackjak34.compute.block.BlockCableRibbon;
+import com.github.blackjak34.compute.block.BlockDiskDrive;
+import com.github.blackjak34.compute.block.BlockTerminal;
+import com.github.blackjak34.compute.entity.tile.TileEntityCPU;
+import com.github.blackjak34.compute.entity.tile.TileEntityCableRibbon;
+import com.github.blackjak34.compute.entity.tile.TileEntityDiskDrive;
+import com.github.blackjak34.compute.entity.tile.TileEntityTerminal;
+import com.github.blackjak34.compute.entity.tile.client.TileEntityCPUClient;
+import com.github.blackjak34.compute.entity.tile.client.TileEntityCableRibbonClient;
+import com.github.blackjak34.compute.entity.tile.client.TileEntityDiskDriveClient;
+import com.github.blackjak34.compute.entity.tile.client.TileEntityTerminalClient;
 import com.github.blackjak34.compute.item.ItemFloppy;
 import com.github.blackjak34.compute.packet.MessageActionPerformed;
 import com.github.blackjak34.compute.packet.MessageKeyTyped;
@@ -24,7 +33,9 @@ import net.minecraftforge.fml.common.registry.GameRegistry;
 import net.minecraftforge.fml.relauncher.Side;
 
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.io.RandomAccessFile;
 
 @Mod(modid = DoesNotCompute.MODID, name = DoesNotCompute.NAME, version = DoesNotCompute.VERSION)
 public class DoesNotCompute {
@@ -33,7 +44,7 @@ public class DoesNotCompute {
 
     public static final String NAME = "Does Not Compute";
 
-    public static final String VERSION = "1.0.1";
+    public static final String VERSION = "1.1.1";
     
     public static SimpleNetworkWrapper networkWrapper;
     
@@ -124,34 +135,30 @@ public class DoesNotCompute {
         System.arraycopy(data, 0, dest, index, Math.min(data.length, maxLength));
     }
 
-    public static boolean copyArrayIntoFile(World world, String filename, byte[] src) {
+    public static RandomAccessFile getRandomAccessFile(World world, String filename, String mode) {
         File modDirectory = new File(world.getSaveHandler().getWorldDirectory(), "/doesnotcompute/");
-        File dataFile = new File(modDirectory, filename);
+        File file = new File(modDirectory, filename);
 
         if(!modDirectory.exists() && !modDirectory.mkdir()) {
-            System.err.println("Could not generate the mod directory. Is the world folder read only?");
-            return false;
+            System.err.println("Failed to generate a new directory in the world folder. Is it read only?");
+            return null;
         }
 
         try {
-            if(dataFile.createNewFile()) {
-                System.out.println("Generated a new data file at " + dataFile.getAbsolutePath() + ".");
+            if(file.createNewFile()) {
+                System.out.println("Generated new file " + filename + " in the mod directory.");
             }
         } catch(IOException e) {
-            System.err.println("Could not generate a new data file at " + dataFile.getAbsolutePath() +
-                    ". Is the world folder read only?");
-            return false;
+            System.err.println("Failed to generate new file " + filename + " in the mod directory. Is it read only?");
+            return null;
         }
 
         try {
-            Files.write(src, dataFile);
-        } catch(IOException e) {
-            System.err.println("There was an error writing data to the file at" + dataFile.getAbsolutePath() + ":");
-            e.printStackTrace();
-            return false;
+            return new RandomAccessFile(file, mode);
+        } catch(FileNotFoundException e) {
+            System.err.println("Couldn't find the file " + filename + " in mod directory.");
+            return null;
         }
-
-        return true;
     }
     
 }

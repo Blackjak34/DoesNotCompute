@@ -3,21 +3,30 @@ package com.github.blackjak34.compute.entity.tile;
 import com.github.blackjak34.compute.DoesNotCompute;
 import com.github.blackjak34.compute.interfaces.IRedbusCompatible;
 import com.github.blackjak34.compute.packet.MessageUpdateDisplay;
-import com.github.blackjak34.compute.redbus.RedbusDataPacket;
-import net.minecraft.block.state.IBlockState;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.network.Packet;
 import net.minecraft.network.play.server.S35PacketUpdateTileEntity;
-import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.BlockPos;
 import net.minecraft.world.World;
 
-public class TileEntityTerminal extends TileEntity implements IRedbusCompatible {
+public class TileEntityTerminal extends RedbusCable implements IRedbusCompatible {
 
     public static final int BUS_ADDR = 1;
 
+    private int accessRow = 0;
+    private int cursorX = 0;
+    private int cursorY = 0;
+    private int cursorMode = 0;
+    private int keyBufferStart = 0;
+    private int keyBufferPos = 0;
+    private int blitResult = 0;
+    private int blitXStart = 0;
+    private int blitYStart = 0;
+    private int blitXOffset = 0;
+    private int blitYOffset = 0;
+    private int blitWidth = 0;
+    private int blitHeight = 0;
+
     private byte[] keyBuffer = new byte[16];
-    private byte[] redbusWindow = new byte[256];
     private byte[][] displayBuffer = new byte[50][80];
 
     public TileEntityTerminal() {}
@@ -26,99 +35,110 @@ public class TileEntityTerminal extends TileEntity implements IRedbusCompatible 
 
     public void onKeyTyped(char keyTyped) {
         markDirty();
-        keyBuffer[redbusWindow[5]] = (byte) keyTyped;
-        redbusWindow[5]++;
-        redbusWindow[5] &= 15;
-        redbusWindow[6] = keyBuffer[redbusWindow[4]];
-        RedbusDataPacket.sendPacket(worldObj, pos, new RedbusDataPacket(TileEntityCPU.BUS_ADDR, redbusWindow[5], 5));
-        RedbusDataPacket.sendPacket(worldObj, pos, new RedbusDataPacket(TileEntityCPU.BUS_ADDR, redbusWindow[6], 6));
+        keyBuffer[keyBufferPos] = (byte) keyTyped;
+        ++keyBufferPos;
+        keyBufferPos &= 15;
     }
 
-    public void onPacketReceived(RedbusDataPacket dataPacket) {
-        if(dataPacket.address != BUS_ADDR) {return;}
+    public boolean isDevice() {
+        return true;
+    }
+
+    public int getBusAddress() {
+        return BUS_ADDR;
+    }
+
+    public void write(int index, int value) {
         markDirty();
-
-        if(dataPacket.index == (byte) 0xFF && dataPacket.data == (byte) 0xFF) {
-            for(int i=0;i<256;++i) {
-                RedbusDataPacket.sendPacket(worldObj, pos, new RedbusDataPacket(TileEntityCPU.BUS_ADDR, redbusWindow[i], i));
-            }
-            return;
-        }
-
-        redbusWindow[dataPacket.index&255] = dataPacket.data;
-        switch(dataPacket.index&255) {
+        switch(index) {
             case 0:
-                System.arraycopy(displayBuffer[(dataPacket.data&255) % 50], 0, redbusWindow, 16, 80);
-                for(int i=16;i<96;i++) {
-                    RedbusDataPacket.sendPacket(worldObj, pos, new RedbusDataPacket(TileEntityCPU.BUS_ADDR, redbusWindow[i], i));
-                }
+                accessRow = Math.max(0, value % 50);
                 break;
-            case 1:case 2:case 3:
+            case 1:
+                cursorX = Math.max(0, value % 80);
+                worldObj.markBlockForUpdate(pos);
+                break;
+            case 2:
+                cursorY = Math.max(0, value % 50);
+                worldObj.markBlockForUpdate(pos);
+                break;
+            case 3:
+                cursorMode = Math.max(0, value % 3);
                 worldObj.markBlockForUpdate(pos);
                 break;
             case 4:
-                redbusWindow[6] = keyBuffer[dataPacket.data&15];
-                redbusWindow[4] &= 15;
-                RedbusDataPacket.sendPacket(worldObj, pos, new RedbusDataPacket(TileEntityCPU.BUS_ADDR, redbusWindow[6], 6));
-                RedbusDataPacket.sendPacket(worldObj, pos, new RedbusDataPacket(TileEntityCPU.BUS_ADDR, redbusWindow[4], 4));
+                keyBufferStart = value & 15;
                 break;
             case 5:
-                redbusWindow[5] &= 15;
-                RedbusDataPacket.sendPacket(worldObj, pos, new RedbusDataPacket(TileEntityCPU.BUS_ADDR, redbusWindow[5], 5));
+                keyBufferPos = value & 15;
+                break;
+            case 6:
+                keyBuffer[keyBufferStart] = (byte) value;
                 break;
             case 7:
-                int xStart = redbusWindow[8]&255;
-                int yStart = redbusWindow[9]&255;
-                int xOffset = redbusWindow[10]&255;
-                int yOffset = redbusWindow[11]&255;
-                int width = redbusWindow[12]&255;
-                int height = redbusWindow[13]&255;
-
-                switch(dataPacket.data) {
-                    case 1:
-                        int endY = yOffset + height;
-                        int endX = xOffset + width;
-
-                        for(int i=yOffset;i<endY;i++) {
-                            for(int j=xOffset;j<endX;j++) {
-                                displayBuffer[i][j] = (byte) xStart;
-                                DoesNotCompute.networkWrapper.sendToDimension(
-                                        new MessageUpdateDisplay(j, i, (byte) xStart, pos),
-                                        worldObj.provider.getDimensionId());
-                            }
-                        }
-                        break;
-                    case 2:
-                        break;
-                    case 3:
-                        for(int i=0;i<height;i++) {
-                            for(int j=0;j<width;j++) {
-                                byte newValue = displayBuffer[yStart+i][xStart+j];
-                                displayBuffer[yOffset+i][xOffset+j] = newValue;
-                                DoesNotCompute.networkWrapper.sendToDimension(
-                                        new MessageUpdateDisplay(xOffset + j, yOffset + i, newValue, pos),
-                                        worldObj.provider.getDimensionId());
-                            }
-                        }
-                        break;
-                }
-
-                System.arraycopy(displayBuffer[(redbusWindow[0]&255) % 50], 0, redbusWindow, 16, 80);
-                for(int i=16;i<96;++i) {
-                    RedbusDataPacket.sendPacket(worldObj, pos, new RedbusDataPacket(TileEntityCPU.BUS_ADDR, redbusWindow[i], i));
-                }
-
-                redbusWindow[7] = 0x00;
-                RedbusDataPacket.sendPacket(worldObj, pos, new RedbusDataPacket(TileEntityCPU.BUS_ADDR, 0x00, 7));
+                runBlitter(value);
+                break;
+            case 8:
+                // This is not limited because it is also used as the fill value
+                blitXStart = value;
+                break;
+            case 9:
+                blitYStart = Math.max(0, value % 50);
+                break;
+            case 10:
+                blitXOffset = Math.max(0, value % 80);
+                break;
+            case 11:
+                blitYOffset = Math.max(0, value % 50);
+                break;
+            case 12:
+                blitWidth = Math.max(0, value % 81);
+                break;
+            case 13:
+                blitHeight = Math.max(0, value % 51);
                 break;
             default:
-                if((dataPacket.index&255) > 0x0F && (dataPacket.index&255) < 0x60) {
-                    displayBuffer[(redbusWindow[0]&255) % 50][(dataPacket.index&255)-16] = dataPacket.data;
-                    DoesNotCompute.networkWrapper.sendToDimension(
-                            new MessageUpdateDisplay((dataPacket.index & 255) - 16, redbusWindow[0], dataPacket.data, pos),
-                            worldObj.provider.getDimensionId());
+                if(index > 0x09 && index < 0x60) {
+                    writeToDisplayBuffer(index-16, accessRow, value);
                 }
-                break;
+        }
+    }
+
+    public int read(int index) {
+        switch(index) {
+            case 0:
+                return accessRow;
+            case 1:
+                return cursorX;
+            case 2:
+                return cursorY;
+            case 3:
+                return cursorMode;
+            case 4:
+                return keyBufferStart;
+            case 5:
+                return keyBufferPos;
+            case 6:
+                return keyBuffer[keyBufferStart];
+            case 7:
+                return blitResult;
+            case 8:
+                return blitXStart;
+            case 9:
+                return blitYStart;
+            case 10:
+                return blitXOffset;
+            case 11:
+                return blitYOffset;
+            case 12:
+                return blitWidth;
+            case 13:
+                return blitHeight;
+            default:
+                if(index > 0x09 && index < 0x60) {
+                    return displayBuffer[accessRow][index-10];
+                }
+                return 0xFF;
         }
     }
 
@@ -126,9 +146,9 @@ public class TileEntityTerminal extends TileEntity implements IRedbusCompatible 
     public Packet getDescriptionPacket() {
         NBTTagCompound data = new NBTTagCompound();
 
-        data.setInteger("cursorX", redbusWindow[1]);
-        data.setInteger("cursorY", redbusWindow[2]);
-        data.setInteger("cursorMode", redbusWindow[3]);
+        data.setInteger("cursorX", cursorX);
+        data.setInteger("cursorY", cursorY);
+        data.setInteger("cursorMode", cursorMode);
         super.writeToNBT(data);
 
         return new S35PacketUpdateTileEntity(pos, 0, data);
@@ -136,7 +156,19 @@ public class TileEntityTerminal extends TileEntity implements IRedbusCompatible 
 
     @Override
     public void writeToNBT(NBTTagCompound data) {
-        data.setByteArray("redbusWindow", redbusWindow);
+        data.setInteger("accessRow", accessRow);
+        data.setInteger("cursorX", cursorX);
+        data.setInteger("cursorY", cursorY);
+        data.setInteger("cursorMode", cursorMode);
+        data.setInteger("keyBufferStart", keyBufferStart);
+        data.setInteger("keyBufferPos", keyBufferPos);
+        data.setInteger("blitResult", blitResult);
+        data.setInteger("blitXStart", blitXStart);
+        data.setInteger("blitYStart", blitYStart);
+        data.setInteger("blitXOffset", blitXOffset);
+        data.setInteger("blitYOffset", blitYOffset);
+        data.setInteger("blitWidth", blitWidth);
+        data.setInteger("blitHeight", blitHeight);
         for(int i=0;i<displayBuffer.length;i++) {
             data.setByteArray("displayBuffer_row" + i, displayBuffer[i]);
         }
@@ -146,7 +178,19 @@ public class TileEntityTerminal extends TileEntity implements IRedbusCompatible 
 
     @Override
     public void readFromNBT(NBTTagCompound data) {
-        redbusWindow = data.getByteArray("redbusWindow");
+        accessRow = data.getInteger("accessRow");
+        cursorX = data.getInteger("cursorX");
+        cursorY = data.getInteger("cursorY");
+        cursorMode = data.getInteger("cursorMode");
+        keyBufferStart = data.getInteger("keyBufferStart");
+        keyBufferPos = data.getInteger("keyBufferPos");
+        blitResult = data.getInteger("blitResult");
+        blitXStart = data.getInteger("blitXStart");
+        blitYStart = data.getInteger("blitYStart");
+        blitXOffset = data.getInteger("blitXOffset");
+        blitYOffset = data.getInteger("blitYOffset");
+        blitWidth = data.getInteger("blitWidth");
+        blitHeight = data.getInteger("blitHeight");
         for(int i=0;i<displayBuffer.length;i++) {
             displayBuffer[i] = data.getByteArray("displayBuffer_row" + i);
         }
@@ -154,10 +198,57 @@ public class TileEntityTerminal extends TileEntity implements IRedbusCompatible 
         super.readFromNBT(data);
     }
 
-    @Override
-    public boolean shouldRefresh(World world, BlockPos coords, IBlockState oldState, IBlockState newState)
-    {
-        return oldState.getBlock() != newState.getBlock();
+
+    // TODO: fix blitter; trying to fill only the bottom row seems to fail
+    private void runBlitter(int operation) {
+        int xStart, endX, endY;
+        switch(operation) {
+            case 1:
+                endX = Math.min(79, blitXOffset+blitWidth);
+                endY = Math.min(49, blitYOffset+blitHeight);
+                for(int i=blitYOffset;i<endY;++i) {
+                    for(int j=blitXOffset;j<endX;++j) {
+                        writeToDisplayBuffer(j, i, blitXStart);
+                    }
+                }
+                break;
+            case 2:
+                xStart = Math.min(79, blitXStart);
+                endX = Math.min(79, xStart+blitWidth);
+                endY = Math.min(49, blitYStart+blitHeight);
+                for(int i=blitYStart;i<endY;++i) {
+                    for(int j=xStart;j<endX;++j) {
+                        writeToDisplayBuffer(j, i, (displayBuffer[i][j]&255)+128);
+                    }
+                }
+                break;
+            case 3:
+                xStart = Math.min(79, blitXStart);
+                nextLine: for(int i=0;i<blitHeight;++i) {
+                    int sourceY = blitYStart + i;
+                    int destY = blitYOffset + i;
+                    if(destY > 49 || sourceY > 49) {break;}
+
+                    for(int j=0;j<blitWidth;++j) {
+                        int sourceX = xStart + j;
+                        int destX = blitXOffset + j;
+                        if(destX > 79 || sourceX > 79) {continue nextLine;}
+
+                        writeToDisplayBuffer(destX, destY, displayBuffer[sourceY][sourceX]);
+                    }
+                }
+                break;
+            default:
+                blitResult = 0xFF;
+                return;
+        }
+        blitResult = 0;
+    }
+
+    private void writeToDisplayBuffer(int xPos, int yPos, int value) {
+        displayBuffer[yPos][xPos] = (byte) value;
+        DoesNotCompute.networkWrapper.sendToDimension(new MessageUpdateDisplay(xPos, yPos, (byte) value, pos),
+                worldObj.provider.getDimensionId());
     }
 
 }

@@ -77,4 +77,9 @@ public class BlockCPU extends BlockBase implements ITileEntityProvider {
         return true;
     }
 
+    @Override
+    public void breakBlock(World worldIn, BlockPos pos, IBlockState state) {
+        worldIn.removeTileEntity(pos);
+    }
+
 }
