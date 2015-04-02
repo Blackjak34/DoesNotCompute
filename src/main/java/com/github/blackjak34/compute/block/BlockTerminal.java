@@ -7,7 +7,6 @@ import com.github.blackjak34.compute.gui.GuiTerminal;
 import net.minecraft.block.ITileEntityProvider;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.state.IBlockState;
-import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.BlockPos;
 import net.minecraft.util.EnumFacing;
@@ -18,7 +17,7 @@ public class BlockTerminal extends BlockPeripheral implements ITileEntityProvide
 	public BlockTerminal() {
 		super(Material.iron, TileEntityTerminalClient.class, TileEntityTerminal.class);
 		
-		setCreativeTab(CreativeTabs.tabMisc);
+		setCreativeTab(DoesNotCompute.tabDoesNotCompute);
 		setUnlocalizedName("blockTerminal");
 	}
 

@@ -21,6 +21,8 @@ import com.github.blackjak34.compute.packet.handler.HandlerKeyTyped;
 import com.github.blackjak34.compute.packet.handler.HandlerUpdateDisplay;
 import com.github.blackjak34.compute.proxy.CommonProxy;
 import com.google.common.io.Files;
+import net.minecraft.creativetab.CreativeTabs;
+import net.minecraft.item.Item;
 import net.minecraft.world.World;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.SidedProxy;
@@ -31,6 +33,7 @@ import net.minecraftforge.fml.common.network.NetworkRegistry;
 import net.minecraftforge.fml.common.network.simpleimpl.SimpleNetworkWrapper;
 import net.minecraftforge.fml.common.registry.GameRegistry;
 import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.SideOnly;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -44,7 +47,7 @@ public class DoesNotCompute {
 
     public static final String NAME = "Does Not Compute";
 
-    public static final String VERSION = "1.1.2";
+    public static final String VERSION = "1.1.3";
     
     public static SimpleNetworkWrapper networkWrapper;
     
@@ -61,6 +64,16 @@ public class DoesNotCompute {
     @SidedProxy(clientSide="com.github.blackjak34.compute.proxy.client.ClientProxy",
     		serverSide="com.github.blackjak34.compute.proxy.CommonProxy")
     public static CommonProxy proxy;
+
+    public static final CreativeTabs tabDoesNotCompute = new CreativeTabs("tabDoesNotCompute") {
+
+        @Override
+        @SideOnly(Side.CLIENT)
+        public Item getTabIconItem() {
+            return Item.getItemFromBlock(terminal);
+        }
+
+    };
 
     @SuppressWarnings("unused")
 	@Mod.EventHandler
@@ -82,7 +95,6 @@ public class DoesNotCompute {
         GameRegistry.registerTileEntity(TileEntityDiskDriveClient.class, "tileEntityDiskDriveClient");
         GameRegistry.registerTileEntity(TileEntityCableRibbon.class, "tileEntityCableRibbon");
         GameRegistry.registerTileEntity(TileEntityCableRibbonClient.class, "tileEntityCableRibbonClient");
-    	
     	
     	floppy = new ItemFloppy();
     	

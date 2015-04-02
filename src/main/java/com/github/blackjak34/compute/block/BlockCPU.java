@@ -9,7 +9,6 @@ import net.minecraft.block.material.Material;
 import net.minecraft.block.properties.PropertyBool;
 import net.minecraft.block.state.BlockState;
 import net.minecraft.block.state.IBlockState;
-import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.BlockPos;
 import net.minecraft.util.EnumFacing;
@@ -22,7 +21,7 @@ public class BlockCPU extends BlockBase implements ITileEntityProvider {
     public BlockCPU() {
         super(Material.iron, TileEntityCPUClient.class, TileEntityCPU.class, RUNNING);
 
-        setCreativeTab(CreativeTabs.tabMisc);
+        setCreativeTab(DoesNotCompute.tabDoesNotCompute);
         setUnlocalizedName("blockCPU");
     }
 

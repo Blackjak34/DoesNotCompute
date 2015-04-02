@@ -1,5 +1,6 @@
 package com.github.blackjak34.compute.block;
 
+import com.github.blackjak34.compute.DoesNotCompute;
 import com.github.blackjak34.compute.entity.tile.TileEntityDiskDrive;
 import com.github.blackjak34.compute.entity.tile.client.TileEntityDiskDriveClient;
 import com.github.blackjak34.compute.utils.TernaryTree;
@@ -8,7 +9,6 @@ import net.minecraft.block.material.Material;
 import net.minecraft.block.properties.PropertyBool;
 import net.minecraft.block.state.BlockState;
 import net.minecraft.block.state.IBlockState;
-import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.BlockPos;
@@ -22,7 +22,7 @@ public class BlockDiskDrive extends BlockPeripheral implements ITileEntityProvid
     public BlockDiskDrive() {
         super(Material.iron, TileEntityDiskDriveClient.class, TileEntityDiskDrive.class, DISK);
 
-        setCreativeTab(CreativeTabs.tabMisc);
+        setCreativeTab(DoesNotCompute.tabDoesNotCompute);
         setUnlocalizedName("blockDiskDrive");
     }
 

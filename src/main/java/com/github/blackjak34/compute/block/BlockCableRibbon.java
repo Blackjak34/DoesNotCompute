@@ -1,5 +1,6 @@
 package com.github.blackjak34.compute.block;
 
+import com.github.blackjak34.compute.DoesNotCompute;
 import com.github.blackjak34.compute.entity.tile.TileEntityCableRibbon;
 import com.github.blackjak34.compute.interfaces.IRedbusCompatible;
 import com.github.blackjak34.compute.utils.TernaryTree;
@@ -9,7 +10,6 @@ import net.minecraft.block.material.Material;
 import net.minecraft.block.properties.PropertyBool;
 import net.minecraft.block.state.BlockState;
 import net.minecraft.block.state.IBlockState;
-import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.BlockPos;
@@ -27,7 +27,7 @@ public class BlockCableRibbon extends Block implements ITileEntityProvider {
         super(Material.circuits);
         setBlockBounds(0.25f, 0.0f, 0.25f, 0.75f, 0.1f, 0.75f);
 
-        setCreativeTab(CreativeTabs.tabMisc);
+        setCreativeTab(DoesNotCompute.tabDoesNotCompute);
         setUnlocalizedName("blockCableRibbon");
         setDefaultState(blockState.getBaseState()
                         .withProperty(NORTH, false)
