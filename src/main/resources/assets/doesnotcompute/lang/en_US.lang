@@ -4,5 +4,6 @@ tile.blockDiskDrive.name=Disk Drive
 tile.blockCableRibbon.name=Ribbon Cable
 
 item.itemFloppy.name=Floppy Disk
+item.itemScrewdriver.name=Screwdriver
 
 itemGroup.tabDoesNotCompute=Does Not Compute

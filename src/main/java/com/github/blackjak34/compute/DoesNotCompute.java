@@ -13,6 +13,7 @@ import com.github.blackjak34.compute.entity.tile.client.TileEntityCableRibbonCli
 import com.github.blackjak34.compute.entity.tile.client.TileEntityDiskDriveClient;
 import com.github.blackjak34.compute.entity.tile.client.TileEntityTerminalClient;
 import com.github.blackjak34.compute.item.ItemFloppy;
+import com.github.blackjak34.compute.item.ItemScrewdriver;
 import com.github.blackjak34.compute.packet.MessageActionPerformed;
 import com.github.blackjak34.compute.packet.MessageKeyTyped;
 import com.github.blackjak34.compute.packet.MessageUpdateDisplay;
@@ -47,7 +48,7 @@ public class DoesNotCompute {
 
     public static final String NAME = "Does Not Compute";
 
-    public static final String VERSION = "1.1.3";
+    public static final String VERSION = "1.1.4";
     
     public static SimpleNetworkWrapper networkWrapper;
     
@@ -57,6 +58,7 @@ public class DoesNotCompute {
     public static BlockCableRibbon ribbonCable;
     
     public static ItemFloppy floppy;
+    public static ItemScrewdriver screwdriver;
 
     @Mod.Instance(value = DoesNotCompute.MODID)
     public static DoesNotCompute instance;
@@ -97,8 +99,10 @@ public class DoesNotCompute {
         GameRegistry.registerTileEntity(TileEntityCableRibbonClient.class, "tileEntityCableRibbonClient");
     	
     	floppy = new ItemFloppy();
+        screwdriver = new ItemScrewdriver();
     	
     	GameRegistry.registerItem(floppy, "itemFloppy");
+        GameRegistry.registerItem(screwdriver, "itemScrewdriver");
     	
     	networkWrapper = NetworkRegistry.INSTANCE.newSimpleChannel(DoesNotCompute.MODID);
     	networkWrapper.registerMessage(HandlerActionPerformed.class, MessageActionPerformed.class, 0, Side.SERVER);
