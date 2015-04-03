@@ -1268,6 +1268,15 @@ public class Emulator65EL02 {
                 boolean tempCarry = flagEmulate;
                 flagEmulate = flagCarry;
                 flagCarry = tempCarry;
+
+                if(flagEmulate) {
+                    registerX &= 255;
+                    registerY &= 255;
+                    flagBreak = false;
+                } else {
+                    flagBreak = true;
+                }
+                flagAccumulator = true;
             }
             break;
             case MMU:

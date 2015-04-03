@@ -39,7 +39,6 @@ public class TileEntityCPU extends RedbusMaster implements IUpdatePlayerListBox,
                 setRunning(true);
             }
         } else if(buttonID == BUTTON_RST.getValue()) {
-            // TODO: stack pointers are not reset
             setRunning(false);
             emulator.setProgramCounter(0x0400);
             emulator.clearMemory();

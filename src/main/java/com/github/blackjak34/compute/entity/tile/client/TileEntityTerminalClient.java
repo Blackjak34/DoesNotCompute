@@ -33,13 +33,12 @@ public class TileEntityTerminalClient extends TileEntityRedbus {
         return cursorMode;
     }
 
-    // TODO: cursorX and cursorY can be set negative
     @Override
     public void onDataPacket(NetworkManager networkManager, S35PacketUpdateTileEntity packet) {
         NBTTagCompound data = packet.getNbtCompound();
 
-        cursorX = Math.min(data.getInteger("cursorX"), 79);
-        cursorY = Math.min(data.getInteger("cursorY"), 49);
+        cursorX = Math.min(Math.abs(data.getInteger("cursorX")), 79);
+        cursorY = Math.min(Math.abs(data.getInteger("cursorY")), 49);
         cursorMode = Math.min(Math.abs(data.getInteger("cursorMode")), 3);
 
         super.onDataPacket(networkManager, packet);
