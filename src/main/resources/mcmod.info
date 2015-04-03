@@ -2,13 +2,13 @@
 {
   "modid": "doesnotcompute",
   "name": "Does Not Compute",
-  "description": "A simple computer mod.",
+  "description": "A faithful reimplementation of RedPower Control. All credit for the concepts in this mod go to Eloraam.",
   "version": "${version}",
   "mcversion": "${mcversion}",
   "url": "https://github.com/blackjak34/DoesNotCompute",
   "updateUrl": "",
   "authorList": ["Blackjak34"],
-  "credits": "My bro, leoMagis, for making some of the textures in this mod.",
+  "credits": "My bro, leoMagis, for some of the textures.",
   "logoFile": "",
   "screenshots": [],
   "dependencies": []
