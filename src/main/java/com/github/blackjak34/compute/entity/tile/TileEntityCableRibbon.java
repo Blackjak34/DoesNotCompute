@@ -20,6 +20,8 @@ public class TileEntityCableRibbon extends TileEntity implements IRedbusCompatib
         return 0x100;
     }
 
+    public void setBusAddress(int newAddress) {}
+
     public int read(int index) {
         return 0xFF;
     }

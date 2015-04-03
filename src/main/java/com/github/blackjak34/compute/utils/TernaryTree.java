@@ -2,6 +2,8 @@ package com.github.blackjak34.compute.utils;
 
 import com.github.blackjak34.compute.interfaces.IRedbusCompatible;
 import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.nbt.NBTTagIntArray;
+import net.minecraft.nbt.NBTTagList;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.BlockPos;
 import net.minecraft.world.World;
@@ -16,7 +18,7 @@ public class TernaryTree {
     private World world;
     private final TernaryNode baseNode;
 
-    private final HashMap<Integer,BlockPos> devices = new HashMap<Integer,BlockPos>();
+    private final Set<BlockPos> devices = new HashSet<BlockPos>();
 
     public TernaryTree(World world, BlockPos basePos) {
         this.world = world;
@@ -43,14 +45,14 @@ public class TernaryTree {
     }
 
     public int redbusRead(int address, int index) {
-        BlockPos devicePos = devices.get(address);
+        BlockPos devicePos = getDeviceWithAddress(address);
         if(devicePos == null) {return 0xFF;}
 
         return ((IRedbusCompatible) world.getTileEntity(devicePos)).read(index);
     }
 
     public void redbusWrite(int address, int index, int value) {
-        BlockPos devicePos = devices.get(address);
+        BlockPos devicePos = getDeviceWithAddress(address);
         if(devicePos == null) {return;}
 
         ((IRedbusCompatible) world.getTileEntity(devicePos)).write(index, value);
@@ -60,10 +62,9 @@ public class TernaryTree {
         NBTTagCompound treeData = new NBTTagCompound();
 
         writeNode(treeData, baseNode);
-        NBTTagCompound deviceData = new NBTTagCompound();
-        for(int busAddress : devices.keySet()) {
-            BlockPos pos = devices.get(busAddress);
-            deviceData.setIntArray(String.valueOf(busAddress), new int[] {pos.getX(), pos.getY(), pos.getZ()});
+        NBTTagList deviceData = new NBTTagList();
+        for(BlockPos pos : devices) {
+            deviceData.appendTag(new NBTTagIntArray(new int[] {pos.getX(), pos.getY(), pos.getZ()}));
         }
         treeData.setTag("deviceData", deviceData);
 
@@ -100,11 +101,10 @@ public class TernaryTree {
         NBTTagCompound treeData = (NBTTagCompound) data.getTag("treeData");
 
         readNode(treeData, baseNode);
-        NBTTagCompound deviceData = (NBTTagCompound) treeData.getTag("deviceData");
-        for(Object key : deviceData.getKeySet()) {
-            int busAddress = Integer.parseInt((String) key);
-            int[] pos = deviceData.getIntArray((String) key);
-            devices.put(busAddress, new BlockPos(pos[0], pos[1], pos[2]));
+        NBTTagList deviceData = (NBTTagList) treeData.getTag("deviceData");
+        for(int i=0;i<deviceData.tagCount();++i) {
+            int[] pos = ((NBTTagIntArray) deviceData.get(i)).getIntArray();
+            devices.add(new BlockPos(pos[0], pos[1], pos[2]));
         }
 
         world = DimensionManager.getWorld(treeData.getInteger("dimensionID"));
@@ -213,11 +213,19 @@ public class TernaryTree {
 
         IRedbusCompatible compatibleTile = (IRedbusCompatible) tileEntity;
         if(compatibleTile.isDevice()) {
-            devices.put(compatibleTile.getBusAddress(), pos);
+            devices.add(pos);
             return null;
         }
 
         return new TernaryNode(pos);
+    }
+
+    private BlockPos getDeviceWithAddress(int address) {
+        for(BlockPos pos : devices) {
+            if(((IRedbusCompatible) world.getTileEntity(pos)).getBusAddress() == address) {return pos;}
+        }
+
+        return null;
     }
 
 }

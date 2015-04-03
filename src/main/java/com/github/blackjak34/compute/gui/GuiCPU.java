@@ -6,8 +6,6 @@ import com.github.blackjak34.compute.entity.tile.client.TileEntityCPUClient;
 import com.github.blackjak34.compute.packet.MessageActionPerformed;
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.gui.inventory.GuiContainer;
-import net.minecraft.client.renderer.Tessellator;
-import net.minecraft.client.renderer.WorldRenderer;
 import net.minecraft.util.ResourceLocation;
 import org.lwjgl.opengl.GL11;
 
@@ -16,10 +14,6 @@ import static com.github.blackjak34.compute.enums.GuiConstantCPU.*;
 public class GuiCPU extends GuiContainer {
 
     public static final int GUIID = 24;
-    private static final double UV_SCALE = 0.00390625;
-
-    private static final Tessellator tessellator = Tessellator.getInstance();
-    private static final WorldRenderer worldRenderer = tessellator.getWorldRenderer();
 
     private static final ResourceLocation guiTextureLoc = new ResourceLocation("doesnotcompute:textures/gui/Gui_Commodore9001.png");
 

@@ -13,8 +13,6 @@ import net.minecraft.world.World;
 
 public class TileEntityTerminal extends TileEntity implements IRedbusCompatible {
 
-    public static final int BUS_ADDR = 1;
-
     private int accessRow = 0;
     private int cursorX = 0;
     private int cursorY = 0;
@@ -28,6 +26,7 @@ public class TileEntityTerminal extends TileEntity implements IRedbusCompatible 
     private int blitYOffset = 0;
     private int blitWidth = 0;
     private int blitHeight = 0;
+    private int busAddress = 1;
 
     private byte[] keyBuffer = new byte[16];
     private byte[][] displayBuffer = new byte[50][80];
@@ -48,7 +47,12 @@ public class TileEntityTerminal extends TileEntity implements IRedbusCompatible 
     }
 
     public int getBusAddress() {
-        return BUS_ADDR;
+        return busAddress;
+    }
+
+    public void setBusAddress(int newAddress) {
+        busAddress = newAddress;
+        worldObj.markBlockForUpdate(pos);
     }
 
     public void write(int index, int value) {
@@ -161,7 +165,7 @@ public class TileEntityTerminal extends TileEntity implements IRedbusCompatible 
         data.setInteger("cursorX", cursorX);
         data.setInteger("cursorY", cursorY);
         data.setInteger("cursorMode", cursorMode);
-        super.writeToNBT(data);
+        data.setInteger("busAddress", busAddress);
 
         return new S35PacketUpdateTileEntity(pos, 0, data);
     }
@@ -181,6 +185,7 @@ public class TileEntityTerminal extends TileEntity implements IRedbusCompatible 
         data.setInteger("blitYOffset", blitYOffset);
         data.setInteger("blitWidth", blitWidth);
         data.setInteger("blitHeight", blitHeight);
+        data.setInteger("busAddress", busAddress);
         for(int i=0;i<displayBuffer.length;i++) {
             data.setByteArray("displayBuffer_row" + i, displayBuffer[i]);
         }
@@ -203,7 +208,7 @@ public class TileEntityTerminal extends TileEntity implements IRedbusCompatible 
         blitYOffset = data.getInteger("blitYOffset");
         blitWidth = data.getInteger("blitWidth");
         blitHeight = data.getInteger("blitHeight");
-
+        busAddress = data.getInteger("busAddress");
         for(int i=0;i<displayBuffer.length;++i) {
             displayBuffer[i] = data.getByteArray("displayBuffer_row" + i);
         }

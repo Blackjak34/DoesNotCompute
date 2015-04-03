@@ -72,6 +72,8 @@ public class BlockDiskDrive extends BlockPeripheral implements ITileEntityProvid
     @Override
     public boolean onBlockActivated(World worldIn, BlockPos pos, IBlockState state, EntityPlayer player,
                                     EnumFacing side, float hitX, float hitY, float hitZ) {
+        if(super.onBlockActivated(worldIn, pos, state, player, side, hitX, hitY, hitZ)) {return true;}
+
         ItemStack itemInHand = player.getCurrentEquippedItem();
         if(!worldIn.isRemote && ((TileEntityDiskDrive) worldIn.getTileEntity(pos)).onDiskUsed(itemInHand)) {
             itemInHand.stackSize--;

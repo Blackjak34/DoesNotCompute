@@ -8,6 +8,8 @@ import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.item.EntityItem;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.network.Packet;
+import net.minecraft.network.play.server.S35PacketUpdateTileEntity;
 import net.minecraft.server.gui.IUpdatePlayerListBox;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.BlockPos;
@@ -21,12 +23,11 @@ import java.util.UUID;
 
 public class TileEntityDiskDrive extends TileEntity implements IUpdatePlayerListBox, IRedbusCompatible {
 
-    public static final int BUS_ADDR = 2;
-
     private static String DEFAULT_DISK_NAME = "Floppy Disk";
 
     private int diskCommand = 0;
     private int sectorNumber = 0;
+    private int busAddress = 2;
 
     private boolean diskInDrive = false;
     private boolean inProgress = false;
@@ -177,7 +178,12 @@ public class TileEntityDiskDrive extends TileEntity implements IUpdatePlayerList
     }
 
     public int getBusAddress() {
-        return BUS_ADDR;
+        return busAddress;
+    }
+
+    public void setBusAddress(int newAddress) {
+        busAddress = newAddress;
+        worldObj.markBlockForUpdate(pos);
     }
 
     public void write(int index, int value) {
@@ -202,9 +208,18 @@ public class TileEntityDiskDrive extends TileEntity implements IUpdatePlayerList
     }
 
     @Override
+    public Packet getDescriptionPacket() {
+        NBTTagCompound data = new NBTTagCompound();
+        data.setInteger("busAddress", busAddress);
+
+        return new S35PacketUpdateTileEntity(pos, 0, data);
+    }
+
+    @Override
     public void writeToNBT(NBTTagCompound data) {
         data.setInteger("diskCommand", diskCommand);
         data.setInteger("sectorNumber", sectorNumber);
+        data.setInteger("busAddress", busAddress);
         data.setBoolean("inProgress", inProgress);
         data.setBoolean("diskInDrive", diskInDrive);
         if(diskInDrive) {
@@ -223,6 +238,7 @@ public class TileEntityDiskDrive extends TileEntity implements IUpdatePlayerList
     public void readFromNBT(NBTTagCompound data) {
         diskCommand = data.getInteger("diskCommand");
         sectorNumber = data.getInteger("sectorNumber");
+        busAddress = data.getInteger("busAddress");
         inProgress = data.getBoolean("inProgress");
         diskInDrive = data.getBoolean("diskInDrive");
         if(diskInDrive) {

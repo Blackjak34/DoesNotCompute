@@ -10,8 +10,7 @@ public class TileEntityCableRibbonClient extends TileEntity {
     public TileEntityCableRibbonClient() {}
 
     @Override
-    public boolean shouldRefresh(World world, BlockPos coords, IBlockState oldState, IBlockState newState)
-    {
+    public boolean shouldRefresh(World world, BlockPos coords, IBlockState oldState, IBlockState newState) {
         return oldState.getBlock() != newState.getBlock();
     }
 

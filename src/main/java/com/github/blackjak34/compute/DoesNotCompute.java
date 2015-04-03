@@ -15,9 +15,11 @@ import com.github.blackjak34.compute.entity.tile.client.TileEntityTerminalClient
 import com.github.blackjak34.compute.item.ItemFloppy;
 import com.github.blackjak34.compute.item.ItemScrewdriver;
 import com.github.blackjak34.compute.packet.MessageActionPerformed;
+import com.github.blackjak34.compute.packet.MessageChangeAddress;
 import com.github.blackjak34.compute.packet.MessageKeyTyped;
 import com.github.blackjak34.compute.packet.MessageUpdateDisplay;
 import com.github.blackjak34.compute.packet.handler.HandlerActionPerformed;
+import com.github.blackjak34.compute.packet.handler.HandlerChangeAddress;
 import com.github.blackjak34.compute.packet.handler.HandlerKeyTyped;
 import com.github.blackjak34.compute.packet.handler.HandlerUpdateDisplay;
 import com.github.blackjak34.compute.proxy.CommonProxy;
@@ -48,7 +50,7 @@ public class DoesNotCompute {
 
     public static final String NAME = "Does Not Compute";
 
-    public static final String VERSION = "1.1.4";
+    public static final String VERSION = "1.1.5";
     
     public static SimpleNetworkWrapper networkWrapper;
     
@@ -107,8 +109,9 @@ public class DoesNotCompute {
     	networkWrapper = NetworkRegistry.INSTANCE.newSimpleChannel(DoesNotCompute.MODID);
     	networkWrapper.registerMessage(HandlerActionPerformed.class, MessageActionPerformed.class, 0, Side.SERVER);
         networkWrapper.registerMessage(HandlerKeyTyped.class, MessageKeyTyped.class, 1, Side.SERVER);
+        networkWrapper.registerMessage(HandlerChangeAddress.class, MessageChangeAddress.class, 2, Side.SERVER);
 
-        networkWrapper.registerMessage(HandlerUpdateDisplay.class, MessageUpdateDisplay.class, 2, Side.CLIENT);
+        networkWrapper.registerMessage(HandlerUpdateDisplay.class, MessageUpdateDisplay.class, 3, Side.CLIENT);
     }
 
     @SuppressWarnings("unused")

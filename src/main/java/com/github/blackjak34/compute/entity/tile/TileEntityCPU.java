@@ -16,9 +16,9 @@ import static com.github.blackjak34.compute.enums.GuiConstantCPU.*;
 
 public class TileEntityCPU extends RedbusMaster implements IUpdatePlayerListBox, IRedbusCompatible, IEmulatorIO {
 
-    public static final int BUS_ADDR = 0;
-
     private boolean running = false;
+
+    private int busAddress = 0;
 
     private Emulator65EL02 emulator = new Emulator65EL02(this);
 
@@ -39,6 +39,7 @@ public class TileEntityCPU extends RedbusMaster implements IUpdatePlayerListBox,
                 setRunning(true);
             }
         } else if(buttonID == BUTTON_RST.getValue()) {
+            // TODO: stack pointers are not reset
             setRunning(false);
             emulator.setProgramCounter(0x0400);
             emulator.clearMemory();
@@ -72,7 +73,12 @@ public class TileEntityCPU extends RedbusMaster implements IUpdatePlayerListBox,
     }
 
     public int getBusAddress() {
-        return BUS_ADDR;
+        return busAddress;
+    }
+
+    public void setBusAddress(int newAddress) {
+        busAddress = newAddress;
+        worldObj.markBlockForUpdate(pos);
     }
 
     public boolean isDevice() {
@@ -99,9 +105,8 @@ public class TileEntityCPU extends RedbusMaster implements IUpdatePlayerListBox,
     @Override
     public Packet getDescriptionPacket() {
         NBTTagCompound data = new NBTTagCompound();
-
+        data.setInteger("busAddress", busAddress);
         data.setBoolean("running", running);
-        super.writeToNBT(data);
 
         return new S35PacketUpdateTileEntity(pos, 0, data);
     }
@@ -109,6 +114,7 @@ public class TileEntityCPU extends RedbusMaster implements IUpdatePlayerListBox,
     @Override
     public void writeToNBT(NBTTagCompound data) {
         data.setBoolean("running", running);
+        data.setInteger("busAddress", busAddress);
 
         emulator.writeToNBT(data);
         super.writeToNBT(data);
@@ -117,6 +123,7 @@ public class TileEntityCPU extends RedbusMaster implements IUpdatePlayerListBox,
     @Override
     public void readFromNBT(NBTTagCompound data) {
         running = data.getBoolean("running");
+        busAddress = data.getInteger("busAddress");
 
         emulator.readFromNBT(data);
         super.readFromNBT(data);

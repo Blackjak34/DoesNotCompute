@@ -4,6 +4,7 @@ import com.github.blackjak34.compute.DoesNotCompute;
 import com.github.blackjak34.compute.entity.tile.TileEntityCPU;
 import com.github.blackjak34.compute.entity.tile.client.TileEntityCPUClient;
 import com.github.blackjak34.compute.gui.GuiCPU;
+import com.github.blackjak34.compute.gui.GuiRedbus;
 import net.minecraft.block.ITileEntityProvider;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.properties.PropertyBool;
@@ -73,7 +74,11 @@ public class BlockCPU extends BlockBase implements ITileEntityProvider {
     @Override
     public boolean onBlockActivated(World worldIn, BlockPos pos, IBlockState state, EntityPlayer player,
             EnumFacing side, float hitX, float hitY, float hitZ) {
-        player.openGui(DoesNotCompute.instance, GuiCPU.GUIID, worldIn, pos.getX(), pos.getY(), pos.getZ());
+        if(player.getCurrentEquippedItem() != null && player.getCurrentEquippedItem().getItem() == DoesNotCompute.screwdriver) {
+            player.openGui(DoesNotCompute.instance, GuiRedbus.GUIID, worldIn, pos.getX(), pos.getY(), pos.getZ());
+        } else {
+            player.openGui(DoesNotCompute.instance, GuiCPU.GUIID, worldIn, pos.getX(), pos.getY(), pos.getZ());
+        }
         return true;
     }
 

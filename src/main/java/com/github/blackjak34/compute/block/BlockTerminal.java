@@ -52,6 +52,8 @@ public class BlockTerminal extends BlockPeripheral implements ITileEntityProvide
 	@Override
 	public boolean onBlockActivated(World worldIn, BlockPos pos, IBlockState state, EntityPlayer player,
 			EnumFacing side, float hitX, float hitY, float hitZ) {
+        if(super.onBlockActivated(worldIn, pos, state, player, side, hitX, hitY, hitZ)) {return true;}
+
 		player.openGui(DoesNotCompute.instance, GuiTerminal.GUIID, worldIn, pos.getX(), pos.getY(), pos.getZ());
         if(!worldIn.isRemote) {((TileEntityTerminal) worldIn.getTileEntity(pos)).updateClient();}
 		return true;
