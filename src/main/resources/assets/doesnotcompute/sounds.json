@@ -1,4 +1,16 @@
 {
-  "computer.keypress": {"category":"master", "sounds":[{"name":"keypress", "stream":false}]},
-  "computer.diskspin": {"category":"master", "sounds":[{"name":"diskspin", "stream":false}]}
+  "computer.keypress": {"category":"master", "sounds":[{"name":"keypress",    "stream":false}]},
+  "computer.diskspin": {"category":"master", "sounds":[{"name":"diskspin",    "stream":false}]},
+  "sid.a2_noise":      {"category":"master", "sounds":[{"name":"a2_noise",    "stream":false}]},
+  "sid.a4_noise":      {"category":"master", "sounds":[{"name":"a4_noise",    "stream":false}]},
+  "sid.a6_noise":      {"category":"master", "sounds":[{"name":"a6_noise",    "stream":false}]},
+  "sid.a2_saw":        {"category":"master", "sounds":[{"name":"a2_saw",      "stream":false}]},
+  "sid.a4_saw":        {"category":"master", "sounds":[{"name":"a4_saw",      "stream":false}]},
+  "sid.a6_saw":        {"category":"master", "sounds":[{"name":"a6_saw",      "stream":false}]},
+  "sid.a2_square":     {"category":"master", "sounds":[{"name":"a2_square",   "stream":false}]},
+  "sid.a4_square":     {"category":"master", "sounds":[{"name":"a4_square",   "stream":false}]},
+  "sid.a6_square":     {"category":"master", "sounds":[{"name":"a6_square",   "stream":false}]},
+  "sid.a2_triangle":   {"category":"master", "sounds":[{"name":"a2_triangle", "stream":false}]},
+  "sid.a4_triangle":   {"category":"master", "sounds":[{"name":"a4_triangle", "stream":false}]},
+  "sid.a6_triangle":   {"category":"master", "sounds":[{"name":"a6_triangle", "stream":false}]}
 }

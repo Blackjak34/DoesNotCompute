@@ -2,6 +2,7 @@ tile.blockTerminal.name=Terminal
 tile.blockCPU.name=Computer
 tile.blockDiskDrive.name=Disk Drive
 tile.blockCableRibbon.name=Ribbon Cable
+tile.blockSID.name=Sound Interface Device
 
 item.itemFloppy.name=Floppy Disk
 item.itemScrewdriver.name=Screwdriver

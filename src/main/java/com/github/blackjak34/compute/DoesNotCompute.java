@@ -1,17 +1,8 @@
 package com.github.blackjak34.compute;
 
-import com.github.blackjak34.compute.block.BlockCPU;
-import com.github.blackjak34.compute.block.BlockCableRibbon;
-import com.github.blackjak34.compute.block.BlockDiskDrive;
-import com.github.blackjak34.compute.block.BlockTerminal;
-import com.github.blackjak34.compute.entity.tile.TileEntityCPU;
-import com.github.blackjak34.compute.entity.tile.TileEntityCableRibbon;
-import com.github.blackjak34.compute.entity.tile.TileEntityDiskDrive;
-import com.github.blackjak34.compute.entity.tile.TileEntityTerminal;
-import com.github.blackjak34.compute.entity.tile.client.TileEntityCPUClient;
-import com.github.blackjak34.compute.entity.tile.client.TileEntityCableRibbonClient;
-import com.github.blackjak34.compute.entity.tile.client.TileEntityDiskDriveClient;
-import com.github.blackjak34.compute.entity.tile.client.TileEntityTerminalClient;
+import com.github.blackjak34.compute.block.*;
+import com.github.blackjak34.compute.entity.tile.*;
+import com.github.blackjak34.compute.entity.tile.client.*;
 import com.github.blackjak34.compute.item.ItemFloppy;
 import com.github.blackjak34.compute.item.ItemScrewdriver;
 import com.github.blackjak34.compute.packet.MessageActionPerformed;
@@ -50,7 +41,7 @@ public class DoesNotCompute {
 
     public static final String NAME = "Does Not Compute";
 
-    public static final String VERSION = "1.1.8";
+    public static final String VERSION = "1.1.9";
     
     public static SimpleNetworkWrapper networkWrapper;
     
@@ -58,6 +49,7 @@ public class DoesNotCompute {
     public static BlockCPU cpu;
     public static BlockDiskDrive diskDrive;
     public static BlockCableRibbon ribbonCable;
+    public static BlockSID sid;
     
     public static ItemFloppy floppy;
     public static ItemScrewdriver screwdriver;
@@ -86,11 +78,13 @@ public class DoesNotCompute {
         cpu = new BlockCPU();
         diskDrive = new BlockDiskDrive();
         ribbonCable = new BlockCableRibbon();
+        sid = new BlockSID();
     	
     	GameRegistry.registerBlock(terminal, "blockTerminal");
         GameRegistry.registerBlock(cpu, "blockCPU");
         GameRegistry.registerBlock(diskDrive, "blockDiskDrive");
         GameRegistry.registerBlock(ribbonCable, "blockCableRibbon");
+        GameRegistry.registerBlock(sid, "blockSID");
         GameRegistry.registerTileEntity(TileEntityTerminal.class, "tileEntityTerminal");
     	GameRegistry.registerTileEntity(TileEntityTerminalClient.class, "tileEntityTerminalClient");
         GameRegistry.registerTileEntity(TileEntityCPU.class, "tileEntityEmulator");
@@ -99,6 +93,8 @@ public class DoesNotCompute {
         GameRegistry.registerTileEntity(TileEntityDiskDriveClient.class, "tileEntityDiskDriveClient");
         GameRegistry.registerTileEntity(TileEntityCableRibbon.class, "tileEntityCableRibbon");
         GameRegistry.registerTileEntity(TileEntityCableRibbonClient.class, "tileEntityCableRibbonClient");
+        GameRegistry.registerTileEntity(TileEntitySID.class, "tileEntitySID");
+        GameRegistry.registerTileEntity(TileEntitySIDClient.class, "tileEntitySIDClient");
     	
     	floppy = new ItemFloppy();
         screwdriver = new ItemScrewdriver();

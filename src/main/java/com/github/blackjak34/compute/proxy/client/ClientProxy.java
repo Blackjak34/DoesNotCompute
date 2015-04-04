@@ -20,6 +20,8 @@ public class ClientProxy extends CommonProxy {
                 new ModelResourceLocation("doesnotcompute:blockDiskDrive", "inventory"));
         modelRegistry.register(Item.getItemFromBlock(DoesNotCompute.ribbonCable), 0,
                 new ModelResourceLocation("doesnotcompute:blockCableRibbon", "inventory"));
+        modelRegistry.register(Item.getItemFromBlock(DoesNotCompute.sid), 0,
+                new ModelResourceLocation("doesnotcompute:blockSID", "inventory"));
 
         modelRegistry.register(DoesNotCompute.floppy, 0,
                 new ModelResourceLocation("doesnotcompute:itemFloppy", "inventory"));
