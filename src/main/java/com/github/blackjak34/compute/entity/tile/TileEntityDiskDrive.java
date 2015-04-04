@@ -31,6 +31,7 @@ public class TileEntityDiskDrive extends TileEntity implements IUpdatePlayerList
 
     private boolean diskInDrive = false;
     private boolean inProgress = false;
+    private boolean operationComplete = true;
 
     private byte[] sectorBuffer;
 
@@ -44,8 +45,15 @@ public class TileEntityDiskDrive extends TileEntity implements IUpdatePlayerList
     }
 
     public void update() {
-        if(!inProgress) {return;}
-        inProgress = false;
+        if(!inProgress) {
+            return;
+        } else if(operationComplete) {
+            inProgress = false;
+            worldObj.markBlockForUpdate(pos);
+        }
+        operationComplete = true;
+
+        markDirty();
 
         if(!diskInDrive) {
             diskCommand = 0xFF;
@@ -196,6 +204,8 @@ public class TileEntityDiskDrive extends TileEntity implements IUpdatePlayerList
         } else if(index == 0x82) {
             diskCommand = value;
             inProgress = true;
+            operationComplete = false;
+            worldObj.markBlockForUpdate(pos);
         }
     }
 
@@ -211,6 +221,7 @@ public class TileEntityDiskDrive extends TileEntity implements IUpdatePlayerList
     public Packet getDescriptionPacket() {
         NBTTagCompound data = new NBTTagCompound();
         data.setInteger("busAddress", busAddress);
+        data.setBoolean("inProgress", inProgress);
 
         return new S35PacketUpdateTileEntity(pos, 0, data);
     }

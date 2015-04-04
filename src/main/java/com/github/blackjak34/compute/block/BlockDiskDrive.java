@@ -3,7 +3,6 @@ package com.github.blackjak34.compute.block;
 import com.github.blackjak34.compute.DoesNotCompute;
 import com.github.blackjak34.compute.entity.tile.TileEntityDiskDrive;
 import com.github.blackjak34.compute.entity.tile.client.TileEntityDiskDriveClient;
-import com.github.blackjak34.compute.utils.TernaryTree;
 import net.minecraft.block.ITileEntityProvider;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.properties.PropertyBool;
@@ -85,8 +84,7 @@ public class BlockDiskDrive extends BlockPeripheral implements ITileEntityProvid
     @Override
     public void breakBlock(World worldIn, BlockPos pos, IBlockState state) {
         if(!worldIn.isRemote) {((TileEntityDiskDrive) worldIn.getTileEntity(pos)).ejectFloppyDisk();}
-        worldIn.removeTileEntity(pos);
-        if(!worldIn.isRemote) {TernaryTree.updateSurroundingNetworks(worldIn, pos);}
+        super.breakBlock(worldIn, pos, state);
     }
 
 }
