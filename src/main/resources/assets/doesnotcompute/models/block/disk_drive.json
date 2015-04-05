@@ -1,8 +1,8 @@
 {
   "parent":"block/orientable",
   "textures": {
-    "front":"doesnotcompute:blocks/CPU_Side",
-    "top":"doesnotcompute:blocks/CPU_Side",
+    "front":"doesnotcompute:blocks/Disk_Drive",
+    "top":"doesnotcompute:blocks/Top",
     "side":"doesnotcompute:blocks/CPU_Side"
   }
 }

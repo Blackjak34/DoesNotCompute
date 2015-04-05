@@ -48,8 +48,7 @@ public class TileEntityDiskDrive extends TileEntity implements IUpdatePlayerList
         if(!inProgress) {
             return;
         } else if(operationComplete) {
-            inProgress = false;
-            worldObj.markBlockForUpdate(pos);
+            setInProgess(false);
         }
         operationComplete = true;
 
@@ -203,9 +202,8 @@ public class TileEntityDiskDrive extends TileEntity implements IUpdatePlayerList
             sectorNumber = (sectorNumber&0xFF) | (value << 8);
         } else if(index == 0x82) {
             diskCommand = value;
-            inProgress = true;
+            setInProgess(true);
             operationComplete = false;
-            worldObj.markBlockForUpdate(pos);
         }
     }
 
@@ -221,7 +219,6 @@ public class TileEntityDiskDrive extends TileEntity implements IUpdatePlayerList
     public Packet getDescriptionPacket() {
         NBTTagCompound data = new NBTTagCompound();
         data.setInteger("busAddress", busAddress);
-        data.setBoolean("inProgress", inProgress);
 
         return new S35PacketUpdateTileEntity(pos, 0, data);
     }
@@ -273,6 +270,12 @@ public class TileEntityDiskDrive extends TileEntity implements IUpdatePlayerList
         diskInDrive = value;
 
         worldObj.setBlockState(pos, worldObj.getBlockState(pos).withProperty(BlockDiskDrive.DISK, value));
+    }
+
+    private void setInProgess(boolean value) {
+        inProgress = value;
+
+        worldObj.setBlockState(pos, worldObj.getBlockState(pos).withProperty(BlockDiskDrive.ACTIVE, value));
     }
 
 }

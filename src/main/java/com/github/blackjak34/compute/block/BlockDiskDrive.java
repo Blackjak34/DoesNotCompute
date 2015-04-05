@@ -17,9 +17,10 @@ import net.minecraft.world.World;
 public class BlockDiskDrive extends BlockPeripheral implements ITileEntityProvider {
 
     public static final PropertyBool DISK = PropertyBool.create("disk");
+    public static final PropertyBool ACTIVE = PropertyBool.create("active");
 
     public BlockDiskDrive() {
-        super(Material.iron, TileEntityDiskDriveClient.class, TileEntityDiskDrive.class, DISK);
+        super(Material.iron, TileEntityDiskDriveClient.class, TileEntityDiskDrive.class, DISK, ACTIVE);
 
         setCreativeTab(DoesNotCompute.tabDoesNotCompute);
         setUnlocalizedName("blockDiskDrive");
@@ -27,12 +28,13 @@ public class BlockDiskDrive extends BlockPeripheral implements ITileEntityProvid
 
     @Override
     protected BlockState createBlockState() {
-        return new BlockState(this, FACING, DISK);
+        return new BlockState(this, FACING, DISK, ACTIVE);
     }
 
     @Override
     public int getMetaFromState(IBlockState state) {
         int meta = (Boolean) state.getValue(DISK) ? 8 : 0;
+        meta += (Boolean) state.getValue(ACTIVE) ? 4 : 0;
 
         switch((EnumFacing) state.getValue(FACING)) {
             case NORTH:default:
@@ -42,7 +44,7 @@ public class BlockDiskDrive extends BlockPeripheral implements ITileEntityProvid
             case SOUTH:
                 return meta + 2;
             case WEST:
-                return meta + 4;
+                return meta + 3;
         }
     }
 
@@ -55,16 +57,32 @@ public class BlockDiskDrive extends BlockPeripheral implements ITileEntityProvid
                 return getDefaultState().withProperty(FACING, EnumFacing.EAST);
             case 2:
                 return getDefaultState().withProperty(FACING, EnumFacing.SOUTH);
-            case 4:
+            case 3:
                 return getDefaultState().withProperty(FACING, EnumFacing.WEST);
+            case 4:
+                return getDefaultState().withProperty(ACTIVE, true);
+            case 5:
+                return getDefaultState().withProperty(FACING, EnumFacing.EAST).withProperty(ACTIVE, true);
+            case 6:
+                return getDefaultState().withProperty(FACING, EnumFacing.SOUTH).withProperty(ACTIVE, true);
+            case 7:
+                return getDefaultState().withProperty(FACING, EnumFacing.WEST).withProperty(ACTIVE, true);
             case 8:
                 return getDefaultState().withProperty(DISK, true);
             case 9:
                 return getDefaultState().withProperty(FACING, EnumFacing.EAST).withProperty(DISK, true);
             case 10:
                 return getDefaultState().withProperty(FACING, EnumFacing.SOUTH).withProperty(DISK, true);
-            case 12:
+            case 11:
                 return getDefaultState().withProperty(FACING, EnumFacing.WEST).withProperty(DISK, true);
+            case 12:
+                return getDefaultState().withProperty(DISK, true).withProperty(ACTIVE, true);
+            case 13:
+                return getDefaultState().withProperty(FACING, EnumFacing.EAST).withProperty(DISK, true).withProperty(ACTIVE, true);
+            case 14:
+                return getDefaultState().withProperty(FACING, EnumFacing.SOUTH).withProperty(DISK, true).withProperty(ACTIVE, true);
+            case 15:
+                return getDefaultState().withProperty(FACING, EnumFacing.WEST).withProperty(DISK, true).withProperty(ACTIVE, true);
         }
     }
 

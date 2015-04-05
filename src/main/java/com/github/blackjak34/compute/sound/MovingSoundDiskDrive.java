@@ -29,7 +29,7 @@ public class MovingSoundDiskDrive extends MovingSound {
         if(diskDrive.isInvalid()) {
             donePlaying = true;
         } else {
-            volume = diskDrive.isInProgress() ? 0.5F : 0.0F;
+            volume = (diskDrive.getBlockMetadata() & 4) == 0 ? 0.0F : 0.5F;
         }
     }
 

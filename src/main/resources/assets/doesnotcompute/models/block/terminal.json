@@ -4,7 +4,7 @@
     "side":"doesnotcompute:blocks/Terminal_Side",
     "front":"doesnotcompute:blocks/Terminal_Front",
     "back":"doesnotcompute:blocks/CPU_Side",
-    "particle":"doesnotcompute:blocks/CPU_Side"
+    "particle":"doesnotcompute:blocks/Top"
   },
   "elements": [
     {

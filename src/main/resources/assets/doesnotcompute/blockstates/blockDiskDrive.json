@@ -1,12 +1,20 @@
 {
   "variants": {
-    "disk=true,facing=north":  {"model":"doesnotcompute:disk_drive_disk"},
-    "disk=true,facing=east":   {"model":"doesnotcompute:disk_drive_disk", "y":90},
-    "disk=true,facing=south":  {"model":"doesnotcompute:disk_drive_disk", "y":180},
-    "disk=true,facing=west":   {"model":"doesnotcompute:disk_drive_disk", "y":270},
-    "disk=false,facing=north": {"model":"doesnotcompute:disk_drive"},
-    "disk=false,facing=east":  {"model":"doesnotcompute:disk_drive", "y":90},
-    "disk=false,facing=south": {"model":"doesnotcompute:disk_drive", "y":180},
-    "disk=false,facing=west":  {"model":"doesnotcompute:disk_drive", "y":270}
+    "active=false,disk=false,facing=north": {"model":"doesnotcompute:disk_drive"},
+    "active=false,disk=false,facing=east":  {"model":"doesnotcompute:disk_drive", "y":90},
+    "active=false,disk=false,facing=south": {"model":"doesnotcompute:disk_drive", "y":180},
+    "active=false,disk=false,facing=west":  {"model":"doesnotcompute:disk_drive", "y":270},
+    "active=false,disk=true,facing=north":  {"model":"doesnotcompute:disk_drive_disk"},
+    "active=false,disk=true,facing=east":   {"model":"doesnotcompute:disk_drive_disk", "y":90},
+    "active=false,disk=true,facing=south":  {"model":"doesnotcompute:disk_drive_disk", "y":180},
+    "active=false,disk=true,facing=west":   {"model":"doesnotcompute:disk_drive_disk", "y":270},
+    "active=true,disk=false,facing=north":  {"model":"doesnotcompute:disk_drive"},
+    "active=true,disk=false,facing=east":   {"model":"doesnotcompute:disk_drive", "y":90},
+    "active=true,disk=false,facing=south":  {"model":"doesnotcompute:disk_drive", "y":180},
+    "active=true,disk=false,facing=west":   {"model":"doesnotcompute:disk_drive", "y":270},
+    "active=true,disk=true,facing=north":   {"model":"doesnotcompute:disk_drive_active"},
+    "active=true,disk=true,facing=east":    {"model":"doesnotcompute:disk_drive_active", "y":90},
+    "active=true,disk=true,facing=south":   {"model":"doesnotcompute:disk_drive_active", "y":180},
+    "active=true,disk=true,facing=west":    {"model":"doesnotcompute:disk_drive_active", "y":270}
   }
 }

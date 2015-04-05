@@ -1,7 +1,7 @@
 {
   "parent":"block/orientable",
   "textures": {
-    "front":"doesnotcompute:blocks/Disk_Drive_Disk_Light",
+    "front":"doesnotcompute:blocks/Disk_Drive_Disk_Light_Active",
     "top":"doesnotcompute:blocks/Top",
     "side":"doesnotcompute:blocks/CPU_Side"
   }
