@@ -14,27 +14,25 @@ import net.minecraft.util.ResourceLocation;
  */
 public class TileEntitySIDClient extends TileEntityRedbus {
 
-    private static final float ONE_AND_ONE_HALF_DIVIDED_BY_23 = 0.06521739130434782608695652173913F;
-
     private MovingSoundVoice voice1;
     private MovingSoundVoice voice2;
     private MovingSoundVoice voice3;
 
-    // 6 octave scale centered on A4, so 0 means A1 and 71 means A7
+    // 6 octave scale centered on A4, so 1 means Ab1 and 75 means A#7
     // must be mapped to a float value from 0.5 to 2.0 to be usable with paulscode
     // since paulscode only covers 2 octaves through pitch manipulation three recordings exist for each waveform
-    private int voice1Note = 35;
-    private int voice2Note = 35;
-    private int voice3Note = 35;
+    private int voice1Note = 0;
+    private int voice2Note = 0;
+    private int voice3Note = 0;
 
     // Notes that were in use before this SID was updated
-    private int oldVoice1Note = 35;
-    private int oldVoice2Note = 35;
-    private int oldVoice3Note = 35;
+    private int oldVoice1Note = 0;
+    private int oldVoice2Note = 0;
+    private int oldVoice3Note = 0;
 
-    private int voice1Waveform = 4;
-    private int voice2Waveform = 4;
-    private int voice3Waveform = 4;
+    private int voice1Waveform = 3;
+    private int voice2Waveform = 3;
+    private int voice3Waveform = 3;
 
     // ranges from 0 as silent to 255 as loudest
     // must be mapped to a float value from 0.0 to 1.0 to be usable with paulscode
@@ -68,19 +66,19 @@ public class TileEntitySIDClient extends TileEntityRedbus {
         }
 
         Waveform waveform1 = Waveform.getWaveform(voice1Waveform);
-        if(waveform1 != Waveform.NONE) {
+        if(voice1Note != 0) {
             if(voice1 == null) {
                 voice1 = getNewVoice(waveform1, voice1Note, volume);
             } else if(voice1.getWaveform() != waveform1
-                    || (oldVoice1Note < 24 && voice1Note >= 24)
-                    || (oldVoice1Note < 48 && voice1Note >= 48)
-                    || (voice1Note < 24 && oldVoice1Note >= 24)
-                    || (voice1Note < 48 && oldVoice1Note >= 48)) {
+                    || (oldVoice1Note < 26 && voice1Note >= 26)
+                    || (oldVoice1Note < 51 && voice1Note >= 51)
+                    || (voice1Note < 26 && oldVoice1Note >= 26)
+                    || (voice1Note < 51 && oldVoice1Note >= 51)) {
                 voice1.delete();
                 voice1 = getNewVoice(waveform1, voice1Note, volume);
             } else {
-                changeNote(voice1, voice1Note);
                 changeVolume(voice1, volume);
+                changeNote(voice1, voice1Note);
             }
         } else if(voice1 != null) {
             voice1.delete();
@@ -88,19 +86,19 @@ public class TileEntitySIDClient extends TileEntityRedbus {
         }
 
         Waveform waveform2 = Waveform.getWaveform(voice2Waveform);
-        if(waveform2 != Waveform.NONE) {
+        if(voice2Note != 0) {
             if(voice2 == null) {
                 voice2 = getNewVoice(waveform2, voice2Note, volume);
             } else if(voice2.getWaveform() != waveform2
-                    || (oldVoice2Note < 24 && voice2Note >= 24)
-                    || (oldVoice2Note < 48 && voice2Note >= 48)
-                    || (voice2Note < 24 && oldVoice2Note >= 24)
-                    || (voice2Note < 48 && oldVoice2Note >= 48)) {
+                    || (oldVoice2Note < 26 && voice2Note >= 26)
+                    || (oldVoice2Note < 51 && voice2Note >= 51)
+                    || (voice2Note < 26 && oldVoice2Note >= 26)
+                    || (voice2Note < 51 && oldVoice2Note >= 51)) {
                 voice2.delete();
                 voice2 = getNewVoice(waveform2, voice2Note, volume);
             } else {
-                changeNote(voice2, voice2Note);
                 changeVolume(voice2, volume);
+                changeNote(voice2, voice2Note);
             }
         } else if(voice2 != null) {
             voice2.delete();
@@ -108,19 +106,19 @@ public class TileEntitySIDClient extends TileEntityRedbus {
         }
 
         Waveform waveform3 = Waveform.getWaveform(voice3Waveform);
-        if(waveform3 != Waveform.NONE) {
+        if(voice3Note != 0) {
             if(voice3 == null) {
                 voice3 = getNewVoice(waveform3, voice3Note, volume);
             } else if(voice3.getWaveform() != waveform3
-                    || (oldVoice3Note < 24 && voice3Note >= 24)
-                    || (oldVoice3Note < 48 && voice3Note >= 48)
-                    || (voice3Note < 24 && oldVoice3Note >= 24)
-                    || (voice3Note < 48 && oldVoice3Note >= 48)) {
+                    || (oldVoice3Note < 26 && voice3Note >= 26)
+                    || (oldVoice3Note < 51 && voice3Note >= 51)
+                    || (voice3Note < 26 && oldVoice3Note >= 26)
+                    || (voice3Note < 51 && oldVoice3Note >= 51)) {
                 voice3.delete();
                 voice3 = getNewVoice(waveform3, voice3Note, volume);
             } else {
-                changeNote(voice3, voice3Note);
                 changeVolume(voice3, volume);
+                changeNote(voice3, voice3Note);
             }
         } else if(voice3 != null) {
             voice3.delete();
@@ -145,9 +143,11 @@ public class TileEntitySIDClient extends TileEntityRedbus {
 
     private MovingSoundVoice getNewVoice(Waveform waveform, int note, int volume) {
         ResourceLocation soundName;
-        if(note < 24) {
+        if(note == 0) {
+            return null;
+        } else if(note < 26) {
             soundName = waveform.getSoundLow();
-        } else if(note < 48) {
+        } else if(note < 51) {
             soundName = waveform.getSoundMed();
         } else {
             soundName = waveform.getSoundHigh();
@@ -162,21 +162,23 @@ public class TileEntitySIDClient extends TileEntityRedbus {
     }
 
     private void changeNote(MovingSoundVoice voice, int newNote) {
-        if(newNote > 47) {
-            newNote -= 48;
-        } else if(newNote > 23) {
-            newNote -= 24;
+        if(newNote > 50) {
+            newNote -= 50;
+        } else if(newNote > 25) {
+            newNote -= 25;
+        } else if(newNote < 1) {
+            newNote = 1;
         }
 
         changePitch(voice, newNote);
     }
 
     private void changePitch(MovingSoundVoice voice, int newPitch) {
-        voice.setPitch((newPitch * ONE_AND_ONE_HALF_DIVIDED_BY_23) + 0.5F);
+        voice.setPitch((newPitch * 0.06F) + 0.5F);
     }
 
     private void changeVolume(MovingSoundVoice voice, int volume) {
-        voice.setVolume(volume / 255.0F);
+        voice.setVolume(volume / 510.0F);
     }
 
 }

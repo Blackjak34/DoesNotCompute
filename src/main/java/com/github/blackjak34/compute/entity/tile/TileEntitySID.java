@@ -15,16 +15,16 @@ import net.minecraft.world.World;
  */
 public class TileEntitySID extends TileEntity implements IRedbusCompatible {
 
-    // 6 octave scale centered on A4, so 0 means A1 and 72 means A7
+    // 6 octave scale centered on A4, so 1 means Ab1 and 75 means A#7
     // must be mapped to a float value from 0.5 to 2.0 to be usable with paulscode
     // since paulscode only covers 2 octaves through pitch manipulation three recordings exist for each waveform
-    private int voice1Note = 35;
-    private int voice2Note = 35;
-    private int voice3Note = 35;
+    private int voice1Note = 0;
+    private int voice2Note = 0;
+    private int voice3Note = 0;
 
-    private int voice1Waveform = 4;
-    private int voice2Waveform = 4;
-    private int voice3Waveform = 4;
+    private int voice1Waveform = 3;
+    private int voice2Waveform = 3;
+    private int voice3Waveform = 3;
 
     // ranges from 0 as silent to 255 as loudest
     // must be mapped to a float value from 0.0 to 1.0 to be usable with paulscode
@@ -61,22 +61,22 @@ public class TileEntitySID extends TileEntity implements IRedbusCompatible {
     public void write(int index, int value) {
         switch(index) {
             case 0x00:
-                voice1Note = Math.min(value, 72);
+                voice1Note = Math.min(value, 75);
                 break;
             case 0x01:
-                voice2Note = Math.min(value, 72);
+                voice2Note = Math.min(value, 75);
                 break;
             case 0x02:
-                voice3Note = Math.min(value, 72);
+                voice3Note = Math.min(value, 75);
                 break;
             case 0x03:
-                voice1Waveform = Math.min(value, 4);
+                voice1Waveform = Math.min(value, 3);
                 break;
             case 0x04:
-                voice2Waveform = Math.min(value, 4);
+                voice2Waveform = Math.min(value, 3);
                 break;
             case 0x05:
-                voice3Waveform = Math.min(value, 4);
+                voice3Waveform = Math.min(value, 3);
                 break;
             case 0x06:
                 volume = value;

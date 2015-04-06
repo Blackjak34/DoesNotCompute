@@ -7,19 +7,18 @@ import net.minecraft.util.ResourceLocation;
  * @since 1.0.0
  */
 public enum Waveform {
-    NOISE    (new ResourceLocation("doesnotcompute:sid.a2_noise"),
-            new ResourceLocation("doesnotcompute:sid.a4_noise"),
-            new ResourceLocation("doesnotcompute:sid.a6_noise")),
-    SAW      (new ResourceLocation("doesnotcompute:sid.a2_saw"),
-            new ResourceLocation("doesnotcompute:sid.a4_saw"),
-            new ResourceLocation("doesnotcompute:sid.a6_saw")),
-    SQUARE   (new ResourceLocation("doesnotcompute:sid.a2_square"),
-            new ResourceLocation("doesnotcompute:sid.a4_square"),
-            new ResourceLocation("doesnotcompute:sid.a6_square")),
-    TRIANGLE (new ResourceLocation("doesnotcompute:sid.a2_triangle"),
-            new ResourceLocation("doesnotcompute:sid.a4_triangle"),
-            new ResourceLocation("doesnotcompute:sid.a6_triangle")),
-    NONE     (null, null, null);
+    NOISE    (new ResourceLocation("doesnotcompute:sid.noise_low"),
+            new ResourceLocation("doesnotcompute:sid.noise_med"),
+            new ResourceLocation("doesnotcompute:sid.noise_high")),
+    SAW      (new ResourceLocation("doesnotcompute:sid.saw_low"),
+            new ResourceLocation("doesnotcompute:sid.saw_med"),
+            new ResourceLocation("doesnotcompute:sid.saw_high")),
+    SQUARE   (new ResourceLocation("doesnotcompute:sid.square_low"),
+            new ResourceLocation("doesnotcompute:sid.square_med"),
+            new ResourceLocation("doesnotcompute:sid.square_high")),
+    TRIANGLE (new ResourceLocation("doesnotcompute:sid.triangle_low"),
+            new ResourceLocation("doesnotcompute:sid.triangle_med"),
+            new ResourceLocation("doesnotcompute:sid.triangle_high"));
 
     private final ResourceLocation soundLow;
     private final ResourceLocation soundMed;
@@ -47,7 +46,7 @@ public enum Waveform {
         for(Waveform waveform : values()) {
             if(waveform.ordinal() == ordinal) {return waveform;}
         }
-        return NONE;
+        return TRIANGLE;
     }
 
 }
