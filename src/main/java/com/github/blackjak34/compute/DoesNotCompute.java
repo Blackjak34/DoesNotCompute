@@ -16,7 +16,10 @@ import com.github.blackjak34.compute.packet.handler.HandlerUpdateDisplay;
 import com.github.blackjak34.compute.proxy.CommonProxy;
 import com.google.common.io.Files;
 import net.minecraft.creativetab.CreativeTabs;
+import net.minecraft.init.Blocks;
+import net.minecraft.init.Items;
 import net.minecraft.item.Item;
+import net.minecraft.item.ItemStack;
 import net.minecraft.world.World;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.SidedProxy;
@@ -28,6 +31,7 @@ import net.minecraftforge.fml.common.network.simpleimpl.SimpleNetworkWrapper;
 import net.minecraftforge.fml.common.registry.GameRegistry;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
+import net.minecraftforge.oredict.ShapedOreRecipe;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -41,7 +45,7 @@ public class DoesNotCompute {
 
     public static final String NAME = "Does Not Compute";
 
-    public static final String VERSION = "1.1.13";
+    public static final String VERSION = "1.1.14";
     
     public static SimpleNetworkWrapper networkWrapper;
     
@@ -95,12 +99,99 @@ public class DoesNotCompute {
         GameRegistry.registerTileEntity(TileEntityCableRibbonClient.class, "tileEntityCableRibbonClient");
         GameRegistry.registerTileEntity(TileEntitySID.class, "tileEntitySID");
         GameRegistry.registerTileEntity(TileEntitySIDClient.class, "tileEntitySIDClient");
+
+        ItemStack ribbonCableStack = new ItemStack(ribbonCable);
+
+        GameRegistry.addRecipe(
+            new ShapedOreRecipe(
+                new ItemStack(terminal),
+                "III",
+                "GCI",
+                "IRI",
+                'I', "ingotIron",
+                'G', new ItemStack(Blocks.glass),
+                'C', "dyeGreen",
+                'R', ribbonCableStack
+            )
+        );
+
+        GameRegistry.addRecipe(
+            new ShapedOreRecipe(
+                new ItemStack(cpu),
+                "III",
+                "ICI",
+                "IRI",
+                'I', "ingotIron",
+                'C', new ItemStack(Items.comparator),
+                'R', ribbonCableStack
+            )
+        );
+
+        GameRegistry.addRecipe(
+            new ShapedOreRecipe(
+                new ItemStack(diskDrive),
+                "III",
+                " JI",
+                "IRI",
+                'I', "ingotIron",
+                'J', new ItemStack(Blocks.jukebox),
+                'R', ribbonCableStack
+            )
+        );
+
+        GameRegistry.addRecipe(
+            new ShapedOreRecipe(
+                new ItemStack(ribbonCable, 8),
+                " D ",
+                "DSD",
+                " D ",
+                'D', "dustRedstone",
+                'S', new ItemStack(Blocks.stone_slab)
+            )
+        );
+
+        GameRegistry.addRecipe(
+            new ShapedOreRecipe(
+                new ItemStack(sid),
+                "III",
+                "NNN",
+                "IRI",
+                'I', "ingotIron",
+                'N', new ItemStack(Blocks.noteblock),
+                'R', ribbonCableStack
+            )
+        );
     	
     	floppy = new ItemFloppy();
         screwdriver = new ItemScrewdriver();
     	
     	GameRegistry.registerItem(floppy, "itemFloppy");
         GameRegistry.registerItem(screwdriver, "itemScrewdriver");
+
+        GameRegistry.addRecipe(
+            new ShapedOreRecipe(
+                new ItemStack(floppy),
+                "BIB",
+                "BMB",
+                "BPB",
+                'B', "dyeBlue",
+                'I', "ingotIron",
+                'M', "record",
+                'P', new ItemStack(Items.paper)
+            )
+        );
+
+        GameRegistry.addRecipe(
+            new ShapedOreRecipe(
+                new ItemStack(screwdriver),
+                "I  ",
+                " S ",
+                "  B",
+                'I', "ingotIron",
+                'S', "stickWood",
+                'B', "dyeBlue"
+            )
+        );
     	
     	networkWrapper = NetworkRegistry.INSTANCE.newSimpleChannel(DoesNotCompute.MODID);
     	networkWrapper.registerMessage(HandlerActionPerformed.class, MessageActionPerformed.class, 0, Side.SERVER);
