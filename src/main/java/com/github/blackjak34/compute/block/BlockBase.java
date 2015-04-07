@@ -25,6 +25,9 @@ public class BlockBase extends Block implements ITileEntityProvider {
                      Class<? extends TileEntity> serverTE, IProperty... addlProps) {
         super(material);
         setHarvestLevel("pickaxe", 1);
+        setHardness(5.0F);
+        setResistance(10.0F);
+        setStepSound(soundTypeMetal);
 
         this.clientTE = clientTE;
         this.serverTE = serverTE;
