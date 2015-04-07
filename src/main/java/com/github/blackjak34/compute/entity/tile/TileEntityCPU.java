@@ -26,7 +26,7 @@ public class TileEntityCPU extends RedbusMaster implements IUpdatePlayerListBox,
 
     public TileEntityCPU(World worldIn) {
         emulator.clearMemory();
-        copyBootloader(worldIn);
+        copyBootloader();
     }
 
     public void onActionPerformed(int buttonID) {
@@ -42,7 +42,7 @@ public class TileEntityCPU extends RedbusMaster implements IUpdatePlayerListBox,
             setRunning(false);
             emulator.setProgramCounter(0x0400);
             emulator.clearMemory();
-            copyBootloader(worldObj);
+            copyBootloader();
         } else if(buttonID == BUTTON_DUMP.getValue()) {
             //DoesNotCompute.copyArrayIntoFile(worldObj, "memorydump", memory);
         } else {
@@ -134,9 +134,9 @@ public class TileEntityCPU extends RedbusMaster implements IUpdatePlayerListBox,
         worldObj.setBlockState(pos, worldObj.getBlockState(pos).withProperty(BlockCPU.RUNNING, value), 2);
     }
 
-    private void copyBootloader(World worldIn) {
-        byte[] bootloader = new byte[256];
-        DoesNotCompute.copyFileIntoArray(worldIn, "bootloader", bootloader, 0, 256);
+    private void copyBootloader() {
+        byte[] bootloader = DoesNotCompute.getStreamAsByteArray(
+                DoesNotCompute.instance.getResourceFromAssetsDirectory("roms/bootloader"), 256);
         emulator.copyArrayIntoMemory(bootloader, 0x0400, 256);
     }
 

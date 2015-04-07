@@ -5,6 +5,7 @@ import com.github.blackjak34.compute.entity.tile.*;
 import com.github.blackjak34.compute.entity.tile.client.*;
 import com.github.blackjak34.compute.item.ItemFloppy;
 import com.github.blackjak34.compute.item.ItemScrewdriver;
+import com.github.blackjak34.compute.item.ItemSystemFloppy;
 import com.github.blackjak34.compute.packet.MessageActionPerformed;
 import com.github.blackjak34.compute.packet.MessageChangeAddress;
 import com.github.blackjak34.compute.packet.MessageKeyTyped;
@@ -14,7 +15,7 @@ import com.github.blackjak34.compute.packet.handler.HandlerChangeAddress;
 import com.github.blackjak34.compute.packet.handler.HandlerKeyTyped;
 import com.github.blackjak34.compute.packet.handler.HandlerUpdateDisplay;
 import com.github.blackjak34.compute.proxy.CommonProxy;
-import com.google.common.io.Files;
+import com.google.common.io.ByteStreams;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.init.Blocks;
 import net.minecraft.init.Items;
@@ -32,11 +33,9 @@ import net.minecraftforge.fml.common.registry.GameRegistry;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 import net.minecraftforge.oredict.ShapedOreRecipe;
+import net.minecraftforge.oredict.ShapelessOreRecipe;
 
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.io.RandomAccessFile;
+import java.io.*;
 
 @Mod(modid = DoesNotCompute.MODID, name = DoesNotCompute.NAME, version = DoesNotCompute.VERSION)
 public class DoesNotCompute {
@@ -45,7 +44,7 @@ public class DoesNotCompute {
 
     public static final String NAME = "Does Not Compute";
 
-    public static final String VERSION = "1.1.14";
+    public static final String VERSION = "1.1.15";
     
     public static SimpleNetworkWrapper networkWrapper;
     
@@ -56,6 +55,7 @@ public class DoesNotCompute {
     public static BlockSID sid;
     
     public static ItemFloppy floppy;
+    public static ItemSystemFloppy systemFloppy;
     public static ItemScrewdriver screwdriver;
 
     @Mod.Instance(value = DoesNotCompute.MODID)
@@ -163,14 +163,18 @@ public class DoesNotCompute {
         );
     	
     	floppy = new ItemFloppy();
+        systemFloppy = new ItemSystemFloppy();
         screwdriver = new ItemScrewdriver();
     	
     	GameRegistry.registerItem(floppy, "itemFloppy");
+        GameRegistry.registerItem(systemFloppy, "itemSystemFloppy");
         GameRegistry.registerItem(screwdriver, "itemScrewdriver");
+
+        ItemStack floppyStack = new ItemStack(floppy);
 
         GameRegistry.addRecipe(
             new ShapedOreRecipe(
-                new ItemStack(floppy),
+                floppyStack,
                 "BIB",
                 "BMB",
                 "BPB",
@@ -178,6 +182,14 @@ public class DoesNotCompute {
                 'I', "ingotIron",
                 'M', "record",
                 'P', new ItemStack(Items.paper)
+            )
+        );
+
+        GameRegistry.addRecipe(
+            new ShapelessOreRecipe(
+                new ItemStack(systemFloppy),
+                "dustRedstone",
+                floppyStack
             )
         );
 
@@ -212,58 +224,55 @@ public class DoesNotCompute {
 	@Mod.EventHandler
     public void postInit(FMLPostInitializationEvent event) {}
 
-    public static byte[] getFileAsArray(World world, String filename) {
-        File modDirectory = new File(world.getSaveHandler().getWorldDirectory(), "/doesnotcompute/");
-        File dataFile = new File(modDirectory, filename);
-
-        if(!modDirectory.exists() && !modDirectory.mkdir()) {
-            System.err.println("Could not generate the mod directory. Is the world folder read only?");
-            return new byte[0];
-        }
-
-        if(!dataFile.exists()) {
-            System.err.println("The requested file at " + dataFile.getAbsolutePath() + " does not exist.");
-            return new byte[0];
-        }
-
-        try {
-            return Files.toByteArray(dataFile);
-        } catch(IOException e) {
-            System.err.println("There was an error reading data from the file at" + dataFile.getAbsolutePath() + ":");
-            e.printStackTrace();
-            return new byte[0];
-        }
+    public InputStream getResourceFromAssetsDirectory(String filePath) {
+        return getClass().getResourceAsStream("/assets/doesnotcompute/" + filePath);
     }
 
-    public static void copyFileIntoArray(World world, String filename, byte[] dest, int index, int maxLength) {
-        byte[] data = getFileAsArray(world, filename);
-
-        System.arraycopy(data, 0, dest, index, Math.min(data.length, maxLength));
-    }
-
-    public static RandomAccessFile getRandomAccessFile(World world, String filename, String mode) {
+    public static RandomAccessFile getFileFromWorldDirectory(World world, String filename, String mode) {
         File modDirectory = new File(world.getSaveHandler().getWorldDirectory(), "/doesnotcompute/");
-        File file = new File(modDirectory, filename);
-
         if(!modDirectory.exists() && !modDirectory.mkdir()) {
-            System.err.println("Failed to generate a new directory in the world folder. Is it read only?");
+            System.err.println("Failed to generate a new folder at " + modDirectory.getAbsolutePath());
             return null;
         }
 
+        return getRandomAccessFile(new File(modDirectory, filename), mode);
+    }
+
+    public static RandomAccessFile getRandomAccessFile(File file, String mode) {
+        if(file == null) {
+            return null;
+        }
         try {
-            if(file.createNewFile()) {
-                System.out.println("Generated new file " + filename + " in the mod directory.");
+            if(!mode.equals("r") && file.createNewFile()) {
+                System.out.println("Generated a new file at " + file.getAbsolutePath());
             }
-        } catch(IOException e) {
-            System.err.println("Failed to generate new file " + filename + " in the mod directory. Is it read only?");
-            return null;
-        }
 
-        try {
             return new RandomAccessFile(file, mode);
         } catch(FileNotFoundException e) {
-            System.err.println("Couldn't find the file " + filename + " in mod directory.");
+            System.err.println("A file could not be found at " + file.getAbsolutePath());
             return null;
+        } catch(IOException e) {
+            System.err.println("Failed to generate a new file at " + file.getAbsolutePath());
+            return null;
+        }
+    }
+
+    public static byte[] getStreamAsByteArray(InputStream stream, int maxLength) {
+        if(stream == null) {
+            return new byte[0];
+        }
+
+        try {
+            byte[] entireFile = ByteStreams.toByteArray(stream);
+            stream.close();
+            if(entireFile.length > maxLength) {
+                byte[] truncatedFile = new byte[maxLength];
+                System.arraycopy(entireFile, 0, truncatedFile, 0, maxLength);
+                return truncatedFile;
+            }
+            return entireFile;
+        } catch(IOException e) {
+            return new byte[0];
         }
     }
     

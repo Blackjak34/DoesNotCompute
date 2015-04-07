@@ -25,6 +25,8 @@ public class ClientProxy extends CommonProxy {
 
         modelRegistry.register(DoesNotCompute.floppy, 0,
                 new ModelResourceLocation("doesnotcompute:itemFloppy", "inventory"));
+        modelRegistry.register(DoesNotCompute.systemFloppy, 0,
+                new ModelResourceLocation("doesnotcompute:itemSystemFloppy", "inventory"));
         modelRegistry.register(DoesNotCompute.screwdriver, 0,
                 new ModelResourceLocation("doesnotcompute:itemScrewdriver", "inventory"));
     }

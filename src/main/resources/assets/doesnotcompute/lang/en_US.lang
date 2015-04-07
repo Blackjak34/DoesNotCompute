@@ -5,6 +5,7 @@ tile.blockCableRibbon.name=Ribbon Cable
 tile.blockSID.name=Sound Interface Device
 
 item.itemFloppy.name=Floppy Disk
+item.itemSystemFloppy.name=System Floppy Disk
 item.itemScrewdriver.name=Screwdriver
 
 itemGroup.tabDoesNotCompute=Does Not Compute
