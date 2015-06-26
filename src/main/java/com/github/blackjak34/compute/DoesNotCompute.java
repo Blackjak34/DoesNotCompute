@@ -1,8 +1,23 @@
 package com.github.blackjak34.compute;
 
-import com.github.blackjak34.compute.block.*;
-import com.github.blackjak34.compute.entity.tile.*;
-import com.github.blackjak34.compute.entity.tile.client.*;
+import com.github.blackjak34.compute.block.BlockCPU;
+import com.github.blackjak34.compute.block.BlockCableRibbon;
+import com.github.blackjak34.compute.block.BlockDiskDrive;
+import com.github.blackjak34.compute.block.BlockSID;
+import com.github.blackjak34.compute.block.BlockTerminal;
+import com.github.blackjak34.compute.entity.tile.TileEntityCPU;
+import com.github.blackjak34.compute.entity.tile.TileEntityCableRibbon;
+import com.github.blackjak34.compute.entity.tile.TileEntityDiskDrive;
+import com.github.blackjak34.compute.entity.tile.TileEntitySID;
+import com.github.blackjak34.compute.entity.tile.TileEntityTerminal;
+import com.github.blackjak34.compute.entity.tile.client.TileEntityCPUClient;
+import com.github.blackjak34.compute.entity.tile.client
+        .TileEntityCableRibbonClient;
+import com.github.blackjak34.compute.entity.tile.client
+        .TileEntityDiskDriveClient;
+import com.github.blackjak34.compute.entity.tile.client.TileEntitySIDClient;
+import com.github.blackjak34.compute.entity.tile.client
+        .TileEntityTerminalClient;
 import com.github.blackjak34.compute.item.ItemFloppy;
 import com.github.blackjak34.compute.item.ItemScrewdriver;
 import com.github.blackjak34.compute.item.ItemSystemFloppy;
@@ -35,7 +50,11 @@ import net.minecraftforge.fml.relauncher.SideOnly;
 import net.minecraftforge.oredict.ShapedOreRecipe;
 import net.minecraftforge.oredict.ShapelessOreRecipe;
 
-import java.io.*;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.RandomAccessFile;
 
 @Mod(modid = DoesNotCompute.MODID, name = DoesNotCompute.NAME, version = DoesNotCompute.VERSION)
 public class DoesNotCompute {
@@ -44,16 +63,16 @@ public class DoesNotCompute {
 
     public static final String NAME = "Does Not Compute";
 
-    public static final String VERSION = "1.1.15";
-    
+    public static final String VERSION = "1.1.16";
+
     public static SimpleNetworkWrapper networkWrapper;
-    
+
     public static BlockTerminal terminal;
     public static BlockCPU cpu;
     public static BlockDiskDrive diskDrive;
     public static BlockCableRibbon ribbonCable;
     public static BlockSID sid;
-    
+
     public static ItemFloppy floppy;
     public static ItemSystemFloppy systemFloppy;
     public static ItemScrewdriver screwdriver;
@@ -83,7 +102,7 @@ public class DoesNotCompute {
         diskDrive = new BlockDiskDrive();
         ribbonCable = new BlockCableRibbon();
         sid = new BlockSID();
-    	
+
     	GameRegistry.registerBlock(terminal, "blockTerminal");
         GameRegistry.registerBlock(cpu, "blockCPU");
         GameRegistry.registerBlock(diskDrive, "blockDiskDrive");
@@ -161,11 +180,11 @@ public class DoesNotCompute {
                 'R', ribbonCableStack
             )
         );
-    	
+
     	floppy = new ItemFloppy();
         systemFloppy = new ItemSystemFloppy();
         screwdriver = new ItemScrewdriver();
-    	
+
     	GameRegistry.registerItem(floppy, "itemFloppy");
         GameRegistry.registerItem(systemFloppy, "itemSystemFloppy");
         GameRegistry.registerItem(screwdriver, "itemScrewdriver");
@@ -204,7 +223,7 @@ public class DoesNotCompute {
                 'B', "dyeBlue"
             )
         );
-    	
+
     	networkWrapper = NetworkRegistry.INSTANCE.newSimpleChannel(DoesNotCompute.MODID);
     	networkWrapper.registerMessage(HandlerActionPerformed.class, MessageActionPerformed.class, 0, Side.SERVER);
         networkWrapper.registerMessage(HandlerKeyTyped.class, MessageKeyTyped.class, 1, Side.SERVER);
@@ -275,5 +294,5 @@ public class DoesNotCompute {
             return new byte[0];
         }
     }
-    
+
 }
