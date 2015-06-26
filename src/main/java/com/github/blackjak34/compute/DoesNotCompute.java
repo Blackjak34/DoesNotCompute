@@ -63,7 +63,7 @@ public class DoesNotCompute {
 
     public static final String NAME = "Does Not Compute";
 
-    public static final String VERSION = "1.1.16";
+    public static final String VERSION = "1.1.17";
 
     public static SimpleNetworkWrapper networkWrapper;
 

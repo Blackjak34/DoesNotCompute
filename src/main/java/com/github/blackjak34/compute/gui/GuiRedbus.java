@@ -17,7 +17,8 @@ public class GuiRedbus extends GuiContainer {
 
     public static final int GUIID = 99;
 
-    private static final ResourceLocation guiTextureLoc = new ResourceLocation("doesnotcompute:textures/gui/Gui_RedBus.png");
+    private static final ResourceLocation guiTextureLoc = new
+            ResourceLocation("doesnotcompute:textures/gui/Gui_Redbus.png");
 
     private TileEntityRedbus tiledata;
 
