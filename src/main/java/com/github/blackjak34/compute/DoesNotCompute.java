@@ -2,17 +2,21 @@ package com.github.blackjak34.compute;
 
 import com.github.blackjak34.compute.block.BlockCPU;
 import com.github.blackjak34.compute.block.BlockCableRibbon;
+import com.github.blackjak34.compute.block.BlockCardPunch;
 import com.github.blackjak34.compute.block.BlockDiskDrive;
 import com.github.blackjak34.compute.block.BlockSID;
 import com.github.blackjak34.compute.block.BlockTerminal;
 import com.github.blackjak34.compute.entity.tile.TileEntityCPU;
 import com.github.blackjak34.compute.entity.tile.TileEntityCableRibbon;
+import com.github.blackjak34.compute.entity.tile.TileEntityCardPunch;
 import com.github.blackjak34.compute.entity.tile.TileEntityDiskDrive;
 import com.github.blackjak34.compute.entity.tile.TileEntitySID;
 import com.github.blackjak34.compute.entity.tile.TileEntityTerminal;
 import com.github.blackjak34.compute.entity.tile.client.TileEntityCPUClient;
 import com.github.blackjak34.compute.entity.tile.client
         .TileEntityCableRibbonClient;
+import com.github.blackjak34.compute.entity.tile.client
+        .TileEntityCardPunchClient;
 import com.github.blackjak34.compute.entity.tile.client
         .TileEntityDiskDriveClient;
 import com.github.blackjak34.compute.entity.tile.client.TileEntitySIDClient;
@@ -64,7 +68,7 @@ public class DoesNotCompute {
 
     public static final String NAME = "Does Not Compute";
 
-    public static final String VERSION = "1.2.18";
+    public static final String VERSION = "1.2.19";
 
     public static SimpleNetworkWrapper networkWrapper;
 
@@ -73,6 +77,7 @@ public class DoesNotCompute {
     public static BlockDiskDrive diskDrive;
     public static BlockCableRibbon ribbonCable;
     public static BlockSID sid;
+    public static BlockCardPunch cardPunch;
 
     public static ItemFloppy floppy;
     public static ItemSystemFloppy systemFloppy;
@@ -104,12 +109,14 @@ public class DoesNotCompute {
         diskDrive = new BlockDiskDrive();
         ribbonCable = new BlockCableRibbon();
         sid = new BlockSID();
+        cardPunch = new BlockCardPunch();
 
     	GameRegistry.registerBlock(terminal, "blockTerminal");
         GameRegistry.registerBlock(cpu, "blockCPU");
         GameRegistry.registerBlock(diskDrive, "blockDiskDrive");
         GameRegistry.registerBlock(ribbonCable, "blockCableRibbon");
         GameRegistry.registerBlock(sid, "blockSID");
+        GameRegistry.registerBlock(cardPunch, "blockCardPunch");
         GameRegistry.registerTileEntity(TileEntityTerminal.class, "tileEntityTerminal");
     	GameRegistry.registerTileEntity(TileEntityTerminalClient.class, "tileEntityTerminalClient");
         GameRegistry.registerTileEntity(TileEntityCPU.class, "tileEntityEmulator");
@@ -120,6 +127,8 @@ public class DoesNotCompute {
         GameRegistry.registerTileEntity(TileEntityCableRibbonClient.class, "tileEntityCableRibbonClient");
         GameRegistry.registerTileEntity(TileEntitySID.class, "tileEntitySID");
         GameRegistry.registerTileEntity(TileEntitySIDClient.class, "tileEntitySIDClient");
+        GameRegistry.registerTileEntity(TileEntityCardPunch.class, "tileEntityCardPunch");
+        GameRegistry.registerTileEntity(TileEntityCardPunchClient.class, "tileEntityCardPunchClient");
 
         ItemStack ribbonCableStack = new ItemStack(ribbonCable);
 
@@ -183,6 +192,20 @@ public class DoesNotCompute {
             )
         );
 
+        GameRegistry.addRecipe(
+            new ShapedOreRecipe(
+                new ItemStack(cardPunch),
+                "BPI",
+                "IFI",
+                "IRI",
+                'B', "dyeBlack",
+                'P', new ItemStack(Blocks.sticky_piston),
+                'I', "ingotIron",
+                'F', new ItemStack(Items.flint),
+                'R', ribbonCableStack
+            )
+        );
+
     	floppy = new ItemFloppy();
         systemFloppy = new ItemSystemFloppy();
         screwdriver = new ItemScrewdriver();
@@ -225,6 +248,18 @@ public class DoesNotCompute {
                 'I', "ingotIron",
                 'S', "stickWood",
                 'B', "dyeBlue"
+            )
+        );
+
+        GameRegistry.addRecipe(
+            new ShapedOreRecipe(
+                new ItemStack(punchCard, 6),
+                "PLP",
+                "PBP",
+                "PLP",
+                'P', new ItemStack(Items.paper),
+                'L', "dyeBlue",
+                'B', "dyeBlack"
             )
         );
 

@@ -3,6 +3,7 @@ tile.blockCPU.name=Computer
 tile.blockDiskDrive.name=Disk Drive
 tile.blockCableRibbon.name=Ribbon Cable
 tile.blockSID.name=Sound Interface Device
+tile.blockCardPunch.name=Card Punch
 
 item.itemFloppy.name=Floppy Disk
 item.itemSystemFloppy.name=System Floppy Disk

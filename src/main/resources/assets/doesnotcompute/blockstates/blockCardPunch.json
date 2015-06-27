@@ -1,0 +1,8 @@
+{
+  "variants": {
+    "facing=north": {"model":"doesnotcompute:card_punch"},
+    "facing=east":  {"model":"doesnotcompute:card_punch", "y":90},
+    "facing=south": {"model":"doesnotcompute:card_punch", "y":180},
+    "facing=west":  {"model":"doesnotcompute:card_punch", "y":270}
+  }
+}
