@@ -9,7 +9,7 @@ src/main/resources - contains the assets (textures, sounds, models, etc.)
 
 gradlew (gradlew.bat) - run this with the argument "build" to generate the compiled code
 
-This project was coded around Minecraft Forge/FML 11.14.0.1273 (Minecraft 1.8), use that version for best compatibility.
+This project was coded around Minecraft Forge/FML 11.14.3.1450 (Minecraft 1.8), use that version for best compatibility.
 
 Overview
 ========
