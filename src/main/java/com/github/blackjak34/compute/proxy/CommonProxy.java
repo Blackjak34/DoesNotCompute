@@ -5,6 +5,7 @@ import com.github.blackjak34.compute.entity.tile.client.TileEntityCPUClient;
 import com.github.blackjak34.compute.entity.tile.client.TileEntityRedbus;
 import com.github.blackjak34.compute.entity.tile.client.TileEntityTerminalClient;
 import com.github.blackjak34.compute.gui.GuiCPU;
+import com.github.blackjak34.compute.gui.GuiPunchCard;
 import com.github.blackjak34.compute.gui.GuiRedbus;
 import com.github.blackjak34.compute.gui.GuiTerminal;
 import net.minecraft.entity.player.EntityPlayer;
@@ -13,7 +14,7 @@ import net.minecraft.world.World;
 import net.minecraftforge.fml.common.network.IGuiHandler;
 
 public class CommonProxy implements IGuiHandler {
-	
+
     public void registerRenderers() {}
 
 	@Override
@@ -22,7 +23,7 @@ public class CommonProxy implements IGuiHandler {
 			case GuiTerminal.GUIID:case GuiCPU.GUIID:case GuiRedbus.GUIID:
 				return new ContainerBase(world.getTileEntity(new BlockPos(blockX, blockY, blockZ)));
 		}
-		
+
 		return null;
 	}
 
@@ -35,9 +36,11 @@ public class CommonProxy implements IGuiHandler {
 				return new GuiCPU((TileEntityCPUClient) world.getTileEntity(new BlockPos(blockX, blockY, blockZ)));
             case GuiRedbus.GUIID:
                 return new GuiRedbus((TileEntityRedbus) world.getTileEntity(new BlockPos(blockX, blockY, blockZ)));
+            case GuiPunchCard.GUIID:
+                return new GuiPunchCard(player.getHeldItem());
 		}
-		
+
 		return null;
 	}
-    
+
 }

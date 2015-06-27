@@ -7,5 +7,6 @@ tile.blockSID.name=Sound Interface Device
 item.itemFloppy.name=Floppy Disk
 item.itemSystemFloppy.name=System Floppy Disk
 item.itemScrewdriver.name=Screwdriver
+item.itemPunchCard.name=Punch Card
 
 itemGroup.tabDoesNotCompute=Does Not Compute

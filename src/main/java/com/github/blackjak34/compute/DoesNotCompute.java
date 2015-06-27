@@ -19,6 +19,7 @@ import com.github.blackjak34.compute.entity.tile.client.TileEntitySIDClient;
 import com.github.blackjak34.compute.entity.tile.client
         .TileEntityTerminalClient;
 import com.github.blackjak34.compute.item.ItemFloppy;
+import com.github.blackjak34.compute.item.ItemPunchCard;
 import com.github.blackjak34.compute.item.ItemScrewdriver;
 import com.github.blackjak34.compute.item.ItemSystemFloppy;
 import com.github.blackjak34.compute.packet.MessageActionPerformed;
@@ -63,7 +64,7 @@ public class DoesNotCompute {
 
     public static final String NAME = "Does Not Compute";
 
-    public static final String VERSION = "1.1.17";
+    public static final String VERSION = "1.2.18";
 
     public static SimpleNetworkWrapper networkWrapper;
 
@@ -76,6 +77,7 @@ public class DoesNotCompute {
     public static ItemFloppy floppy;
     public static ItemSystemFloppy systemFloppy;
     public static ItemScrewdriver screwdriver;
+    public static ItemPunchCard punchCard;
 
     @Mod.Instance(value = DoesNotCompute.MODID)
     public static DoesNotCompute instance;
@@ -184,10 +186,12 @@ public class DoesNotCompute {
     	floppy = new ItemFloppy();
         systemFloppy = new ItemSystemFloppy();
         screwdriver = new ItemScrewdriver();
+        punchCard = new ItemPunchCard();
 
     	GameRegistry.registerItem(floppy, "itemFloppy");
         GameRegistry.registerItem(systemFloppy, "itemSystemFloppy");
         GameRegistry.registerItem(screwdriver, "itemScrewdriver");
+        GameRegistry.registerItem(punchCard, "itemPunchCard");
 
         ItemStack floppyStack = new ItemStack(floppy);
 

@@ -8,7 +8,7 @@ import net.minecraft.client.resources.model.ModelResourceLocation;
 import net.minecraft.item.Item;
 
 public class ClientProxy extends CommonProxy {
-	
+
 	@Override
     public void registerRenderers() {
         ItemModelMesher modelRegistry = Minecraft.getMinecraft().getRenderItem().getItemModelMesher();
@@ -29,6 +29,8 @@ public class ClientProxy extends CommonProxy {
                 new ModelResourceLocation("doesnotcompute:itemSystemFloppy", "inventory"));
         modelRegistry.register(DoesNotCompute.screwdriver, 0,
                 new ModelResourceLocation("doesnotcompute:itemScrewdriver", "inventory"));
+        modelRegistry.register(DoesNotCompute.punchCard, 0,
+                new ModelResourceLocation("doesnotcompute:itemPunchCard", "inventory"));
     }
-	
+
 }
