@@ -61,7 +61,7 @@ public class BlockCardPunch extends BlockPeripheral {
             if(itemUsed == null) {
                 tileEntity.ejectCard();
             } else if(tileEntity.onItemUsed(itemUsed)) {
-                player.destroyCurrentEquippedItem();
+                --itemUsed.stackSize;
             }
         }
 
