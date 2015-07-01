@@ -21,12 +21,14 @@ public class GuiCardHopper extends GuiContainer {
     protected GuiCardHopper(TileEntityCardPunch tileEntity, EntityPlayer player, boolean openCardHopper) {
         super(openCardHopper ? new ContainerCardHopper(player, tileEntity) : new ContainerCardStacker(player, tileEntity));
 
-
+        xSize = 176;
+        ySize = 133;
     }
 
     @Override
     protected void drawGuiContainerBackgroundLayer(float partialTicks, int mouseX, int mouseY) {
-
+        mc.renderEngine.bindTexture(guiTextureLoc);
+        drawTexturedModalRect(guiLeft, guiTop, 0, 0, xSize, ySize);
     }
 
 }

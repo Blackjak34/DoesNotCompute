@@ -43,6 +43,7 @@ public class BlockCardPunch extends Block implements ITileEntityProvider {
         if(side == blockFacing) {
             player.openGui(DoesNotCompute.instance, GuiCardPunch.GUIID,
                     worldIn, pos.getX(), pos.getY(), pos.getZ());
+            return true;
         }
 
         if(side == blockFacing.rotateY()) {

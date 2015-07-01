@@ -50,13 +50,11 @@ public class CommonProxy implements IGuiHandler {
             case GuiPunchCard.GUIID:
                 return new GuiPunchCard(player.getHeldItem());
             case GuiCardPunch.GUIID:
-                return new GuiCardPunch((TileEntityCardPunch) world.getTileEntity(
-                        new BlockPos(blockX, blockY, blockZ)));
+                return new GuiCardPunch((TileEntityCardPunch) world.getTileEntity(new BlockPos(blockX, blockY, blockZ)));
             case GuiCardHopper.GUIID:
                 return new GuiCardHopper((TileEntityCardPunch) world.getTileEntity(new BlockPos(blockX, blockY, blockZ)), player);
             case GuiCardStacker.GUIID:
-                return new GuiCardStacker((TileEntityCardPunch) world.getTileEntity(
-                        new BlockPos(blockX, blockY, blockZ)), player);
+                return new GuiCardStacker((TileEntityCardPunch) world.getTileEntity(new BlockPos(blockX, blockY, blockZ)), player);
         }
 
 		return null;

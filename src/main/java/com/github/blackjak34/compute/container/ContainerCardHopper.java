@@ -1,5 +1,6 @@
 package com.github.blackjak34.compute.container;
 
+import com.github.blackjak34.compute.DoesNotCompute;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.InventoryPlayer;
 import net.minecraft.inventory.Container;
@@ -18,15 +19,18 @@ public class ContainerCardHopper extends Container {
     protected ContainerCardHopper(InventoryPlayer playerInventory, IInventory inventory, boolean openCardHopper) {
         this.inventory = inventory;
 
-        if(openCardHopper) {
-            for(int i=0;i<8;++i) {
-                addSlotToContainer(new Slot(inventory, i, 44+i*18, 20));
-            }
-        } else {
-            int inventorySize = inventory.getSizeInventory();
-            for(int i=8;i<inventorySize;++i) {
-                addSlotToContainer(new Slot(inventory, i, 44+i*18, 20));
-            }
+        for(int i=0;i<8;++i) {
+            addSlotToContainer(new Slot(inventory, i+(openCardHopper?0:8), 17+i*18, 20) {
+
+                                  public boolean isItemValid(ItemStack stack) {
+                                      return stack.getItem() == DoesNotCompute.punchCardStack;
+                                  }
+
+                                  public int getSlotStackLimit() {
+                                      return 1;
+                                  }
+
+                               });
         }
 
         for(int i=0;i<3;++i) {
@@ -36,7 +40,7 @@ public class ContainerCardHopper extends Container {
         }
 
         for(int i=0;i<9;++i) {
-            addSlotToContainer(new Slot(playerInventory, i, 8 + i * 18, 109));
+            addSlotToContainer(new Slot(playerInventory, i, 8+i*18, 109));
         }
     }
 

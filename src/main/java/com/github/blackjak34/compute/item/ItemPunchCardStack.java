@@ -21,6 +21,11 @@ public class ItemPunchCardStack extends Item {
     }
 
     @Override
+    public int getItemStackLimit(ItemStack stack) {
+        return 1;
+    }
+
+    @Override
     public ItemStack onItemRightClick(ItemStack itemStackIn, World worldIn, EntityPlayer playerIn) {
         return itemStackIn;
     }
