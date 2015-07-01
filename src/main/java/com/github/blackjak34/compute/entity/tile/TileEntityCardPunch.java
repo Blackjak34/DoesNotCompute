@@ -287,7 +287,7 @@ public class TileEntityCardPunch extends TileEntity implements ISidedInventory, 
 
     @Override
     public boolean isItemValidForSlot(int index, ItemStack stack) {
-        return index > 0 && index < getSizeInventory() &&
+        return index >= 0 && index < getSizeInventory() &&
                (stack == null || stack.getItem() == DoesNotCompute.punchCardStack);
     }
 
