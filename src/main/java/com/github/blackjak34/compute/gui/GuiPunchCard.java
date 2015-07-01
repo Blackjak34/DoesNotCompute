@@ -1,6 +1,6 @@
 package com.github.blackjak34.compute.gui;
 
-import com.github.blackjak34.compute.DoesNotCompute;
+import com.github.blackjak34.compute.render.RenderPunchCard;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.item.ItemStack;
 
@@ -19,7 +19,7 @@ public class GuiPunchCard extends GuiScreen {
         double guiLeft = (width - 256) / 2;
         double guiTop = (height - 112.5) / 2;
 
-        DoesNotCompute.punchCard.drawPunchCard(punchCard, guiLeft, guiTop, zLevel, 0.5);
+        RenderPunchCard.INSTANCE.drawPunchCard(punchCard, guiLeft, guiTop, zLevel, 0.5);
     }
 
     @Override
