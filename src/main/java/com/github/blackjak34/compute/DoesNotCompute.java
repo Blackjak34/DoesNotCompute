@@ -16,14 +16,13 @@ import com.github.blackjak34.compute.entity.tile.client.TileEntityCPUClient;
 import com.github.blackjak34.compute.entity.tile.client
         .TileEntityCableRibbonClient;
 import com.github.blackjak34.compute.entity.tile.client
-        .TileEntityCardPunchClient;
-import com.github.blackjak34.compute.entity.tile.client
         .TileEntityDiskDriveClient;
 import com.github.blackjak34.compute.entity.tile.client.TileEntitySIDClient;
 import com.github.blackjak34.compute.entity.tile.client
         .TileEntityTerminalClient;
 import com.github.blackjak34.compute.item.ItemFloppy;
 import com.github.blackjak34.compute.item.ItemPunchCard;
+import com.github.blackjak34.compute.item.ItemPunchCardStack;
 import com.github.blackjak34.compute.item.ItemScrewdriver;
 import com.github.blackjak34.compute.item.ItemSystemFloppy;
 import com.github.blackjak34.compute.packet.MessageActionPerformed;
@@ -68,7 +67,7 @@ public class DoesNotCompute {
 
     public static final String NAME = "Does Not Compute";
 
-    public static final String VERSION = "1.2.19";
+    public static final String VERSION = "1.2.20";
 
     public static SimpleNetworkWrapper networkWrapper;
 
@@ -83,6 +82,7 @@ public class DoesNotCompute {
     public static ItemSystemFloppy systemFloppy;
     public static ItemScrewdriver screwdriver;
     public static ItemPunchCard punchCard;
+    public static ItemPunchCardStack punchCardStack;
 
     @Mod.Instance(value = DoesNotCompute.MODID)
     public static DoesNotCompute instance;
@@ -128,7 +128,6 @@ public class DoesNotCompute {
         GameRegistry.registerTileEntity(TileEntitySID.class, "tileEntitySID");
         GameRegistry.registerTileEntity(TileEntitySIDClient.class, "tileEntitySIDClient");
         GameRegistry.registerTileEntity(TileEntityCardPunch.class, "tileEntityCardPunch");
-        GameRegistry.registerTileEntity(TileEntityCardPunchClient.class, "tileEntityCardPunchClient");
 
         ItemStack ribbonCableStack = new ItemStack(ribbonCable);
 
@@ -210,11 +209,13 @@ public class DoesNotCompute {
         systemFloppy = new ItemSystemFloppy();
         screwdriver = new ItemScrewdriver();
         punchCard = new ItemPunchCard();
+        punchCardStack = new ItemPunchCardStack();
 
     	GameRegistry.registerItem(floppy, "itemFloppy");
         GameRegistry.registerItem(systemFloppy, "itemSystemFloppy");
         GameRegistry.registerItem(screwdriver, "itemScrewdriver");
         GameRegistry.registerItem(punchCard, "itemPunchCard");
+        GameRegistry.registerItem(punchCardStack, "itemPunchCardStack");
 
         ItemStack floppyStack = new ItemStack(floppy);
 

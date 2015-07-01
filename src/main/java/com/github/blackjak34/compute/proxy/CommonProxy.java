@@ -1,10 +1,17 @@
 package com.github.blackjak34.compute.proxy;
 
 import com.github.blackjak34.compute.container.ContainerBase;
+import com.github.blackjak34.compute.container.ContainerCardHopper;
+import com.github.blackjak34.compute.container.ContainerCardStacker;
+import com.github.blackjak34.compute.entity.tile.TileEntityCardPunch;
 import com.github.blackjak34.compute.entity.tile.client.TileEntityCPUClient;
 import com.github.blackjak34.compute.entity.tile.client.TileEntityRedbus;
-import com.github.blackjak34.compute.entity.tile.client.TileEntityTerminalClient;
+import com.github.blackjak34.compute.entity.tile.client
+        .TileEntityTerminalClient;
 import com.github.blackjak34.compute.gui.GuiCPU;
+import com.github.blackjak34.compute.gui.GuiCardHopper;
+import com.github.blackjak34.compute.gui.GuiCardPunch;
+import com.github.blackjak34.compute.gui.GuiCardStacker;
 import com.github.blackjak34.compute.gui.GuiPunchCard;
 import com.github.blackjak34.compute.gui.GuiRedbus;
 import com.github.blackjak34.compute.gui.GuiTerminal;
@@ -20,8 +27,12 @@ public class CommonProxy implements IGuiHandler {
 	@Override
 	public Object getServerGuiElement(int ID, EntityPlayer player, World world, int blockX, int blockY, int blockZ) {
 		switch(ID) {
-			case GuiTerminal.GUIID:case GuiCPU.GUIID:case GuiRedbus.GUIID:
+			case GuiTerminal.GUIID:case GuiCPU.GUIID:case GuiRedbus.GUIID:case GuiCardPunch.GUIID:
 				return new ContainerBase(world.getTileEntity(new BlockPos(blockX, blockY, blockZ)));
+            case GuiCardHopper.GUIID:
+                return new ContainerCardHopper(player, (TileEntityCardPunch) world.getTileEntity(new BlockPos(blockX, blockY, blockZ)));
+            case GuiCardStacker.GUIID:
+                return new ContainerCardStacker(player, (TileEntityCardPunch) world.getTileEntity(new BlockPos(blockX, blockY, blockZ)));
 		}
 
 		return null;
@@ -38,7 +49,15 @@ public class CommonProxy implements IGuiHandler {
                 return new GuiRedbus((TileEntityRedbus) world.getTileEntity(new BlockPos(blockX, blockY, blockZ)));
             case GuiPunchCard.GUIID:
                 return new GuiPunchCard(player.getHeldItem());
-		}
+            case GuiCardPunch.GUIID:
+                return new GuiCardPunch((TileEntityCardPunch) world.getTileEntity(
+                        new BlockPos(blockX, blockY, blockZ)));
+            case GuiCardHopper.GUIID:
+                return new GuiCardHopper((TileEntityCardPunch) world.getTileEntity(new BlockPos(blockX, blockY, blockZ)), player);
+            case GuiCardStacker.GUIID:
+                return new GuiCardStacker((TileEntityCardPunch) world.getTileEntity(
+                        new BlockPos(blockX, blockY, blockZ)), player);
+        }
 
 		return null;
 	}

@@ -9,5 +9,6 @@ item.itemFloppy.name=Floppy Disk
 item.itemSystemFloppy.name=System Floppy Disk
 item.itemScrewdriver.name=Screwdriver
 item.itemPunchCard.name=Punch Card
+item.itemPunchCardStack.name=Punch Card Stack
 
 itemGroup.tabDoesNotCompute=Does Not Compute

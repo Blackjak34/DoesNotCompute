@@ -33,6 +33,8 @@ public class ClientProxy extends CommonProxy {
                 new ModelResourceLocation("doesnotcompute:itemScrewdriver", "inventory"));
         modelRegistry.register(DoesNotCompute.punchCard, 0,
                 new ModelResourceLocation("doesnotcompute:itemPunchCard", "inventory"));
+        modelRegistry.register(DoesNotCompute.punchCardStack, 0,
+                new ModelResourceLocation("doesnotcompute:itemPunchCardStack", "inventory"));
     }
 
 }
