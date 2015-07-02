@@ -3,18 +3,16 @@ package com.github.blackjak34.compute.render;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.OpenGlHelper;
-import net.minecraft.client.renderer.Tessellator;
-import net.minecraft.client.renderer.WorldRenderer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.ResourceLocation;
 import org.lwjgl.BufferUtils;
 import org.lwjgl.opengl.EXTPackedDepthStencil;
-import org.lwjgl.opengl.GL12;
 
 import java.nio.ByteBuffer;
 import java.nio.IntBuffer;
 
+import static org.lwjgl.opengl.EXTFramebufferBlit.*;
 import static org.lwjgl.opengl.EXTFramebufferObject.*;
 import static org.lwjgl.opengl.GL11.*;
 
@@ -25,20 +23,15 @@ public class RenderPunchCard {
     private static final ResourceLocation punchCardTexture =
             new ResourceLocation("doesnotcompute:textures/gui/Fortran_Card.png");
 
-    private static final Tessellator tessellator = Tessellator.getInstance();
-    private static final WorldRenderer worldRenderer = tessellator.getWorldRenderer();
-
-    private final int texture;
     private final int framebuffer;
 
     private RenderPunchCard() {
         if(!OpenGlHelper.isFramebufferEnabled()) {
-            texture = 0;
             framebuffer = 0;
             return;
         }
 
-        texture = glGenTextures();
+        int texture = glGenTextures();
         glBindTexture(GL_TEXTURE_2D, texture);
 
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP);
@@ -46,7 +39,7 @@ public class RenderPunchCard {
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 
-        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, 512, 225, 0, GL12.GL_BGRA,
+        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, 512, 225, 0, GL_RGBA,
                 GL_UNSIGNED_BYTE, (ByteBuffer) null);
 
         framebuffer = OpenGlHelper.func_153165_e(); // glGenFramebuffers
@@ -69,7 +62,7 @@ public class RenderPunchCard {
 
         switch(OpenGlHelper.func_153167_i(GL_FRAMEBUFFER_EXT)) { // glCheckFramebufferStatus
             case GL_FRAMEBUFFER_COMPLETE_EXT:
-                System.err.println("Framebuffers are working properly.");
+                System.out.println("Framebuffers are working properly.");
                 return;
             case GL_FRAMEBUFFER_INCOMPLETE_ATTACHMENT_EXT:
                 System.err.println("Framebuffer error, incomplete attachment.");
@@ -97,7 +90,7 @@ public class RenderPunchCard {
         //TODO: delete texture, framebuffer, and renderbuffer upon failure
     }
 
-    public void drawPunchCard(ItemStack punchCard, double x, double y, double z, double scale) {
+    public void drawPunchCard(ItemStack punchCard, int x, int y, double scale) {
         if(!OpenGlHelper.isFramebufferEnabled()) {return;}
         GlStateManager.pushAttrib();
         GlStateManager.pushMatrix();
@@ -126,6 +119,7 @@ public class RenderPunchCard {
         glEnable(GL_STENCIL_TEST);
         glDisable(GL_DEPTH_TEST);
         glDepthMask(false);
+        glColorMask(false, false, false, false);
 
         // begin drawing to the stencil buffer
         glStencilFunc(GL_ALWAYS, 1, 1);
@@ -136,6 +130,7 @@ public class RenderPunchCard {
                                      : new NBTTagCompound();
 
         // draw punch card holes into stencil buffer
+        glBindTexture(GL_TEXTURE_2D, 0);
         glBegin(GL_QUADS);
         for(int i=0;i<80;++i) {
             String key = "col" + i;
@@ -220,8 +215,10 @@ public class RenderPunchCard {
         glEnd();
 
         // stop drawing to the stencil buffer and set up stencil test
-        glStencilFunc(GL_GREATER, 1, 1);
+        glStencilFunc(GL_EQUAL, 0, 1);
         glStencilOp(GL_KEEP, GL_KEEP, GL_KEEP);
+
+        glColorMask(true, true, true, true);
 
         // draw punch card texture using stencil test
         Minecraft.getMinecraft().renderEngine.bindTexture(punchCardTexture);
@@ -270,22 +267,14 @@ public class RenderPunchCard {
         glViewport(oldViewport.get(0), oldViewport.get(1),
                 oldViewport.get(2), oldViewport.get(3));
 
-        // restore framebuffer
-        OpenGlHelper.func_153171_g(GL_FRAMEBUFFER_EXT, oldFramebuffer);
+        // bind framebuffers and blit image
+        OpenGlHelper.func_153171_g(GL_READ_FRAMEBUFFER_EXT, framebuffer);
+        OpenGlHelper.func_153171_g(GL_DRAW_FRAMEBUFFER_EXT, oldFramebuffer);
 
-        // bind texture drawn into using framebuffer
-        glBindTexture(GL_TEXTURE_2D, texture);
-        glColor4d(1.0, 1.0, 1.0, 1.0);
-
-        // draw generated texture into specified location
-        double xFar = x + (512 * scale);
-        double yFar = y + (225 * scale);
-        worldRenderer.startDrawingQuads();
-        worldRenderer.addVertexWithUV(x, y, z, 0.0, 0.0);
-        worldRenderer.addVertexWithUV(x, yFar, z, 0.0, 0.439453125);
-        worldRenderer.addVertexWithUV(xFar, yFar, z, 1.0, 0.439453125);
-        worldRenderer.addVertexWithUV(xFar, y, z, 1.0, 0.0);
-        tessellator.draw();
+        glBlitFramebufferEXT(0, 0, 512, 225, x, y,
+                x + ((int) (512 * scale)),
+                y + ((int) (225 * scale)),
+                GL_COLOR_BUFFER_BIT, GL_NEAREST);
     }
 
 }

@@ -16,10 +16,10 @@ public class GuiPunchCard extends GuiScreen {
 
     @Override
     public void drawScreen(int mouseX, int mouseY, float partialTicks) {
-        double guiLeft = (width - 256) / 2;
-        double guiTop = (height - 112.5) / 2;
-
-        RenderPunchCard.INSTANCE.drawPunchCard(punchCard, guiLeft, guiTop, zLevel, 0.5);
+        RenderPunchCard.INSTANCE.drawPunchCard(punchCard,
+                (mc.displayWidth-1024)/2,
+                (mc.displayHeight-450)/2,
+                2.0);
     }
 
     @Override
