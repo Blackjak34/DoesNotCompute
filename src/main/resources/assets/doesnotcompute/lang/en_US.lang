@@ -12,3 +12,21 @@ item.itemPunchCard.name=Punch Card
 item.itemPunchCardStack.name=Punch Card Stack
 
 itemGroup.tabDoesNotCompute=Does Not Compute
+
+key.punch.feed=Feed
+key.punch.reg=Register
+key.punch.rel=Release
+key.punch.lzero=Left Zero
+key.punch.mpunch=Multi Punch
+key.punch.dup=Duplicate
+key.punch.auxdup=Aux. Duplicate
+key.punch.skip=Skip
+key.punch.progone=Program One
+key.punch.progtwo=Program Two
+key.punch.alpha=Alpha
+key.punch.numeric=Numeric
+key.punch.master=Master Card
+key.punch.cent=Cent Symbol (Alpha)
+key.punch.prime=Prime Symbol (Alpha)
+
+key.categories.doesnotcompute=DNC 029 Card Punch GUI
