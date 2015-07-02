@@ -104,10 +104,6 @@ public class RenderPunchCard {
         // bind framebuffer
         OpenGlHelper.func_153171_g(GL_FRAMEBUFFER_EXT, framebuffer);
 
-        glClearColor(0.0F, 0.0F, 0.0F, 0.0F);
-        glClearStencil(0);
-        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT |  GL_STENCIL_BUFFER_BIT);
-
         glViewport(0, 0, 512, 225);
 
         glMatrixMode(GL_PROJECTION);
@@ -115,6 +111,18 @@ public class RenderPunchCard {
         glOrtho(0.0, 512.0, 225.0, 0.0, -1.0, 1.0);
         glMatrixMode(GL_MODELVIEW);
         glLoadIdentity();
+
+        glClearStencil(0);
+        glClear(GL_DEPTH_BUFFER_BIT |  GL_STENCIL_BUFFER_BIT);
+
+        //FIXME framebuffer copy to obtain alpha blending
+        OpenGlHelper.func_153171_g(GL_READ_FRAMEBUFFER_EXT, oldFramebuffer);
+        OpenGlHelper.func_153171_g(GL_DRAW_FRAMEBUFFER_EXT, framebuffer);
+
+        int xFar = x + ((int) (512 * scale));
+        int yFar = y + ((int) (225 * scale));
+        glBlitFramebufferEXT(x, y, xFar, yFar, 0, 0, 512, 225,
+                GL_COLOR_BUFFER_BIT, GL_NEAREST);
 
         glEnable(GL_STENCIL_TEST);
         glDisable(GL_DEPTH_TEST);
@@ -270,9 +278,7 @@ public class RenderPunchCard {
         OpenGlHelper.func_153171_g(GL_READ_FRAMEBUFFER_EXT, framebuffer);
         OpenGlHelper.func_153171_g(GL_DRAW_FRAMEBUFFER_EXT, oldFramebuffer);
 
-        glBlitFramebufferEXT(0, 0, 512, 225, x, y,
-                x + ((int) (512 * scale)),
-                y + ((int) (225 * scale)),
+        glBlitFramebufferEXT(0, 0, 512, 225, x, y, xFar, yFar,
                 GL_COLOR_BUFFER_BIT, GL_NEAREST);
     }
 
