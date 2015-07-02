@@ -237,7 +237,6 @@ public class RenderPunchCard {
         glDisable(GL_STENCIL_TEST);
 
         // draw printed letters
-        glColor4d(0.0, 0.0, 0.0, 1.0);
         glBegin(GL_QUADS);
         for(int i=0;i<80;++i) {
             byte[] printedChars = tagCompound.getByteArray("chr" + i);
