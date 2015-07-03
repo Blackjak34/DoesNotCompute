@@ -91,7 +91,7 @@ public class RenderPunchCard {
     }
 
     public void drawPunchCard(ItemStack punchCard, int x, int y, double scale) {
-        if(!OpenGlHelper.isFramebufferEnabled()) {return;}
+        if(!OpenGlHelper.isFramebufferEnabled() || punchCard == null) {return;}
         GlStateManager.pushAttrib();
         GlStateManager.pushMatrix();
 
