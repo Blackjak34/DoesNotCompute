@@ -113,7 +113,7 @@ public class RenderPunchCard {
         glLoadIdentity();
 
         glClearStencil(0);
-        glClear(GL_DEPTH_BUFFER_BIT |  GL_STENCIL_BUFFER_BIT);
+        glClear(GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
 
         //FIXME framebuffer copy to obtain alpha blending
         OpenGlHelper.func_153171_g(GL_READ_FRAMEBUFFER_EXT, oldFramebuffer);
@@ -229,6 +229,7 @@ public class RenderPunchCard {
         glColorMask(true, true, true, true);
 
         // draw punch card texture using stencil test
+        GlStateManager.func_179144_i(0); // glBindTexture
         Minecraft.getMinecraft().renderEngine.bindTexture(punchCardTexture);
         glColor4d(1.0, 1.0, 1.0, 1.0);
         glBegin(GL_QUADS);
