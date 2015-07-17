@@ -1,10 +1,12 @@
 package com.github.blackjak34.compute.item;
 
 import com.github.blackjak34.compute.DoesNotCompute;
+import com.github.blackjak34.compute.gui.GuiCardStack;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.util.BlockPos;
 import net.minecraft.world.World;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
@@ -27,6 +29,9 @@ public class ItemPunchCardStack extends Item {
 
     @Override
     public ItemStack onItemRightClick(ItemStack itemStackIn, World worldIn, EntityPlayer playerIn) {
+        BlockPos playerPos = playerIn.getPosition();
+        playerIn.openGui(DoesNotCompute.instance, GuiCardStack.GUIID, worldIn,
+                playerPos.getX(), playerPos.getY(), playerPos.getZ());
         return itemStackIn;
     }
 
@@ -44,7 +49,7 @@ public class ItemPunchCardStack extends Item {
 
     @Override
     public double getDurabilityForDisplay(ItemStack stack) {
-        return getNumCardsInStack(stack) / 64.0;
+        return 1 - (getNumCardsInStack(stack) / 64.0);
     }
 
     private int getNumCardsInStack(ItemStack stack) {
@@ -53,7 +58,7 @@ public class ItemPunchCardStack extends Item {
 
         int numCards = 0;
         for(int i=0;i<64;++i) {
-            if(tagCompound.hasKey("card_" + 0)) {++numCards;}
+            if(tagCompound.hasKey("card_" + i)) {++numCards;}
         }
 
         return numCards;

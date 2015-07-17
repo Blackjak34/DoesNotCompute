@@ -2,6 +2,7 @@ package com.github.blackjak34.compute.proxy;
 
 import com.github.blackjak34.compute.container.ContainerBase;
 import com.github.blackjak34.compute.container.ContainerCardHopper;
+import com.github.blackjak34.compute.container.ContainerCardStack;
 import com.github.blackjak34.compute.container.ContainerCardStacker;
 import com.github.blackjak34.compute.entity.tile.TileEntityCardPunch;
 import com.github.blackjak34.compute.entity.tile.client.TileEntityCPUClient;
@@ -11,6 +12,7 @@ import com.github.blackjak34.compute.entity.tile.client
 import com.github.blackjak34.compute.gui.GuiCPU;
 import com.github.blackjak34.compute.gui.GuiCardHopper;
 import com.github.blackjak34.compute.gui.GuiCardPunch;
+import com.github.blackjak34.compute.gui.GuiCardStack;
 import com.github.blackjak34.compute.gui.GuiCardStacker;
 import com.github.blackjak34.compute.gui.GuiPunchCard;
 import com.github.blackjak34.compute.gui.GuiRedbus;
@@ -33,6 +35,8 @@ public class CommonProxy implements IGuiHandler {
                 return new ContainerCardHopper(player, (TileEntityCardPunch) world.getTileEntity(new BlockPos(blockX, blockY, blockZ)));
             case GuiCardStacker.GUIID:
                 return new ContainerCardStacker(player, (TileEntityCardPunch) world.getTileEntity(new BlockPos(blockX, blockY, blockZ)));
+            case GuiCardStack.GUIID:
+                return new ContainerCardStack(player.inventory, player.getCurrentEquippedItem());
 		}
 
 		return null;
@@ -55,6 +59,8 @@ public class CommonProxy implements IGuiHandler {
                 return new GuiCardHopper((TileEntityCardPunch) world.getTileEntity(new BlockPos(blockX, blockY, blockZ)), player);
             case GuiCardStacker.GUIID:
                 return new GuiCardStacker((TileEntityCardPunch) world.getTileEntity(new BlockPos(blockX, blockY, blockZ)), player);
+            case GuiCardStack.GUIID:
+                return new GuiCardStack(player, player.getCurrentEquippedItem());
         }
 
 		return null;

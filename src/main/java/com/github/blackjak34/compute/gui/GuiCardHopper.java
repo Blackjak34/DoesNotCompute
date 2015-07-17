@@ -31,4 +31,9 @@ public class GuiCardHopper extends GuiContainer {
         drawTexturedModalRect(guiLeft, guiTop, 0, 0, xSize, ySize);
     }
 
+    @Override
+    public boolean doesGuiPauseGame() {
+        return false;
+    }
+
 }
