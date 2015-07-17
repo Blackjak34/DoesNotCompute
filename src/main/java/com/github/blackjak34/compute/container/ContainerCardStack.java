@@ -41,16 +41,19 @@ public class ContainerCardStack extends Container {
             }
         }
 
-        addSlotToContainer(new Slot(playerInventory, 0, 8, 232) {
+        for(int i=0;i<9;++i) {
+            if(playerInventory.getStackInSlot(i) == punchCardStack) {
+                addSlotToContainer(new Slot(playerInventory, i, 8 + i * 18, 232) {
 
-                              @Override
-                              public boolean canTakeStack(EntityPlayer player) {
-                                  return false;
-                              }
+                                      @Override
+                                      public boolean canTakeStack(EntityPlayer player) {
+                                          return false;
+                                      }
 
-                           });
-        for(int i=1;i<9;++i) {
-            addSlotToContainer(new Slot(playerInventory, i, 8+i*18, 232));
+                                   });
+            } else {
+                addSlotToContainer(new Slot(playerInventory, i, 8 + i * 18, 232));
+            }
         }
     }
 
