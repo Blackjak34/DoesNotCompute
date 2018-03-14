@@ -1,0 +1,247 @@
+<html><head>
+<meta http-equiv="content-type" content="text/html; charset=windows-1252">
+<title>RedPower CPU Instructions</title>
+<style>
+
+table.insn {
+	text-align: center;
+}
+
+table.insn td a {
+	text-decoration: none;
+	color: #000000;
+	padding: 0.2em;
+}
+table.insn td.base {
+	background-color: #00FF00;
+}
+
+table.insn td.c02 {
+	background-color: #AAAAFF;
+}
+
+table.insn td.c816 {
+	background-color: #FF77FF;
+}
+
+table.insn td.el02 {
+	background-color: #FFFF77;
+}
+
+table.ins2 td:first-child {
+	font-weight: bold;
+}
+
+span.base {
+	display: inline;
+	background-color: #00FF00;
+	padding: 2px;
+	font-weight: bold;
+}
+
+span.c02 {
+	display: inline;
+	background-color: #AAAAFF;
+	padding: 2px;
+	font-weight: bold;
+}
+
+span.c816 {
+	display: inline;
+	background-color: #FF77FF;
+	padding: 2px;
+	font-weight: bold;
+}
+
+span.el02 {
+	display: inline;
+	background-color: #FFFF77;
+	padding: 2px;
+	font-weight: bold;
+}
+
+</style>
+</head>
+<body>
+
+<h1>RedPower CPU Instruction Table</h1>
+
+<table class="insn" border="1">
+<tbody><tr><td>&nbsp;</td><td>x0</td><td>x1</td><td>x2</td><td>x3</td><td>x4</td><td>x5</td><td>x6</td><td>x7</td><td>x8</td><td>x9</td><td>xA</td><td>xB</td><td>xC</td><td>xD</td><td>xE</td><td>xF</td></tr><tr><td>0x</td><td class="base"><a href="#i_basesys">BRK</a></td><td class="base"><a href="#i_baselogic">ORA (Ind,X)</a></td><td class="el02"><a href="#i_el02">NXT</a></td><td class="c816"><a href="#i_baselogic">ORA r,S</a></td><td class="c02"><a href="#i_c02">TSB Zp</a></td><td class="base"><a href="#i_baselogic">ORA Zp</a></td><td class="base"><a href="#i_baselogic">ASL Zp</a></td><td class="el02"><a href="#i_baselogic">ORA r,R</a></td><td class="base"><a href="#i_basestack">PHP</a></td><td class="base"><a href="#i_baselogic">ORA #</a></td><td class="base"><a href="#i_baselogic">ASL A</a></td><td class="el02"><a href="#i_el02">RHI</a></td><td class="c02"><a href="#i_c02">TSB Abs</a></td><td class="base"><a href="#i_baselogic">ORA Abs</a></td><td class="base"><a href="#i_baselogic">ASL Abs</a></td><td class="el02"><a href="#i_elmath">MUL Zp</a></td></tr><tr><td>1x</td><td class="base"><a href="#i_basebranch">BPL Rel</a></td><td class="base"><a href="#i_baselogic">ORA (Ind),Y</a></td><td class="c02"><a href="#i_baselogic">ORA (Ind)</a></td><td class="c816"><a href="#i_baselogic">ORA (r,S),Y</a></td><td class="c02"><a href="#i_c02">TRB Zp</a></td><td class="base"><a href="#i_baselogic">ORA Zp,X</a></td><td class="base"><a href="#i_baselogic">ASL Zp,X</a></td><td class="el02"><a href="#i_baselogic">ORA (r,R),Y</a></td><td class="base"><a href="#i_baseflags">CLC</a></td><td class="base"><a href="#i_baselogic">ORA Abs,Y</a></td><td class="c02"><a href="#i_basemath">INC A</a></td><td class="el02"><a href="#i_el02">RHX</a></td><td class="c02"><a href="#i_c02">TRB Abs</a></td><td class="base"><a href="#i_baselogic">ORA Abs,X</a></td><td class="base"><a href="#i_baselogic">ASL Abs,X</a></td><td class="el02"><a href="#i_elmath">MUL Zp,X</a></td></tr><tr><td>2x</td><td class="base"><a href="#i_basejump">JSR Abs</a></td><td class="base"><a href="#i_baselogic">AND (Ind,X)</a></td><td class="el02"><a href="#i_el02">ENT</a></td><td class="c816"><a href="#i_baselogic">AND r,S</a></td><td class="base"><a href="#i_baselogic">BIT Zp</a></td><td class="base"><a href="#i_baselogic">AND Zp</a></td><td class="base"><a href="#i_baselogic">ROL Zp</a></td><td class="el02"><a href="#i_baselogic">AND r,R</a></td><td class="base"><a href="#i_basestack">PLP</a></td><td class="base"><a href="#i_baselogic">AND #</a></td><td class="base"><a href="#i_baselogic">ROL A</a></td><td class="el02"><a href="#i_el02">RLI</a></td><td class="base"><a href="#i_baselogic">BIT Abs</a></td><td class="base"><a href="#i_baselogic">AND Abs</a></td><td class="base"><a href="#i_baselogic">ROL Abs</a></td><td class="el02"><a href="#i_elmath">MUL Abs</a></td></tr><tr><td>3x</td><td class="base"><a href="#i_basebranch">BMI Rel</a></td><td class="base"><a href="#i_baselogic">AND (Ind),Y</a></td><td class="c02"><a href="#i_baselogic">AND (Ind)</a></td><td class="c816"><a href="#i_baselogic">AND (r,S),Y</a></td><td class="c02"><a href="#i_baselogic">BIT Zp,X</a></td><td class="base"><a href="#i_baselogic">AND Zp,X</a></td><td class="base"><a href="#i_baselogic">ROL Zp,X</a></td><td class="el02"><a href="#i_baselogic">AND (r,R),Y</a></td><td class="base"><a href="#i_baseflags">SEC</a></td><td class="base"><a href="#i_baselogic">AND Abs,Y</a></td><td class="c02"><a href="#i_basemath">DEC A</a></td><td class="el02"><a href="#i_el02">RLX</a></td><td class="c02"><a href="#i_baselogic">BIT Abs,X</a></td><td class="base"><a href="#i_baselogic">AND Abs,X</a></td><td class="base"><a href="#i_baselogic">ROL Abs,X</a></td><td class="el02"><a href="#i_elmath">MUL Abs,X</a></td></tr><tr><td>4x</td><td class="base"><a href="#i_basejump">RTI</a></td><td class="base"><a href="#i_baselogic">EOR (Ind,X)</a></td><td class="el02"><a href="#i_el02">NXA</a></td><td class="c816"><a href="#i_baselogic">EOR r,S</a></td><td class="el02"><a href="#i_el02">REA Abs</a></td><td class="base"><a href="#i_baselogic">EOR Zp</a></td><td class="base"><a href="#i_baselogic">LSR Zp</a></td><td class="el02"><a href="#i_baselogic">EOR r,R</a></td><td class="base"><a href="#i_basestack">PHA</a></td><td class="base"><a href="#i_baselogic">EOR #</a></td><td class="base"><a href="#i_baselogic">LSR A</a></td><td class="el02"><a href="#i_el02">RHA</a></td><td class="base"><a href="#i_basejump">JMP Abs</a></td><td class="base"><a href="#i_baselogic">EOR Abs</a></td><td class="base"><a href="#i_baselogic">LSR Abs</a></td><td class="el02"><a href="#i_elmath">DIV Zp</a></td></tr><tr><td>5x</td><td class="base"><a href="#i_basebranch">BVC Rel</a></td><td class="base"><a href="#i_baselogic">EOR (Ind),Y</a></td><td class="c02"><a href="#i_baselogic">EOR (Ind)</a></td><td class="c816"><a href="#i_baselogic">EOR (r,S),Y</a></td><td class="el02"><a href="#i_el02">REI (Zp)</a></td><td class="base"><a href="#i_baselogic">EOR Zp,X</a></td><td class="base"><a href="#i_baselogic">LSR Zp,X</a></td><td class="el02"><a href="#i_baselogic">EOR (r,R),Y</a></td><td class="base"><a href="#i_baseflags">CLI</a></td><td class="base"><a href="#i_baselogic">EOR Abs,Y</a></td><td class="c02"><a href="#i_basestack">PHY</a></td><td class="el02"><a href="#i_el02">RHY</a></td><td class="el02"><a href="#i_el02">TXI</a></td><td class="base"><a href="#i_baselogic">EOR Abs,X</a></td><td class="base"><a href="#i_baselogic">LSR Abs,X</a></td><td class="el02"><a href="#i_elmath">DIV Zp,X</a></td></tr><tr><td>6x</td><td class="base"><a href="#i_basejump">RTS</a></td><td class="base"><a href="#i_basemath">ADC (Ind,X)</a></td><td class="c816"><a href="#i_c816">PER Rel</a></td><td class="c816"><a href="#i_basemath">ADC r,S</a></td><td class="c02"><a href="#i_c02">STZ Zp</a></td><td class="base"><a href="#i_basemath">ADC Zp</a></td><td class="base"><a href="#i_baselogic">ROR Zp</a></td><td class="el02"><a href="#i_basemath">ADC r,R</a></td><td class="base"><a href="#i_basestack">PLA</a></td><td class="base"><a href="#i_basemath">ADC #</a></td><td class="base"><a href="#i_baselogic">ROR A</a></td><td class="el02"><a href="#i_el02">RLA</a></td><td class="base"><a href="#i_basejump">JMP (Ind)</a></td><td class="base"><a href="#i_basemath">ADC Abs</a></td><td class="base"><a href="#i_baselogic">ROR Abs</a></td><td class="el02"><a href="#i_elmath">DIV Abs</a></td></tr><tr><td>7x</td><td class="base"><a href="#i_basebranch">BVS Rel</a></td><td class="base"><a href="#i_basemath">ADC (Ind),Y</a></td><td class="c02"><a href="#i_basemath">ADC (Ind)</a></td><td class="c816"><a href="#i_basemath">ADC (r,S),Y</a></td><td class="c02"><a href="#i_c02">STZ Zp,X</a></td><td class="base"><a href="#i_basemath">ADC Zp,X</a></td><td class="base"><a href="#i_baselogic">ROR Zp,X</a></td><td class="el02"><a href="#i_basemath">ADC (r,R),Y</a></td><td class="base"><a href="#i_baseflags">SEI</a></td><td class="base"><a href="#i_basemath">ADC Abs,Y</a></td><td class="c02"><a href="#i_basestack">PLY</a></td><td class="el02"><a href="#i_el02">RLY</a></td><td class="c02"><a href="#i_basejump">JMP (Abs,X)</a></td><td class="base"><a href="#i_basemath">ADC Abs,X</a></td><td class="base"><a href="#i_baselogic">ROR Abs,X</a></td><td class="el02"><a href="#i_elmath">DIV Abs,X</a></td></tr><tr><td>8x</td><td class="c02"><a href="#i_basejump">BRA Rel</a></td><td class="base"><a href="#i_basemoves">STA (Ind,X)</a></td><td class="el02"><a href="#i_el02">RER Rel</a></td><td class="c816"><a href="#i_basemoves">STA r,S</a></td><td class="base"><a href="#i_basemoves">STY Zp</a></td><td class="base"><a href="#i_basemoves">STA Zp</a></td><td class="base"><a href="#i_basemoves">STX Zp</a></td><td class="el02"><a href="#i_basemoves">STA r,R</a></td><td class="base"><a href="#i_basemath">DEY</a></td><td class="c02"><a href="#i_baselogic">BIT #</a></td><td class="base"><a href="#i_basemoves">TXA</a></td><td class="el02"><a href="#i_el02">TXR</a></td><td class="base"><a href="#i_basemoves">STY Abs</a></td><td class="base"><a href="#i_basemoves">STA Abs</a></td><td class="base"><a href="#i_basemoves">STX Abs</a></td><td class="el02"><a href="#i_elmath">ZEA</a></td></tr><tr><td>9x</td><td class="base"><a href="#i_basebranch">BCC Rel</a></td><td class="base"><a href="#i_basemoves">STA (Ind),Y</a></td><td class="c02"><a href="#i_basemoves">STA (Ind)</a></td><td class="c816"><a href="#i_basemoves">STA (r,S),Y</a></td><td class="base"><a href="#i_basemoves">STY Zp,X</a></td><td class="base"><a href="#i_basemoves">STA Zp,X</a></td><td class="base"><a href="#i_basemoves">STX Zp,Y</a></td><td class="el02"><a href="#i_basemoves">STA (r,R),Y</a></td><td class="base"><a href="#i_basemoves">TYA</a></td><td class="base"><a href="#i_basemoves">STA Abs,Y</a></td><td class="base"><a href="#i_basemoves">TXS</a></td><td class="c816"><a href="#i_c816">TXY</a></td><td class="c02"><a href="#i_c02">STZ Abs</a></td><td class="base"><a href="#i_basemoves">STA Abs,X</a></td><td class="c02"><a href="#i_c02">STZ Abs,X</a></td><td class="el02"><a href="#i_elmath">SEA</a></td></tr><tr><td>Ax</td><td class="base"><a href="#i_basemoves">LDY #</a></td><td class="base"><a href="#i_basemoves">LDA (Ind,X)</a></td><td class="base"><a href="#i_basemoves">LDX #</a></td><td class="c816"><a href="#i_basemoves">LDA r,S</a></td><td class="base"><a href="#i_basemoves">LDY Zp</a></td><td class="base"><a href="#i_basemoves">LDA Zp</a></td><td class="base"><a href="#i_basemoves">LDX Zp</a></td><td class="el02"><a href="#i_basemoves">LDA r,R</a></td><td class="base"><a href="#i_basemoves">TAY</a></td><td class="base"><a href="#i_basemoves">LDA #</a></td><td class="base"><a href="#i_basemoves">TAX</a></td><td class="el02"><a href="#i_el02">TRX</a></td><td class="base"><a href="#i_basemoves">LDY Abs</a></td><td class="base"><a href="#i_basemoves">LDA Abs</a></td><td class="base"><a href="#i_basemoves">LDX Abs</a></td><td class="el02"><a href="#i_elmath">TDA</a></td></tr><tr><td>Bx</td><td class="base"><a href="#i_basebranch">BCS Rel</a></td><td class="base"><a href="#i_basemoves">LDA (Ind),Y</a></td><td class="c02"><a href="#i_basemoves">LDA (Ind)</a></td><td class="c816"><a href="#i_basemoves">LDA (r,S),Y</a></td><td class="base"><a href="#i_basemoves">LDY Zp,X</a></td><td class="base"><a href="#i_basemoves">LDA Zp,X</a></td><td class="base"><a href="#i_basemoves">LDX Zp,Y</a></td><td class="el02"><a href="#i_basemoves">LDA (r,R),Y</a></td><td class="base"><a href="#i_baseflags">CLV</a></td><td class="base"><a href="#i_basemoves">LDA Abs,Y</a></td><td class="base"><a href="#i_basemoves">TSX</a></td><td class="c816"><a href="#i_c816">TYX</a></td><td class="base"><a href="#i_basemoves">LDY Abs,X</a></td><td class="base"><a href="#i_basemoves">LDA Abs,X</a></td><td class="base"><a href="#i_basemoves">LDX Abs,Y</a></td><td class="el02"><a href="#i_elmath">TAD</a></td></tr><tr><td>Cx</td><td class="base"><a href="#i_basemath">CPY #</a></td><td class="base"><a href="#i_basemath">CMP (Ind,X)</a></td><td class="c816"><a href="#i_c816">REP #</a></td><td class="c816"><a href="#i_basemath">CMP r,S</a></td><td class="base"><a href="#i_basemath">CPY Zp</a></td><td class="base"><a href="#i_basemath">CMP Zp</a></td><td class="base"><a href="#i_basemath">DEC Zp</a></td><td class="el02"><a href="#i_basemath">CMP r,R</a></td><td class="base"><a href="#i_basemath">INY</a></td><td class="base"><a href="#i_basemath">CMP #</a></td><td class="base"><a href="#i_basemath">DEX</a></td><td class="c02"><a href="#i_c02">WAI</a></td><td class="base"><a href="#i_basemath">CPY Abs</a></td><td class="base"><a href="#i_basemath">CMP Abs</a></td><td class="base"><a href="#i_basemath">DEC Abs</a></td><td class="el02"><a href="#i_elmath">PLD</a></td></tr><tr><td>Dx</td><td class="base"><a href="#i_basebranch">BNE Rel</a></td><td class="base"><a href="#i_basemath">CMP (Ind),Y</a></td><td class="c02"><a href="#i_basemath">CMP (Ind)</a></td><td class="c816"><a href="#i_basemath">CMP (r,S),Y</a></td><td class="c816"><a href="#i_c816">PEI (Zp)</a></td><td class="base"><a href="#i_basemath">CMP Zp,X</a></td><td class="base"><a href="#i_basemath">DEC Zp,X</a></td><td class="el02"><a href="#i_basemath">CMP (r,R),Y</a></td><td class="base"><a href="#i_baseflags">CLD</a></td><td class="base"><a href="#i_basemath">CMP Abs,Y</a></td><td class="c02"><a href="#i_basestack">PHX</a></td><td class="c02"><a href="#i_c02">STP</a></td><td class="el02"><a href="#i_el02">TIX</a></td><td class="base"><a href="#i_basemath">CMP Abs,X</a></td><td class="base"><a href="#i_basemath">DEC Abs,X</a></td><td class="el02"><a href="#i_elmath">PHD</a></td></tr><tr><td>Ex</td><td class="base"><a href="#i_basemath">CPX #</a></td><td class="base"><a href="#i_basemath">SBC (Ind,X)</a></td><td class="c816"><a href="#i_c816">SEP #</a></td><td class="c816"><a href="#i_basemath">SBC r,S</a></td><td class="base"><a href="#i_basemath">CPX Zp</a></td><td class="base"><a href="#i_basemath">SBC Zp</a></td><td class="base"><a href="#i_basemath">INC Zp</a></td><td class="el02"><a href="#i_basemath">SBC r,R</a></td><td class="base"><a href="#i_basemath">INX</a></td><td class="base"><a href="#i_basemath">SBC #</a></td><td class="base"><a href="#i_basesys">NOP</a></td><td class="c816"><a href="#i_c816">XBA</a></td><td class="base"><a href="#i_basemath">CPX Abs</a></td><td class="base"><a href="#i_basemath">SBC Abs</a></td><td class="base"><a href="#i_basemath">INC Abs</a></td><td class="el02"><a href="#i_el02">MMU</a></td></tr><tr><td>Fx</td><td class="base"><a href="#i_basebranch">BEQ Rel</a></td><td class="base"><a href="#i_basemath">SBC (Ind),Y</a></td><td class="c02"><a href="#i_basemath">SBC (Ind)</a></td><td class="c816"><a href="#i_basemath">SBC (r,S),Y</a></td><td class="c816"><a href="#i_c816">PEA Abs</a></td><td class="base"><a href="#i_basemath">SBC Zp,X</a></td><td class="base"><a href="#i_basemath">INC Zp,X</a></td><td class="el02"><a href="#i_basemath">SBC (r,R),Y</a></td><td class="base"><a href="#i_baseflags">SED</a></td><td class="base"><a href="#i_basemath">SBC Abs,Y</a></td><td class="c02"><a href="#i_basestack">PLX</a></td><td class="c816"><a href="#i_c816">XCE</a></td><td class="c816"><a href="#i_basejump">JSR (Abs,X)</a></td><td class="base"><a href="#i_basemath">SBC Abs,X</a></td><td class="base"><a href="#i_basemath">INC Abs,X</a></td><td>&nbsp;</td></tr>
+</tbody></table>
+<br>
+Key:
+<span class="base">6502 Base Instructions</span>
+<span class="c02">65C02 Instructions</span>
+<span class="c816">65C816 Instructions</span>
+<span class="el02">65EL02 Instructions</span>
+
+<br>
+<br>
+An assembler is available here: <a href="http://www.eloraam.com/files/acme_rp.tar.gz">ACME for RedPower</a>.
+
+
+<h1>Instruction Listing</h1>
+<h2>Standard 6502 Instructions</h2>
+
+<a name="i_basemath">
+<h3>Arithmetic</h3>
+<table class="ins2" cellspacing="0" cellpadding="3" border="1">
+<tbody><tr><td>ADC</td><td>Add with carry</td><td>N,V,Z,C</td></tr>
+<tr><td>CMP</td><td>Compare accumulator</td><td>N,Z,C</td></tr>
+<tr><td>CPX</td><td>Compare X register</td><td>N,Z,C</td></tr>
+<tr><td>CPY</td><td>Compare Y register</td><td>N,Z,C</td></tr>
+<tr><td>DEC</td><td>Decrement memory location</td><td>N,Z</td></tr>
+<tr><td>DEX</td><td>Decrement X register</td><td>N,Z</td></tr>
+<tr><td>DEY</td><td>Decrement Y register</td><td>N,Z</td></tr>
+<tr><td>SBC</td><td>Subtract with carry</td><td>N,V,Z,C</td></tr>
+</tbody></table>
+
+</a><a name="i_basemoves">
+<h3>Load/Store</h3>
+<table class="ins2" cellspacing="0" cellpadding="3" border="1">
+<tbody><tr><td>LDA</td><td>Load accumulator</td><td>N,Z</td></tr>
+<tr><td>LDX</td><td>Load X register</td><td>N,Z</td></tr>
+<tr><td>LDY</td><td>Load Y register</td><td>N,Z</td></tr>
+<tr><td>STA</td><td>Store accumulator</td><td>&nbsp;</td></tr>
+<tr><td>STX</td><td>Store X register</td><td>&nbsp;</td></tr>
+<tr><td>STY</td><td>Store Y register</td><td>&nbsp;</td></tr>
+<tr><td>TAX</td><td>Transfer accumulator to X</td><td>N,Z</td></tr>
+<tr><td>TAY</td><td>Transfer accumulator to Y</td><td>N,Z</td></tr>
+<tr><td>TSX</td><td>Transfer stack pointer to X</td><td>N,Z</td></tr>
+<tr><td>TXA</td><td>Transfer X to accumulator</td><td>N,Z</td></tr>
+<tr><td>TXS</td><td>Transfer X to stack pointer</td><td>N,Z</td></tr>
+<tr><td>TYA</td><td>Transfer Y to accumulator</td><td>N,Z</td></tr>
+</tbody></table>
+
+</a><a name="i_baselogic">
+<h3>Logical</h3>
+<table class="ins2" cellspacing="0" cellpadding="3" border="1">
+<tbody><tr><td>AND</td><td>Logical AND</td><td>N,Z</td></tr>
+<tr><td>ASL</td><td>Arithmatic shift left</td><td>N,Z,C</td></tr>
+<tr><td>BIT</td><td>Bit test</td><td>N,V,Z</td></tr>
+<tr><td>BIT #</td><td>Bit test immediate</td><td>Z</td></tr>
+<tr><td>EOR</td><td>Exclusive OR</td><td>N,Z</td></tr>
+<tr><td>LSR</td><td>Logical shift right</td><td>N,Z,C</td></tr>
+<tr><td>ORA</td><td>Logical OR</td><td>N,Z</td></tr>
+<tr><td>ROL</td><td>Rotate left</td><td>N,Z,C</td></tr>
+<tr><td>ROR</td><td>Rotate left</td><td>N,Z,C</td></tr>
+</tbody></table>
+
+</a><a name="i_basebranch">
+<h3>Branching</h3>
+<table class="ins2" cellspacing="0" cellpadding="3" border="1">
+<tbody><tr><td>BCC</td><td>Branch if carry flag clear</td><td>&nbsp;</td></tr>
+<tr><td>BCS</td><td>Branch if carry flag set</td><td>&nbsp;</td></tr>
+<tr><td>BEQ</td><td>Branch if zero flag set</td><td>&nbsp;</td></tr>
+<tr><td>BMI</td><td>Branch if negative flag set</td><td>&nbsp;</td></tr>
+<tr><td>BNE</td><td>Branch if zero flag clear</td><td>&nbsp;</td></tr>
+<tr><td>BPL</td><td>Branch if negative flag clear</td><td>&nbsp;</td></tr>
+<tr><td>BVC</td><td>Branch if overflow flag clear</td><td>&nbsp;</td></tr>
+<tr><td>BVS</td><td>Branch if overflow flag set</td><td>&nbsp;</td></tr>
+<tr><td>BRA</td><td>Branch always</td><td>&nbsp;</td></tr>
+</tbody></table>
+
+</a><a name="i_basejump">
+<h3>Jumps and Calls</h3>
+<table class="ins2" cellspacing="0" cellpadding="3" border="1">
+<tbody><tr><td>JMP</td><td>Jump</td><td>&nbsp;</td></tr>
+<tr><td>JSR</td><td>Jump saving return</td><td>&nbsp;</td></tr>
+<tr><td>RTS</td><td>Return from subroutine</td><td>&nbsp;</td></tr>
+<tr><td>RTI</td><td>Return from interrupt</td><td>All</td></tr>
+</tbody></table>
+
+</a><a name="i_baseflags">
+<h3>Flag Manipulation</h3>
+<table class="ins2" cellspacing="0" cellpadding="3" border="1">
+<tbody><tr><td>CLC</td><td>Clear carry flag</td><td>C</td></tr>
+<tr><td>CLD</td><td>Clear decimal flag</td><td>D</td></tr>
+<tr><td>CLI</td><td>Clear interrupt disable flag</td><td>I</td></tr>
+<tr><td>CLV</td><td>Clear overflow flag</td><td>V</td></tr>
+<tr><td>SEC</td><td>Set carry flag</td><td>C</td></tr>
+<tr><td>SED</td><td>Set decimal flag</td><td>D</td></tr>
+<tr><td>SEI</td><td>Set interrupt disable flag</td><td>I</td></tr>
+</tbody></table>
+
+</a><a name="i_basesys">
+<h3>System</h3>
+<table class="ins2" cellspacing="0" cellpadding="3" border="1">
+<tbody><tr><td>BRK</td><td>Force an interrupt</td><td>B</td></tr>
+<tr><td>NOP</td><td>No operation</td><td>&nbsp;</td></tr>
+</tbody></table>
+
+</a><a name="i_basestack">
+<h3>Stack Operations</h3>
+<table class="ins2" cellspacing="0" cellpadding="3" border="1">
+<tbody><tr><td>PHA</td><td>Push accumulator on stack</td><td>&nbsp;</td></tr>
+<tr><td>PHP</td><td>Push processor status on stack</td><td>&nbsp;</td></tr>
+<tr><td>PHX</td><td>Push X register on stack</td><td>&nbsp;</td></tr>
+<tr><td>PHY</td><td>Push Y register on stack</td><td>&nbsp;</td></tr>
+<tr><td>PLA</td><td>Pull accumulator from stack</td><td>N,Z</td></tr>
+<tr><td>PLP</td><td>Pull processor status from stack</td><td>All</td></tr>
+<tr><td>PLX</td><td>Pull X register from stack</td><td>N,Z</td></tr>
+<tr><td>PLY</td><td>Pull Y register from stack</td><td>N,Z</td></tr>
+</tbody></table>
+
+<h2>65C02 Instructions</h2>
+</a><a name="i_c02">
+<table class="ins2" cellspacing="0" cellpadding="3" border="1">
+<tbody><tr><td>STZ</td><td>Store 0</td><td>&nbsp;</td></tr>
+<tr><td>TRB</td><td>Test and Reset Bits</td><td>Z</td></tr>
+<tr><td>TSB</td><td>Test and Set Bits</td><td>Z</td></tr>
+<tr><td>STP</td><td>Halt and Catch Fire</td><td>&nbsp;</td></tr>
+<tr><td>WAI</td><td>Wait for Interrupt</td><td>&nbsp;</td></tr>
+</tbody></table>
+
+<h2>65C816 Instructions</h2>
+</a><a name="i_c816">
+<table class="ins2" cellspacing="0" cellpadding="3" border="1">
+<tbody><tr><td>PEA</td><td>Push effective address</td><td>&nbsp;</td></tr>
+<tr><td>PEI</td><td>Push effective indirect address</td><td>&nbsp;</td></tr>
+<tr><td>PER</td><td>Push effective relative address</td><td>&nbsp;</td></tr>
+<tr><td>REP</td><td>Reset Flags</td><td>All</td></tr>
+<tr><td>SEP</td><td>Set Flags</td><td>All</td></tr>
+<tr><td>TXY</td><td>Transfer X to Y</td><td>N,Z</td></tr>
+<tr><td>TYX</td><td>Transfer Y to X</td><td>N,Z</td></tr>
+<tr><td>XBA</td><td>Exchange A bytes</td><td>&nbsp;</td></tr>
+<tr><td>XCE</td><td>Exchange C and E flags</td><td>C,E</td></tr>
+</tbody></table>
+
+<h2>65EL02 Instructions</h2>
+</a><a name="i_el02">
+<table class="ins2" cellspacing="0" cellpadding="3" border="1">
+<tbody><tr><td>ENT</td><td>Enter word, RHI, I=PC+2, PC=(PC)</td><td>&nbsp;</td></tr>
+<tr><td>NXA</td><td>Next word into A, A=(I), I=I+1/I=I+2</td><td>&nbsp;</td></tr>
+<tr><td>NXT</td><td>Next word, PC=(I), I=I+2</td><td>&nbsp;</td></tr>
+<tr><td>TXR</td><td>Transfer X to R</td><td>N,Z</td></tr>
+<tr><td>TRX</td><td>Transfer R to X</td><td>N,Z</td></tr>
+<tr><td>TXI</td><td>Transfer X to I</td><td>N,Z</td></tr>
+<tr><td>TIX</td><td>Transfer I to X</td><td>N,Z</td></tr>
+<tr><td>RHA</td><td>Push accumulator to R stack</td><td>&nbsp;</td></tr>
+<tr><td>RLA</td><td>Pull accumulator from R stack</td><td>N,Z</td></tr>
+<tr><td>RHX</td><td>Push X register to R stack</td><td>&nbsp;</td></tr>
+<tr><td>RLX</td><td>Pull X register from R stack</td><td>N,Z</td></tr>
+<tr><td>RHY</td><td>Push Y register to R stack</td><td>&nbsp;</td></tr>
+<tr><td>RLY</td><td>Pull Y register from R stack</td><td>N,Z</td></tr>
+<tr><td>RHI</td><td>Push I register to R stack</td><td>&nbsp;</td></tr>
+<tr><td>RLI</td><td>Pull I register from R stack</td><td>N,Z</td></tr>
+<tr><td>RER</td><td>Push effective relative address to R stack</td><td>&nbsp;</td></tr>
+<tr><td>MMU</td><td>Prefix for MMU manipulation</td><td>&nbsp;</td></tr>
+</tbody></table>
+
+<h3>Math Extensions</h3>
+</a><a name="i_elmath">
+<table class="ins2" cellspacing="0" cellpadding="3" border="1">
+<tbody><tr><td>MUL</td><td>Signed multiply A into D:A</td><td>N,Z,O</td></tr>
+<tr><td>DIV</td><td>Signed divide D:A, quotient in A, remainder in D</td><td>N,Z,O</td></tr>
+<tr><td>ZEA</td><td>Zero extend A into D:A</td><td>&nbsp;</td></tr>
+<tr><td>SEA</td><td>Sign extend A into D:A</td><td>&nbsp;</td></tr>
+<tr><td>TAD</td><td>Transfer A to D</td><td>N,Z</td></tr>
+<tr><td>TDA</td><td>Transfer D to A</td><td>N,Z</td></tr>
+<tr><td>PHD</td><td>Push D register on stack</td><td>&nbsp;</td></tr>
+<tr><td>PLD</td><td>Pull D register from stack</td><td>N,Z</td></tr>
+</tbody></table>
+
+
+
+</a></body></html>

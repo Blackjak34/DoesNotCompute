@@ -1,0 +1,4069 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<!-- saved from url=(0099)http://web.archive.org/web/20121115140300/http://integratedredstone.wikispaces.com/Forth+Dictionary -->
+<html xmlns="http://www.w3.org/1999/xhtml"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+
+
+<script type="text/javascript" async="" src="./integratedredstone - Forth Dictionary_files/ga.js"></script><script type="text/javascript" src="./integratedredstone - Forth Dictionary_files/analytics.js"></script>
+<script type="text/javascript">archive_analytics.values.server_name="wwwb-app18.us.archive.org";archive_analytics.values.server_ms=145;</script>
+<link type="text/css" rel="stylesheet" href="./integratedredstone - Forth Dictionary_files/banner-styles.css">
+
+
+
+<link rel="search" href="http://integratedredstone.wikispaces.com/space/opensearch" type="application/opensearchdescription+xml" title="Wikispaces Search (integratedredstone Wiki)">
+<link rel="alternate" type="application/x-wiki" title="Edit This Page" href="http://web.archive.org/page/edit/Forth+Dictionary">
+<link rel="alternate" title="integratedredstone - All Changes" href="http://integratedredstone.wikispaces.com/wiki/xmla?v=rss_2_0" type="application/rss+xml">
+<link rel="alternate" title="integratedredstone : Forth Dictionary - Discussion" href="http://integratedredstone.wikispaces.com/message/xml/Forth+Dictionary?v=rss_2_0" type="application/rss+xml">
+<link rel="alternate" title="integratedredstone : Forth Dictionary - Edits" href="http://integratedredstone.wikispaces.com/page/xml/Forth+Dictionary?v=rss_2_0" type="application/rss+xml">
+<link rel="microsummary" href="http://web.archive.org/page/microsummary/Forth+Dictionary/edits">
+<link rel="microsummary" href="http://web.archive.org/page/microsummary/Forth+Dictionary/messages">
+<script type="text/javascript">
+var wikispaces_isUserLoggedIn = false;
+var wikispaces_isUserOrganizer = false;
+var wikispaces_isMain = true;
+var wikispaces_username = '';
+var wikispaces_spaceName = 'integratedredstone';
+var wikispaces_projectName = '';
+var wikispaces_wikiName = 'integratedredstone';
+var wikispaces_wikiText = 'integratedredstone';
+var wikispaces_isDefaultSpace = '1';
+var wikispaces_method = 'view';
+var wikispaces_object = 'page';
+var wikispaces_page = 'Forth Dictionary';
+var wikispaces_id = '';
+var wikispaces_domain = 'wikispaces.com';
+var wikispaces_main_domain = 'wikispaces.com';
+var wikispaces_asset_url_prefix = '/web/20121115140300/http://www.wikispaces.com';
+var wikispaces_beta_features = false;
+var wikispaces_isMobileSite = false;
+var wikispaces_isUploadCapable = true;
+var wikispaces_can_discuss = false;
+var wikispaces_has_gdocs = false;
+</script>
+  <title>integratedredstone - Forth Dictionary</title>
+  <link rel="shortcut icon" href="http://web.archive.org/web/20121115140300im_/http://www.wikispaces.com/_/1v8qv98z/favicon.ico">
+  <style type="text/css">
+
+/* ==== LINK and TEXT COLORS ==== */
+.WikiLogoName a { color: #FFF; }
+.WikiFooterNav, .WikiFooterNav a, .WikiLicense, .WikiLicense a { color: #000000; }
+#wikiBox { color: #000; }
+.sidebar a { color: #000000; }
+.sidebar .wiki span a { color: inherit; }
+
+/* ==== GENERAL STYLES ==== */
+body { background-color: #d6caca; font-family: 'Lucida Grande', Arial, Helvetica, sans-serif; font-size: 13px; margin: 0; padding: 0; }
+#wrapper { background-color: #d6caca; float: left;  position: relative; min-width: 925px; }
+#wrapper, .header, #wikiBody { width: 100%; }
+img { border: 0; }
+.footer a, .sidebar a { text-decoration: none; }
+.footer a:hover, .sidebar a:hover { text-decoration: underline; }
+
+/* ==== HEADER ==== */
+.header { background: #870d0d url(/web/20121115140300im_/http://www.wikispaces.com/_/4qkjx897/i/header-overlay.png) repeat-x bottom left; float: left; overflow: visible; position: relative; }
+.WikiLogoTable { float: left; padding-left: 17px; margin: 13px 0; }
+.WikiLogo { float: left; padding-left: 17px; margin: 5px 0; }
+.WikiLogoName a { font-size: 1.5em; font-weight: normal; text-decoration: none; }
+.headerSwoop { background: transparent url('/web/20121115140300im_/http://www.wikispaces.com/_/94v39788/i/pl-background.png') no-repeat 100% -20px; min-height: 85px; width: 100%; }
+.headerInner { float: right; line-height: 1; min-height: 52px; width: 100%; }
+
+/* ==== CONTENT ==== */
+#wikiBody { clear: both; padding-top: 15px; }
+#wikiBox { margin: 0 15px 5px 228px; min-width: 682px; width: auto; }
+#wikiBoxTable { table-layout: fixed; width: 100%; }
+#leftGradient { background: transparent url(/web/20121115140300im_/http://www.wikispaces.com/_/4q746115/i/left-gradient.png) repeat-y top right; width: 5px; }
+#rightGradient { background: transparent url(/web/20121115140300im_/http://www.wikispaces.com/_/95jqk048/i/right-gradient.png) repeat-y top left; width: 5px; }
+#topGradient { background: transparent url(/web/20121115140300im_/http://www.wikispaces.com/_/1vq21590/i/top-gradient.png) repeat-x top left; height: 3px; }
+#topLeftGradient { background: transparent url(/web/20121115140300im_/http://www.wikispaces.com/_/xz02150z/i/top-left-gradient.png) no-repeat top right; height: 3px; width: 5px; }
+#topRightGradient { background: transparent url(/web/20121115140300im_/http://www.wikispaces.com/_/60q073q6/i/top-right-gradient.png) no-repeat top left; height: 3px; width: 5px; }
+#bottomGradient { background: transparent url(/web/20121115140300im_/http://www.wikispaces.com/_/26v3jzz1/i/bottom-gradient.png) repeat-x top left; height: 5px; }
+#bottomLeftGradient { background: transparent url(/web/20121115140300im_/http://www.wikispaces.com/_/vj85kk7z/i/bottom-left-gradient.png) no-repeat top right; height: 5px; width: 5px; }
+#bottomRightGradient { background: transparent url(/web/20121115140300im_/http://www.wikispaces.com/_/93186876/i/bottom-right-gradient.png) no-repeat top left; height: 5px; width: 5px; }
+#centerCell { background-color: #FFF; padding: 15px; }
+#content_view.wiki { overflow-x: auto; overflow-y: visible; }
+
+/* ==== FOOTER ==== */
+.footer { padding: 10px 0 15px; text-align: center; }
+.WikiFooterNav { padding-bottom: 5px; }
+.WikiFooterNav a { font-size: 1em; padding: 0 8px; }
+.WikiLicense img { vertical-align: text-bottom; }
+
+/* ==== SIDEBAR ==== */
+.sidebar { position: absolute; left: 0; padding: 5px 6px 0 17px; width: 200px; }
+.actions { padding-bottom: 15px; }
+.WikiActions { list-style-type: none; margin: 0; padding: 0; }
+.WikiCustomNav { padding: 0; width: 100%; }
+.WikiCustomNav ol { padding-left: 1.5em !important; }
+.WikiCustomNav ul { margin: 0; padding: 0 0 0 1em !important; }
+.WikiCustomNav ol.includePageList { padding-left: 0 !important; }
+.WikiCustomNav a { font-family: 'Lucida Grande', Arial, Helvetica, sans-serif; font-size: 1em; }
+.WikiActions li { padding-bottom: 6px; white-space: nowrap; }
+.WikiActions a { font-size: 1em; font-family: 'Lucida Grande',Arial,Helvetica,sans-serif; }
+.WikiActions img { padding-right: 0.5em; }
+.editNav { padding: 5px 0 15px; text-align: center; }
+.editNav a { color: #666; }
+
+</style>
+
+<!--[if IE 7]>
+<style type="text/css">
+  .WikiCustomNav ol { padding-left: 2em !important; }
+  ol.includePageList { padding-left: 0 !important; }
+  .WikiCustomNav ul { padding-left: 1.5em !important; }
+</style>
+<![endif]-->
+
+<!--[if lte IE 7]>
+<style type="text/css">
+  form.WikiSearch { margin: 0; padding: 0; }
+  #content_view.wiki { padding-bottom: 3em; overflow-y: hidden; }
+</style>
+<![endif]-->
+
+<link rel="stylesheet" href="./integratedredstone - Forth Dictionary_files/217420326D.css" type="text/css">
+<link rel="stylesheet" href="./integratedredstone - Forth Dictionary_files/zxv2j8j1-internal.css" type="text/css">
+
+<!--[if lte IE 8]>
+<style type="text/css">
+.WikiInternalHeaderNav {
+   margin: -3px;
+   zoom: 1;
+   filter:
+         progid:DXImageTransform.Microsoft.Shadow(Color=#999999, Strength=3, Direction=180),
+         progid:DXImageTransform.Microsoft.Shadow(Color=#999999, Strength=3, Direction=270);
+}
+</style>
+<![endif]-->
+<script src="./integratedredstone - Forth Dictionary_files/8j5k37vj-common.min.js" type="text/javascript"></script>
+
+<script type="text/javascript">
+  var _gaq = _gaq || [];
+
+  var wsGoogleAccount = 'UA-80504-1';
+  _gaq.push(['_setAccount', wsGoogleAccount]);
+  _gaq.push(['_gat._anonymizeIp']);
+  _gaq.push(['_setDomainName', 'wikispaces.com']);
+  _gaq.push(['_setAllowLinker', true]);
+  _gaq.push(['_trackPageview']);
+
+  _gaq.push(['_setCustomVar', 2, 'Authenticated', 'Guest', 2]);
+</script></head>
+
+<body><div id="wm-ipp" lang="en" style="display: block;" class="">
+
+<div style="position:fixed;left:0;top:0;width:100%!important">
+<div id="wm-ipp-inside">
+   <table style="width:100%;"><tbody><tr>
+   <td id="wm-logo">
+       <a href="http://web.archive.org/web/" title="Wayback Machine home page"><img src="./integratedredstone - Forth Dictionary_files/wayback-toolbar-logo.png" alt="Wayback Machine" width="110" height="39" border="0"></a>
+   </td>
+   <td class="c">
+       <table style="margin:0 auto;"><tbody><tr>
+       <td class="u" colspan="2">
+       <form target="_top" method="get" action="http://web.archive.org/web/form-submit.jsp" name="wmtb" id="wmtb"><input type="text" name="url" id="wmtbURL" value="http://integratedredstone.wikispaces.com/Forth+Dictionary" style="width:400px;" onfocus="this.focus();this.select();"><input type="hidden" name="type" value="replay"><input type="hidden" name="date" value="20121115140300"><input type="submit" value="Go"><span id="wm_tb_options" style="display:block;"></span></form>
+       </td>
+       <td class="n" rowspan="2">
+           <table><tbody>
+           <!-- NEXT/PREV MONTH NAV AND MONTH INDICATOR -->
+           <tr class="m">
+           	<td class="b" nowrap="nowrap">
+		
+		    <a href="http://web.archive.org/web/20121015085732/http://integratedredstone.wikispaces.com/Forth+Dictionary" title="15 Oct 2012">OCT</a>
+		
+		</td>
+		<td class="c" id="displayMonthEl" title="You are here: 14:03:00 Nov 15, 2012">Nov</td>
+		<td class="f" nowrap="nowrap">
+		
+		    Dec
+		
+                </td>
+	    </tr>
+           <!-- NEXT/PREV CAPTURE NAV AND DAY OF MONTH INDICATOR -->
+           <tr class="d">
+               <td class="b" nowrap="nowrap">
+               
+                   <a href="http://web.archive.org/web/20121015085732/http://integratedredstone.wikispaces.com/Forth+Dictionary" title="8:57:32 Oct 15, 2012"><img src="./integratedredstone - Forth Dictionary_files/wm_tb_prv_on.png" alt="Previous capture" width="14" height="16" border="0"></a>
+               
+               </td>
+               <td class="c" id="displayDayEl" style="width:34px;font-size:24px;" title="You are here: 14:03:00 Nov 15, 2012">15</td>
+	       <td class="f" nowrap="nowrap">
+               
+                   <img src="./integratedredstone - Forth Dictionary_files/wm_tb_nxt_off.png" alt="Next capture" width="14" height="16" border="0">
+               
+	       </td>
+           </tr>
+           <!-- NEXT/PREV YEAR NAV AND YEAR INDICATOR -->
+           <tr class="y">
+	       <td class="b" nowrap="nowrap">
+               
+                   2011
+               
+               </td>
+               <td class="c" id="displayYearEl" title="You are here: 14:03:00 Nov 15, 2012">2012</td>
+	       <td class="f" nowrap="nowrap">
+               
+                   2013
+               
+	       </td>
+           </tr>
+           </tbody></table>
+       </td>
+       </tr>
+       <tr>
+       <td class="s">
+           <a class="t" href="http://web.archive.org/web/20121115140300*/http://integratedredstone.wikispaces.com/Forth+Dictionary" title="See a list of every capture for this URL">5 captures</a>
+           <div class="r" title="Timespan for captures of this URL">30 Aug 12 - 15 Nov 12</div>
+       </td>
+       <td class="k">
+       <a href="http://web.archive.org/web/20091015000000/http://integratedredstone.wikispaces.com/Forth+Dictionary" id="wm-graph-anchor">
+       <div id="wm-ipp-sparkline" title="Explore captures for this URL">
+	 <img id="sparklineImgId" alt="sparklines" onmouseover="__wm.st(1)" onmouseout="__wm.st(0)" onmousemove="__wm.mv(event,this)" width="500" height="27" border="0" src="./integratedredstone - Forth Dictionary_files/graph.jsp">
+       <div class="yt" style="display: none; width: 25px; height: 27px; left: 325px;"></div><div class="mt" style="display: none; width: 2px; height: 27px; left: 344px;"></div></div>
+       </a>
+       </td>
+       </tr></tbody></table>
+   </td>
+   <td class="r">
+       <a href="http://web.archive.org/web/20121115140300/http://integratedredstone.wikispaces.com/Forth+Dictionary#close" onclick="__wm.h();return false;" style="background-image:url(/static/images/toolbar/wm_tb_close.png);top:5px;" title="Close the toolbar">Close</a>
+       <a href="http://faq.web.archive.org/" style="background-image:url(/static/images/toolbar/wm_tb_help.png);bottom:5px;" title="Get some help using the Wayback Machine">Help</a>
+   </td>
+   </tr></tbody></table>
+</div>
+</div>
+</div>
+
+
+<!-- BEGIN WAYBACK TOOLBAR INSERT -->
+<script type="text/javascript" src="./integratedredstone - Forth Dictionary_files/disclaim-element.js"></script>
+<script type="text/javascript" src="./integratedredstone - Forth Dictionary_files/graph-calc.js"></script>
+<script type="text/javascript" src="./integratedredstone - Forth Dictionary_files/jquery.min.js"></script>
+<script type="text/javascript">//<![CDATA[
+var __wm = (function(){
+var wbPrefix = "/web/";
+var wbCurrentUrl = "http://integratedredstone.wikispaces.com/Forth+Dictionary";
+
+var firstYear = 1996;
+var imgWidth = 500,imgHeight = 27;
+var yearImgWidth = 25,monthImgWidth = 2;
+var displayDay = "15";
+var displayMonth = "Nov";
+var displayYear = "2012";
+var prettyMonths = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
+var $D=document,$=function(n){return document.getElementById(n)};
+var trackerVal,curYear = -1,curMonth = -1;
+var yearTracker,monthTracker;
+function showTrackers(val) {
+  if (val===trackerVal) return;
+  var $ipp=$("wm-ipp");
+  var $y=$("displayYearEl"),$m=$("displayMonthEl"),$d=$("displayDayEl");
+  if (val) {
+    $ipp.className="hi";
+  } else {
+    $ipp.className="";
+    $y.innerHTML=displayYear;$m.innerHTML=displayMonth;$d.innerHTML=displayDay;
+  }
+  yearTracker.style.display=val?"inline":"none";
+  monthTracker.style.display=val?"inline":"none";
+  trackerVal = val;
+}
+function getElementX2(obj) {
+  var $e=jQuery(obj);
+  return (typeof $e=="undefined"||typeof $e.offset=="undefined")?
+    getElementX(obj):Math.round($e.offset().left);
+}
+function trackMouseMove(event,element) {
+  var eventX = getEventX(event);
+  var elementX = getElementX2(element);
+  var xOff = Math.min(Math.max(0, eventX - elementX),imgWidth);
+  var monthOff = xOff % yearImgWidth;
+
+  var year = Math.floor(xOff / yearImgWidth);
+  var monthOfYear = Math.min(11,Math.floor(monthOff / monthImgWidth));
+  // 1 extra border pixel at the left edge of the year:
+  var month = (year * 12) + monthOfYear;
+  var day = monthOff % 2==1?15:1;
+  var dateString = zeroPad(year + firstYear) + zeroPad(monthOfYear+1,2) +
+    zeroPad(day,2) + "000000";
+
+  $("displayYearEl").innerHTML=year+firstYear;
+  $("displayMonthEl").innerHTML=prettyMonths[monthOfYear];
+  // looks too jarring when it changes..
+  //$("displayDayEl").innerHTML=zeroPad(day,2);
+  var url = wbPrefix + dateString + '/' +  wbCurrentUrl;
+  $("wm-graph-anchor").href=url;
+
+  if(curYear != year) {
+    var yrOff = year * yearImgWidth;
+    yearTracker.style.left = yrOff + "px";
+    curYear = year;
+  }
+  if(curMonth != month) {
+    var mtOff = year + (month * monthImgWidth) + 1;
+    monthTracker.style.left = mtOff + "px";
+    curMonth = month;
+  }
+}
+function hideToolbar() {
+  $("wm-ipp").style.display="none";
+}
+function bootstrap() {
+  var $spk=$("wm-ipp-sparkline");
+  yearTracker=$D.createElement('div');
+  yearTracker.className='yt';
+  with(yearTracker.style){
+    display='none';width=yearImgWidth+"px";height=imgHeight+"px";
+  }
+  monthTracker=$D.createElement('div');
+  monthTracker.className='mt';
+  with(monthTracker.style){
+    display='none';width=monthImgWidth+"px";height=imgHeight+"px";
+  }
+  $spk.appendChild(yearTracker);
+  $spk.appendChild(monthTracker);
+
+  var $ipp=$("wm-ipp");
+  $ipp&&disclaimElement($ipp);
+}
+return{st:showTrackers,mv:trackMouseMove,h:hideToolbar,bt:bootstrap};
+})();//]]>
+</script>
+<style type="text/css">
+body {
+  margin-top:0 !important;
+  padding-top:0 !important;
+  min-width:800px !important;
+}
+</style>
+
+<script type="text/javascript">__wm.bt();</script>
+<!-- END WAYBACK TOOLBAR INSERT -->
+<div id="WikispacesWrapper" class="BannerDisplayed" style="margin-top: 28px;"><div id="WikispacesBanner" class="BannerDisplayed" style="top: 0px;">You are not a member of this wiki. <a href="http://web.archive.org/web/20121115140300/http://integratedredstone.wikispaces.com/space/join"> 
+<script type="text/javascript">
+function dismissJoinWiki(banner) {
+  ws.common.displayBanner(false);
+  jQuery.post("/web/20121115140300/http://integratedredstone.wikispaces.com/wiki/dismissjoin");
+}
+</script>Join now</a> &nbsp;<a href="http://web.archive.org/web/20121115140300/http://integratedredstone.wikispaces.com/Forth+Dictionary#" onclick="dismissJoinWiki(this); return false;">Dismiss</a></div><div id="WikispacesNoticeHolder"><div id="WikispacesNoticeJs" style="display: none"></div></div><div class="WikiInternalHeaderNav WikiElement"><div class="WikiInternalHeaderNavMenu"><span class="WikiInternalHeaderNavMenuArea guestUserName">guest</span><span class="slideMarker divider">|</span><span class="WikiInternalHeaderNavMenuArea"><a href="http://web.archive.org/web/20121115140300/http://www.wikispaces.com/user/join?goto=http%3A%2F%2Fintegratedredstone.wikispaces.com%2Fspace%2Fjoin" rel="nofollow" class="WikispacesXDomainDialogLink">Join</a></span><span class="divider">|</span><span class="WikiInternalHeaderNavMenuArea"><a class="WikispacesHelpTrigger" rel="nofollow" href="http://web.archive.org/web/20121115140300/http://help.wikispaces.com/">Help</a></span><span class="divider">|</span><span class="WikiInternalHeaderNavMenuArea"><a href="http://web.archive.org/web/20121115140300/http://www.wikispaces.com/site/signin?goto=http%3A%2F%2Fintegratedredstone.wikispaces.com%2FForth%2BDictionary" rel="nofollow" class="WikispacesXDomainDialogLink">Sign In</a></span></div></div>
+<div id="wrapper">
+
+  <div class="header">
+    <div class="headerSwoop">
+      <div class="headerInner">
+        <a href="http://web.archive.org/web/20121115140300/http://integratedredstone.wikispaces.com/" class="WikiLogo WikiElement"><img src="./integratedredstone - Forth Dictionary_files/logo.png" alt="integratedredstone"></a>      </div>
+    </div>
+  </div>
+
+  <div id="wikiBody">
+    <div class="sidebar">
+      <div class="actions">
+        <ul class="WikiActions WikiElement WikiControls">
+<li id="WikiActionHome"><div><span class="WikiActionSupplemental" style="float: right;"></span><a href="http://web.archive.org/web/20121115140300/http://integratedredstone.wikispaces.com/" class=" WikispacesSpriteTheme home"></a><a href="http://web.archive.org/web/20121115140300/http://integratedredstone.wikispaces.com/" style="margin-left: 5px;">Wiki Home</a></div></li>
+<li id="WikiActionChanges"><div><span class="WikiActionSupplemental" style="float: right;"></span><a href="http://web.archive.org/web/20121115140300/http://integratedredstone.wikispaces.com/wiki/changes" class=" WikispacesSpriteTheme changes"></a><a href="http://web.archive.org/web/20121115140300/http://integratedredstone.wikispaces.com/wiki/changes" style="margin-left: 5px;">Recent Changes</a></div></li>
+<li id="WikiActionPagesAndFiles"><div><span class="WikiActionSupplemental" style="float: right;"></span><a href="http://web.archive.org/web/20121115140300/http://integratedredstone.wikispaces.com/space/content" class=" WikispacesSpriteTheme pages-files"></a><a href="http://web.archive.org/web/20121115140300/http://integratedredstone.wikispaces.com/space/content" style="margin-left: 5px;">Pages and Files</a></div></li>
+<li id="WikiActionMembers"><div><span class="WikiActionSupplemental" style="float: right;"></span><a href="http://web.archive.org/web/20121115140300/http://integratedredstone.wikispaces.com/wiki/members" class=" WikispacesSpriteTheme users"></a><a href="http://web.archive.org/web/20121115140300/http://integratedredstone.wikispaces.com/wiki/members" style="margin-left: 5px;">Members</a></div></li>
+<li id="WikiActionManage"><div><span class="WikiActionSupplemental" style="float: right;"></span><a href="http://web.archive.org/web/20121115140300/http://integratedredstone.wikispaces.com/wiki/about" class=" WikispacesSpriteTheme settings"></a><a href="http://web.archive.org/web/20121115140300/http://integratedredstone.wikispaces.com/wiki/about" style="margin-left: 5px;">Manage Wiki</a></div></li>
+</ul>
+        <form action="http://web.archive.org/web/20121115140300/http://integratedredstone.wikispaces.com/search/view" method="post" class="WikiSearch WikiElement"><input class="WikiSearchInput WikiInputHint WikiInputHintVisible" name="q" value="" title="Search Wiki" type="text"> </form>      </div>
+      <!-- google_ad_section_start --><div class="WikiCustomNav WikiElement wiki"><!-- ws:start:WikiTextMediaRule:0:&lt;img src=&quot;/web/20121115140300/http://www.wikispaces.com/site/embedthumbnail/custom/19378342?h=0&amp;w=0&quot; class=&quot;WikiMedia WikiMediaCustom&quot; id=&quot;wikitext@@media@@type=&amp;quot;custom&amp;quot; key=&amp;quot;19378342&amp;quot;&quot; title=&quot;Custom Media&quot;/&gt; --><ul style="list-style-type: none; padding: 0px !important;">
+<li>
+<div style="top: -2px; position: relative; width: 16px; height: 19px; overflow: hidden; display: inline-block; vertical-align: middle;"><img style="padding: 0px;" alt="Grid stone.png" src="./integratedredstone - Forth Dictionary_files/c2.png" width="16" height="19"></div>
+<b><a href="http://web.archive.org/web/20121115140300/http://integratedredstone.wikispaces.com/Change+Log" rel="nofollow">Mod Change Log</a></b></li>
+</ul><!-- ws:end:WikiTextMediaRule:0 --><!-- ws:start:WikiTextMediaRule:1:&lt;img src=&quot;/web/20121115140300/http://www.wikispaces.com/site/embedthumbnail/custom/19302710?h=0&amp;w=0&quot; class=&quot;WikiMedia WikiMediaCustom&quot; id=&quot;wikitext@@media@@type=&amp;quot;custom&amp;quot; key=&amp;quot;19302710&amp;quot;&quot; title=&quot;Custom Media&quot;/&gt; --><ul style="list-style-type: none; padding: 0 0 !important;">
+<li>
+<div style="top: -2px; position: relative; width: 16px; height: 19px; overflow: hidden; display: inline-block; vertical-align: middle;"><img style="padding: 0px;" alt="Grid stone.png" src="./integratedredstone - Forth Dictionary_files/c2.png" width="16" height="19"></div>
+<b><a href="http://web.archive.org/web/20121115140300/http://integratedredstone.wikispaces.com/Redpower+Core" rel="nofollow">Redpower Core</a></b></li>
+</ul><!-- ws:end:WikiTextMediaRule:1 --><!-- ws:start:WikiTextMediaRule:2:&lt;img src=&quot;/web/20121115140300/http://www.wikispaces.com/site/embedthumbnail/custom/19319668?h=0&amp;w=0&quot; class=&quot;WikiMedia WikiMediaCustom&quot; id=&quot;wikitext@@media@@type=&amp;quot;custom&amp;quot; key=&amp;quot;19319668&amp;quot;&quot; title=&quot;Custom Media&quot;/&gt; --><div class="includeBody" style="padding: 4px 0 0 16px">
+<div class="includeNavbar">
+<div class="WikispacesNavbarList" id="WikispacesNavbarList">
+<div class="WikispacesNavbarEntryHeader"><img src="./integratedredstone - Forth Dictionary_files/c.gif" width="" height="" title="expand" alt="expand" class="WikispacesNavbarToggleImg WikispacesNavbarPlusImg hidden WikispacesSpriteTheme arrow-right"><img src="./integratedredstone - Forth Dictionary_files/c.gif" width="" height="" title="collapse" alt="collapse" class="WikispacesNavbarToggleImg WikispacesNavbarMinusImg WikispacesSpriteTheme arrow-down"><span><a href="http://web.archive.org/web/20121115140300/http://integratedredstone.wikispaces.com/Redpower+Wiring" rel="nofollow">Redpower Wiring</a></span></div>
+<div class="WikispacesNavbarListItems" id="WikispacesNavbarAllPagesListItems" style="padding: 0 0 0 4px;">
+<ol>
+<li><a style="margin: 0; font-size: 0.9em" href="http://web.archive.org/web/20121115140300/http://integratedredstone.wikispaces.com/Alloy+Furnace" rel="nofollow">Alloy Furnace</a></li>
+<li><a style="margin: 0; font-size: 0.9em" href="http://web.archive.org/web/20121115140300/http://integratedredstone.wikispaces.com/Wires" rel="nofollow">Wires</a></li>
+<li><a style="margin: 0; font-size: 0.9em" href="http://web.archive.org/web/20121115140300/http://integratedredstone.wikispaces.com/Bundled+Cable" rel="nofollow">Bundled Cables</a></li>
+<li><a style="margin: 0; font-size: 0.9em" href="http://web.archive.org/web/20121115140300/http://integratedredstone.wikispaces.com/Jacketed+Wire+And+Cable" rel="nofollow">Jacketed Wire/Cable</a></li>
+<li><a style="margin: 0; font-size: 0.9em" href="http://web.archive.org/web/20121115140300/http://integratedredstone.wikispaces.com/Sub+Blocks" rel="nofollow">Sub Blocks</a></li>
+</ol>
+</div>
+</div>
+<div id="WikispacesNavbarTags"></div>
+</div>
+</div><!-- ws:end:WikiTextMediaRule:2 --><!-- ws:start:WikiTextMediaRule:3:&lt;img src=&quot;/web/20121115140300/http://www.wikispaces.com/site/embedthumbnail/custom/19302740?h=0&amp;w=0&quot; class=&quot;WikiMedia WikiMediaCustom&quot; id=&quot;wikitext@@media@@type=&amp;quot;custom&amp;quot; key=&amp;quot;19302740&amp;quot;&quot; title=&quot;Custom Media&quot;/&gt; --><div class="includeBody" style="padding: 4px 0 0 16px">
+<div class="includeNavbar">
+<div class="WikispacesNavbarList" id="WikispacesNavbarList">
+<div class="WikispacesNavbarEntryHeader"><img src="./integratedredstone - Forth Dictionary_files/c.gif" width="" height="" title="expand" alt="expand" class="WikispacesNavbarToggleImg WikispacesNavbarPlusImg WikispacesSpriteTheme arrow-right"><img src="./integratedredstone - Forth Dictionary_files/c.gif" width="" height="" title="collapse" alt="collapse" class="WikispacesNavbarToggleImg WikispacesNavbarMinusImg hidden WikispacesSpriteTheme arrow-down"><span><a class="wiki_link" href="http://web.archive.org/web/20121115140300/http://integratedredstone.wikispaces.com/Redpower+Logic" rel="nofollow">Redpower Logic</a></span></div>
+<div class="WikispacesNavbarListItems hidden" id="WikispacesNavbarAllPagesListItems" style="display: none; margin: padding: 0 0 0 4px;">
+<ol>
+<li><a style="font-size: 0.9em" href="http://web.archive.org/web/20121115140300/http://integratedredstone.wikispaces.com/Screwdriver" rel="nofollow">Screwdriver</a></li>
+<li>
+<div class="WikispacesNavbarEntryHeader"><img src="./integratedredstone - Forth Dictionary_files/c.gif" width="" height="" title="expand" alt="expand" class="WikispacesNavbarToggleImg WikispacesNavbarPlusImg WikispacesSpriteTheme arrow-down"><img src="./integratedredstone - Forth Dictionary_files/c.gif" width="" height="" title="collapse" alt="collapse" class="WikispacesNavbarToggleImg WikispacesNavbarMinusImg hidden WikispacesSpriteTheme arrow-right"><span>Parts</span></div>
+<ol>
+<li><a style="font-size: 0.9em" href="http://web.archive.org/web/20121115140300/http://integratedredstone.wikispaces.com/Wafer" rel="nofollow">Wafer</a></li>
+<li><a style="font-size: 0.9em" href="http://web.archive.org/web/20121115140300/http://integratedredstone.wikispaces.com/Wire" rel="nofollow">Wire</a></li>
+<li><a style="font-size: 0.9em" href="http://web.archive.org/web/20121115140300/http://integratedredstone.wikispaces.com/Anode" rel="nofollow">Anode</a></li>
+<li><a style="font-size: 0.9em" href="http://web.archive.org/web/20121115140300/http://integratedredstone.wikispaces.com/Cathode" rel="nofollow">Cathode</a></li>
+<li><a style="font-size: 0.9em" href="http://web.archive.org/web/20121115140300/http://integratedredstone.wikispaces.com/Pointer" rel="nofollow">Pointer</a></li>
+</ol>
+</li>
+<li>
+<div class="WikispacesNavbarEntryHeader"><img src="./integratedredstone - Forth Dictionary_files/c.gif" width="" height="" title="expand" alt="expand" class="WikispacesNavbarToggleImg WikispacesNavbarPlusImg WikispacesSpriteTheme arrow-down"><img src="./integratedredstone - Forth Dictionary_files/c.gif" width="" height="" title="collapse" alt="collapse" class="WikispacesNavbarToggleImg WikispacesNavbarMinusImg hidden WikispacesSpriteTheme arrow-right"><span>Circuits</span></div>
+<ol>
+<li>
+<p style="padding: 0; font-size: 0.9em">NOR Gate</p>
+</li>
+<li>
+<p style="padding: 0; font-size: 0.9em">OR Gate</p>
+</li>
+<li>
+<p style="padding: 0; font-size: 0.9em">NAND Gate</p>
+</li>
+<li>
+<p style="padding: 0; font-size: 0.9em">AND Gate</p>
+</li>
+<li>
+<p style="padding: 0; font-size: 0.9em">XNOR Gate</p>
+</li>
+<li>
+<p style="padding: 0; font-size: 0.9em">Buffer Gate</p>
+</li>
+<li>
+<p style="padding: 0; font-size: 0.9em">RS Latch</p>
+</li>
+<li>
+<p style="padding: 0; font-size: 0.9em">Toggle Latch</p>
+</li>
+<li><a style="font-size: 0.9em" href="http://web.archive.org/web/20121115140300/http://integratedredstone.wikispaces.com/Timer" rel="nofollow">Timer</a></li>
+<li><a style="font-size: 0.9em" href="http://web.archive.org/web/20121115140300/http://integratedredstone.wikispaces.com/Sequencer" rel="nofollow">Sequencer</a></li>
+<li>
+<p style="padding: 0; font-size: 0.9em">Pulse Former</p>
+</li>
+<li>
+<p style="padding: 0; font-size: 0.9em">Multiplexer</p>
+</li>
+<li>
+<p style="padding: 0; font-size: 0.9em">Counter</p>
+</li>
+<li>
+<p style="padding: 0; font-size: 0.9em">Repeater</p>
+</li>
+</ol>
+</li>
+</ol>
+</div>
+</div>
+</div>
+</div>
+<div id="WikispacesNavbarTags"></div><!-- ws:end:WikiTextMediaRule:3 --><!-- ws:start:WikiTextMediaRule:4:&lt;img src=&quot;/web/20121115140300/http://www.wikispaces.com/site/embedthumbnail/custom/19302744?h=0&amp;w=0&quot; class=&quot;WikiMedia WikiMediaCustom&quot; id=&quot;wikitext@@media@@type=&amp;quot;custom&amp;quot; key=&amp;quot;19302744&amp;quot;&quot; title=&quot;Custom Media&quot;/&gt; --><div class="includeBody" style="padding: 4px 0 0 16px">
+<div class="includeNavbar">
+<div class="WikispacesNavbarList" id="WikispacesNavbarList">
+<div class="WikispacesNavbarEntryHeader"><img src="./integratedredstone - Forth Dictionary_files/c.gif" width="" height="" title="expand" alt="expand" class="WikispacesNavbarToggleImg WikispacesNavbarPlusImg WikispacesSpriteTheme arrow-right"><img src="./integratedredstone - Forth Dictionary_files/c.gif" width="" height="" title="collapse" alt="collapse" class="WikispacesNavbarToggleImg WikispacesNavbarMinusImg hidden WikispacesSpriteTheme arrow-down"><span><a class="wiki_link" href="http://web.archive.org/web/20121115140300/http://integratedredstone.wikispaces.com/Redpower+Lighting" rel="nofollow">Redpower Lighting</a></span></div>
+<div class="WikispacesNavbarListItems hidden" id="WikispacesNavbarAllPagesListItems" style="display: none;"></div>
+</div>
+<div id="WikispacesNavbarTags"></div>
+</div>
+</div><!-- ws:end:WikiTextMediaRule:4 --><!-- ws:start:WikiTextMediaRule:5:&lt;img src=&quot;/web/20121115140300/http://www.wikispaces.com/site/embedthumbnail/custom/19302748?h=0&amp;w=0&quot; class=&quot;WikiMedia WikiMediaCustom&quot; id=&quot;wikitext@@media@@type=&amp;quot;custom&amp;quot; key=&amp;quot;19302748&amp;quot;&quot; title=&quot;Custom Media&quot;/&gt; --><div class="includeBody" style="padding: 4px 0 0 16px">
+<div class="includeNavbar">
+<div class="WikispacesNavbarList" id="WikispacesNavbarList">
+<div class="WikispacesNavbarEntryHeader"><img src="./integratedredstone - Forth Dictionary_files/c.gif" width="" height="" title="expand" alt="expand" class="WikispacesNavbarToggleImg WikispacesNavbarPlusImg WikispacesSpriteTheme arrow-right"><img src="./integratedredstone - Forth Dictionary_files/c.gif" width="" height="" title="collapse" alt="collapse" class="WikispacesNavbarToggleImg WikispacesNavbarMinusImg hidden WikispacesSpriteTheme arrow-down"><span><a class="wiki_link" href="http://web.archive.org/web/20121115140300/http://integratedredstone.wikispaces.com/Redpower+Array" rel="nofollow">Redpower Array</a></span></div>
+<div class="WikispacesNavbarListItems hidden" id="WikispacesNavbarAllPagesListItems" style="display: none;"></div>
+</div>
+<div id="WikispacesNavbarTags"></div>
+</div>
+</div><!-- ws:end:WikiTextMediaRule:5 --><!-- ws:start:WikiTextMediaRule:6:&lt;img src=&quot;/web/20121115140300/http://www.wikispaces.com/site/embedthumbnail/custom/19342968?h=0&amp;w=0&quot; class=&quot;WikiMedia WikiMediaCustom&quot; id=&quot;wikitext@@media@@type=&amp;quot;custom&amp;quot; key=&amp;quot;19342968&amp;quot;&quot; title=&quot;Custom Media&quot;/&gt; --><div class="includeBody" style="padding: 4px 0 0 16px">
+<div class="includeNavbar">
+<div class="WikispacesNavbarList" id="WikispacesNavbarList">
+<div class="WikispacesNavbarEntryHeader"><img src="./integratedredstone - Forth Dictionary_files/c.gif" width="" height="" title="expand" alt="expand" class="WikispacesNavbarToggleImg WikispacesNavbarPlusImg WikispacesSpriteTheme arrow-right"><img src="./integratedredstone - Forth Dictionary_files/c.gif" width="" height="" title="collapse" alt="collapse" class="WikispacesNavbarToggleImg WikispacesNavbarMinusImg hidden WikispacesSpriteTheme arrow-down"><span><a class="wiki_link" href="http://web.archive.org/web/20121115140300/http://integratedredstone.wikispaces.com/Redpower+World" rel="nofollow">Redpower World</a></span></div>
+<div class="WikispacesNavbarListItems hidden" id="WikispacesNavbarAllPagesListItems" style="padding: 0 0 0 4px;">
+<ol>
+<li><a style="margin: 0; font-size: 0.9em" href="http://web.archive.org/web/20121115140300/http://integratedredstone.wikispaces.com/Copper+Ore" rel="nofollow">Copper</a></li>
+<li><a style="margin: 0; font-size: 0.9em" href="http://web.archive.org/web/20121115140300/http://integratedredstone.wikispaces.com/Tin+Ore" rel="nofollow">Tin</a></li>
+<li><a style="margin: 0; font-size: 0.9em" href="http://web.archive.org/web/20121115140300/http://integratedredstone.wikispaces.com/Silver+Ore" rel="nofollow">Silver</a></li>
+<li><a style="margin: 0; font-size: 0.9em" href="http://web.archive.org/web/20121115140300/http://integratedredstone.wikispaces.com/Tungsten+Ore" rel="nofollow">Tungsten</a></li>
+<li><a style="margin: 0; font-size: 0.9em" href="http://web.archive.org/web/20121115140300/http://integratedredstone.wikispaces.com/Nikolite+Ore" rel="nofollow">Nikolite</a></li>
+<li><a style="margin: 0; font-size: 0.9em" href="http://web.archive.org/web/20121115140300/http://integratedredstone.wikispaces.com/Gem+Ores" rel="nofollow">Gems</a></li>
+<li><a style="margin: 0; font-size: 0.9em" href="http://web.archive.org/web/20121115140300/http://integratedredstone.wikispaces.com/Basalt" rel="nofollow">Basalt</a></li>
+<li><a style="margin: 0; font-size: 0.9em" href="http://web.archive.org/web/20121115140300/http://integratedredstone.wikispaces.com/Marble" rel="nofollow">Marble</a></li>
+</ol>
+</div>
+</div>
+<div id="WikispacesNavbarTags"></div>
+</div>
+</div><!-- ws:end:WikiTextMediaRule:6 --><!-- ws:start:WikiTextMediaRule:7:&lt;img src=&quot;/web/20121115140300/http://www.wikispaces.com/site/embedthumbnail/custom/19302758?h=0&amp;w=0&quot; class=&quot;WikiMedia WikiMediaCustom&quot; id=&quot;wikitext@@media@@type=&amp;quot;custom&amp;quot; key=&amp;quot;19302758&amp;quot;&quot; title=&quot;Custom Media&quot;/&gt; --><div class="includeBody" style="padding: 4px 0 0 16px">
+<div class="includeNavbar">
+<div class="WikispacesNavbarList" id="WikispacesNavbarList">
+<div class="WikispacesNavbarEntryHeader"><img src="./integratedredstone - Forth Dictionary_files/c.gif" width="" height="" title="expand" alt="expand" class="WikispacesNavbarToggleImg WikispacesNavbarPlusImg WikispacesSpriteTheme arrow-right"><img src="./integratedredstone - Forth Dictionary_files/c.gif" width="" height="" title="collapse" alt="collapse" class="WikispacesNavbarToggleImg WikispacesNavbarMinusImg hidden WikispacesSpriteTheme arrow-down"><span><a class="wiki_link" href="http://web.archive.org/web/20121115140300/http://integratedredstone.wikispaces.com/Redpower+Machine" rel="nofollow">Redpower Machine</a></span></div>
+<div class="WikispacesNavbarListItems hidden" id="WikispacesNavbarAllPagesListItems" style="display: none;"></div>
+</div>
+<div id="WikispacesNavbarTags"></div>
+</div>
+</div><!-- ws:end:WikiTextMediaRule:7 --><!-- ws:start:WikiTextMediaRule:8:&lt;img src=&quot;/web/20121115140300/http://www.wikispaces.com/site/embedthumbnail/custom/19320402?h=0&amp;w=0&quot; class=&quot;WikiMedia WikiMediaCustom&quot; id=&quot;wikitext@@media@@type=&amp;quot;custom&amp;quot; key=&amp;quot;19320402&amp;quot;&quot; title=&quot;Custom Media&quot;/&gt; --><div class="includeBody" style="padding: 4px 0 0 16px">
+<div class="includeNavbar">
+<div class="WikispacesNavbarList" id="WikispacesNavbarList">
+<div class="WikispacesNavbarEntryHeader"><img src="./integratedredstone - Forth Dictionary_files/c.gif" width="" height="" title="expand" alt="expand" class="WikispacesNavbarToggleImg WikispacesNavbarPlusImg WikispacesSpriteTheme arrow-right"><img src="./integratedredstone - Forth Dictionary_files/c.gif" width="" height="" title="collapse" alt="collapse" class="WikispacesNavbarToggleImg WikispacesNavbarMinusImg hidden WikispacesSpriteTheme arrow-down"><span><a class="wiki_link" href="http://web.archive.org/web/20121115140300/http://integratedredstone.wikispaces.com/Redpower+Control" rel="nofollow">Redpower Control</a></span></div>
+<div class="WikispacesNavbarListItems hidden" id="WikispacesNavbarAllPagesListItems" style="margin: 0 0 8px 0;">
+<ol>
+<li>
+<div class="WikispacesNavbarEntryHeader"><img src="./integratedredstone - Forth Dictionary_files/c.gif" width="" height="" title="expand" alt="expand" class="WikispacesNavbarToggleImg WikispacesNavbarPlusImg WikispacesSpriteTheme arrow-down"><img src="./integratedredstone - Forth Dictionary_files/c.gif" width="" height="" title="collapse" alt="collapse" class="WikispacesNavbarToggleImg WikispacesNavbarMinusImg hidden WikispacesSpriteTheme arrow-right"><span>Parts</span></div>
+<ol>
+<li><a style="margin: 0; font-size: 0.9em" href="http://web.archive.org/web/20121115140300/http://integratedredstone.wikispaces.com/Copper+Coil" rel="nofollow">Copper Coil</a></li>
+<li><a style="margin: 0; font-size: 0.9em" href="http://web.archive.org/web/20121115140300/http://integratedredstone.wikispaces.com/Fine+Iron+wire" rel="nofollow">Fine Iron Wire</a></li>
+<li><a style="margin: 0; font-size: 0.9em" href="http://web.archive.org/web/20121115140300/http://integratedredstone.wikispaces.com/CPU" rel="nofollow">Central Proccessing Unit</a></li>
+<li><a style="margin: 0; font-size: 0.9em" href="http://web.archive.org/web/20121115140300/http://integratedredstone.wikispaces.com/Monitor" rel="nofollow">Monitor</a></li>
+<li><a style="margin: 0; font-size: 0.9em" href="http://web.archive.org/web/20121115140300/http://integratedredstone.wikispaces.com/Disk+Drive" rel="nofollow">Disk Drive</a></li>
+<li><a style="margin: 0; font-size: 0.9em" href="http://web.archive.org/web/20121115140300/http://integratedredstone.wikispaces.com/Ribbon+Cable" rel="nofollow">Ribbon Cable</a></li>
+<li><a style="margin: 0; font-size: 0.9em" href="http://web.archive.org/web/20121115140300/http://integratedredstone.wikispaces.com/IOX" rel="nofollow">IO Expander</a></li>
+<li><a style="margin: 0; font-size: 0.9em" href="http://web.archive.org/web/20121115140300/http://integratedredstone.wikispaces.com/Backplane" rel="nofollow">Backplane</a></li>
+<li><a style="margin: 0; font-size: 0.9em" href="http://web.archive.org/web/20121115140300/http://integratedredstone.wikispaces.com/RAM" rel="nofollow">8K RAM</a></li>
+</ol>
+</li>
+<li><a style="margin: 0; font-size: 0.9em" href="http://web.archive.org/web/20121115140300/http://integratedredstone.wikispaces.com/FORTH" rel="nofollow">FORTH Documentation</a></li>
+<li><a style="margin: 0; font-size: 0.9em" href="http://web.archive.org/web/20121115140300/http://integratedredstone.wikispaces.com/65EL02" rel="nofollow">65EL02</a></li>
+</ol>
+</div>
+</div>
+</div>
+<div id="WikispacesNavbarTags"></div>
+</div><!-- ws:end:WikiTextMediaRule:8 --><!-- ws:start:WikiTextMediaRule:9:&lt;img src=&quot;/web/20121115140300/http://www.wikispaces.com/site/embedthumbnail/custom/19302814?h=0&amp;w=0&quot; class=&quot;WikiMedia WikiMediaCustom&quot; id=&quot;wikitext@@media@@type=&amp;quot;custom&amp;quot; key=&amp;quot;19302814&amp;quot;&quot; title=&quot;Custom Media&quot;/&gt; --><ul style="list-style-type: none; padding: 0px !important;">
+<li>
+<div style="top: -2px; position: relative; width: 16px; height: 19px; overflow: hidden; display: inline-block; vertical-align: middle;"><img style="padding: 0px;" alt="Grid stone.png" src="./integratedredstone - Forth Dictionary_files/c2.png" width="16" height="19"></div>
+<b>Builds &amp; Tutorials</b></li>
+</ul><!-- ws:end:WikiTextMediaRule:9 --><!-- ws:start:WikiTextMediaRule:10:&lt;img src=&quot;/web/20121115140300/http://www.wikispaces.com/site/embedthumbnail/custom/20646863?h=0&amp;w=0&quot; class=&quot;WikiMedia WikiMediaCustom&quot; id=&quot;wikitext@@media@@type=&amp;quot;custom&amp;quot; key=&amp;quot;20646863&amp;quot;&quot; title=&quot;Custom Media&quot;/&gt; --><ul style="list-style-type: none; padding: 0 0 0 16px !important;">
+<li>
+<div style="top: -2px; position: relative; width: 16px; height: 19px; overflow: hidden; display: inline-block; vertical-align: middle;"><img style="padding: 0px;" alt="Grid stone.png" src="./integratedredstone - Forth Dictionary_files/c3.png" width="16" height="19"></div>
+<a href="http://web.archive.org/web/20121115140300/http://integratedredstone.wikispaces.com/Circuits" rel="nofollow">Sample Circuits</a></li>
+</ul><!-- ws:end:WikiTextMediaRule:10 --><!-- ws:start:WikiTextMediaRule:11:&lt;img src=&quot;/web/20121115140300/http://www.wikispaces.com/site/embedthumbnail/custom/19302914?h=0&amp;w=0&quot; class=&quot;WikiMedia WikiMediaCustom&quot; id=&quot;wikitext@@media@@type=&amp;quot;custom&amp;quot; key=&amp;quot;19302914&amp;quot;&quot; title=&quot;Custom Media&quot;/&gt; --><ul style="list-style-type: none; padding: 0 0 0 16px !important; margin: 0;">
+<li>
+<div style="top: -2px; position: relative; width: 16px; height: 19px; overflow: hidden; display: inline-block; vertical-align: middle;"><img style="padding: 0px;" alt="Grid stone.png" src="./integratedredstone - Forth Dictionary_files/c3.png" width="16" height="19"></div>
+<a href="http://web.archive.org/web/20121115140300/http://integratedredstone.wikispaces.com/Builds+using+Frames" rel="nofollow">Builds using Frames</a></li>
+</ul><!-- ws:end:WikiTextMediaRule:11 --><!-- ws:start:WikiTextMediaRule:12:&lt;img src=&quot;/web/20121115140300/http://www.wikispaces.com/site/embedthumbnail/custom/19302876?h=0&amp;w=0&quot; class=&quot;WikiMedia WikiMediaCustom&quot; id=&quot;wikitext@@media@@type=&amp;quot;custom&amp;quot; key=&amp;quot;19302876&amp;quot;&quot; title=&quot;Custom Media&quot;/&gt; --><ul style="list-style-type: none; padding: 0px !important;">
+<li>
+<div style="top: -2px; position: relative; width: 16px; height: 19px; overflow: hidden; display: inline-block; vertical-align: middle;"><img style="padding: 0px;" alt="Grid stone.png" src="./integratedredstone - Forth Dictionary_files/c2.png" width="16" height="19"></div>
+<b>Answered Questions</b></li>
+</ul><!-- ws:end:WikiTextMediaRule:12 --><!-- ws:start:WikiTextMediaRule:13:&lt;img src=&quot;/web/20121115140300/http://www.wikispaces.com/site/embedthumbnail/custom/20370436?h=0&amp;w=0&quot; class=&quot;WikiMedia WikiMediaCustom&quot; id=&quot;wikitext@@media@@type=&amp;quot;custom&amp;quot; key=&amp;quot;20370436&amp;quot;&quot; title=&quot;Custom Media&quot;/&gt; --><ul style="list-style-type: none; padding: 0 0 0 16px !important;">
+<li>
+<div style="top: -2px; position: relative; width: 16px; height: 19px; overflow: hidden; display: inline-block; vertical-align: middle;"><img style="padding: 0px;" alt="Grid stone.png" src="./integratedredstone - Forth Dictionary_files/c3.png" width="16" height="19"></div>
+<a href="http://web.archive.org/web/20121115140300/http://www.integratedredstone.wikispaces.com/FAQ" rel="nofollow">FAQs</a></li>
+</ul><!-- ws:end:WikiTextMediaRule:13 --><!-- ws:start:WikiTextMediaRule:14:&lt;img src=&quot;/web/20121115140300/http://www.wikispaces.com/site/embedthumbnail/custom/19319918?h=0&amp;w=0&quot; class=&quot;WikiMedia WikiMediaCustom&quot; id=&quot;wikitext@@media@@type=&amp;quot;custom&amp;quot; key=&amp;quot;19319918&amp;quot;&quot; title=&quot;Custom Media&quot;/&gt; --><ul style="list-style-type: none; padding: 0 0 0 16px !important; margin: 0;">
+<li>
+<div style="top: -2px; position: relative; width: 16px; height: 19px; overflow: hidden; display: inline-block; vertical-align: middle;"><img style="padding: 0px;" alt="Grid stone.png" src="./integratedredstone - Forth Dictionary_files/c3.png" width="16" height="19"></div>
+<a href="http://web.archive.org/web/20121115140300/http://www.eloraam.com/?page_id=170" rel="nofollow" style="background: url(/web/20121115140300im_/http://integratedredstone.wikispaces.com/i/a.gif) center right no-repeat; padding-right: 10px;">EAQs</a></li>
+</ul><!-- ws:end:WikiTextMediaRule:14 --><!-- ws:start:WikiTextMediaRule:15:&lt;img src=&quot;/web/20121115140300/http://www.wikispaces.com/site/embedthumbnail/custom/19302912?h=0&amp;w=0&quot; class=&quot;WikiMedia WikiMediaCustom&quot; id=&quot;wikitext@@media@@type=&amp;quot;custom&amp;quot; key=&amp;quot;19302912&amp;quot;&quot; title=&quot;Custom Media&quot;/&gt; --><ul style="list-style-type: none; padding: 0 0 0 16px !important; margin: 0;">
+<li>
+<div style="top: -2px; position: relative; width: 16px; height: 19px; overflow: hidden; display: inline-block; vertical-align: middle;"><img style="padding: 0px;" alt="Grid stone.png" src="./integratedredstone - Forth Dictionary_files/c3.png" width="16" height="19"></div>
+<a href="http://web.archive.org/web/20121115140300/http://integratedredstone.wikispaces.com/Collected+Wisdom" rel="nofollow">Collected Wisdom</a></li>
+</ul><!-- ws:end:WikiTextMediaRule:15 --><!-- ws:start:WikiTextMediaRule:16:&lt;img src=&quot;/web/20121115140300/http://www.wikispaces.com/site/embedthumbnail/custom/19302936?h=0&amp;w=0&quot; class=&quot;WikiMedia WikiMediaCustom&quot; id=&quot;wikitext@@media@@type=&amp;quot;custom&amp;quot; key=&amp;quot;19302936&amp;quot;&quot; title=&quot;Custom Media&quot;/&gt; --><ul style="list-style-type: none; padding: 0px !important;">
+<li>
+<div style="top: -2px; position: relative; width: 16px; height: 19px; overflow: hidden; display: inline-block; vertical-align: middle;"><img style="padding: 0px;" alt="Grid stone.png" src="./integratedredstone - Forth Dictionary_files/c2.png" width="16" height="19"></div>
+<b>Meta</b></li>
+</ul><!-- ws:end:WikiTextMediaRule:16 --><!-- ws:start:WikiTextMediaRule:17:&lt;img src=&quot;/web/20121115140300/http://www.wikispaces.com/site/embedthumbnail/custom/19302944?h=0&amp;w=0&quot; class=&quot;WikiMedia WikiMediaCustom&quot; id=&quot;wikitext@@media@@type=&amp;quot;custom&amp;quot; key=&amp;quot;19302944&amp;quot;&quot; title=&quot;Custom Media&quot;/&gt; --><ul style="list-style-type: none; padding: 0 0 0 16px !important;">
+<li>
+<div style="top: -2px; position: relative; width: 16px; height: 19px; overflow: hidden; display: inline-block; vertical-align: middle;"><img style="padding: 0px;" alt="Grid stone.png" src="./integratedredstone - Forth Dictionary_files/c3.png" width="16" height="19"></div>
+<a href="http://web.archive.org/web/20121115140300/http://integratedredstone.wikispaces.com/What%27s+New" rel="nofollow">What's New</a></li>
+</ul><!-- ws:end:WikiTextMediaRule:17 --><!-- ws:start:WikiTextMediaRule:18:&lt;img src=&quot;/web/20121115140300/http://www.wikispaces.com/site/embedthumbnail/custom/19302984?h=0&amp;w=0&quot; class=&quot;WikiMedia WikiMediaCustom&quot; id=&quot;wikitext@@media@@type=&amp;quot;custom&amp;quot; key=&amp;quot;19302984&amp;quot;&quot; title=&quot;Custom Media&quot;/&gt; --><ul style="list-style-type: none; padding: 0 0 0 16px !important; margin: 0;">
+<li>
+<div style="top: -2px; position: relative; width: 16px; height: 19px; overflow: hidden; display: inline-block; vertical-align: middle;"><img style="padding: 0px;" alt="Grid stone.png" src="./integratedredstone - Forth Dictionary_files/c3.png" width="16" height="19"></div>
+<a href="http://web.archive.org/web/20121115140300/http://integratedredstone.wikispaces.com/To-do" rel="nofollow">To-Do</a></li>
+</ul><!-- ws:end:WikiTextMediaRule:18 --><!-- ws:start:WikiTextMediaRule:19:&lt;img src=&quot;/web/20121115140300/http://www.wikispaces.com/site/embedthumbnail/custom/19302986?h=0&amp;w=0&quot; class=&quot;WikiMedia WikiMediaCustom&quot; id=&quot;wikitext@@media@@type=&amp;quot;custom&amp;quot; key=&amp;quot;19302986&amp;quot;&quot; title=&quot;Custom Media&quot;/&gt; --><ul style="list-style-type: none; padding: 0 0 0 16px !important; margin: 0;">
+<li>
+<div style="top: -2px; position: relative; width: 16px; height: 19px; overflow: hidden; display: inline-block; vertical-align: middle;"><img style="padding: 0px;" alt="Grid stone.png" src="./integratedredstone - Forth Dictionary_files/c3.png" width="16" height="19"></div>
+<a href="http://web.archive.org/web/20121115140300/http://integratedredstone.wikispaces.com/Joining+this+Wiki" rel="nofollow">Joining this Wiki</a></li>
+</ul><!-- ws:end:WikiTextMediaRule:19 --><!-- ws:start:WikiTextMediaRule:20:&lt;img src=&quot;/web/20121115140300/http://www.wikispaces.com/site/embedthumbnail/custom/19302964?h=0&amp;w=0&quot; class=&quot;WikiMedia WikiMediaCustom&quot; id=&quot;wikitext@@media@@type=&amp;quot;custom&amp;quot; key=&amp;quot;19302964&amp;quot;&quot; title=&quot;Custom Media&quot;/&gt; --><ul style="list-style-type: none; padding: 0px !important;">
+<li>
+<div style="top: -2px; position: relative; width: 16px; height: 19px; overflow: hidden; display: inline-block; vertical-align: middle;"><img style="padding: 0px;" alt="Grid stone.png" src="./integratedredstone - Forth Dictionary_files/c2.png" width="16" height="19"></div>
+<b>Help</b></li>
+</ul><!-- ws:end:WikiTextMediaRule:20 --><!-- ws:start:WikiTextMediaRule:21:&lt;img src=&quot;/web/20121115140300/http://www.wikispaces.com/site/embedthumbnail/custom/19302972?h=0&amp;w=0&quot; class=&quot;WikiMedia WikiMediaCustom&quot; id=&quot;wikitext@@media@@type=&amp;quot;custom&amp;quot; key=&amp;quot;19302972&amp;quot;&quot; title=&quot;Custom Media&quot;/&gt; --><ul style="list-style-type: none; padding: 0 0 0 16px !important;">
+<li>
+<div style="top: -2px; position: relative; width: 16px; height: 19px; overflow: hidden; display: inline-block; vertical-align: middle;"><img style="padding: 0px;" alt="Grid stone.png" src="./integratedredstone - Forth Dictionary_files/c3.png" width="16" height="19"></div>
+<a href="http://web.archive.org/web/20121115140300/http://help.wikispaces.com/Wikitext" rel="nofollow">Wikitext</a></li>
+</ul><!-- ws:end:WikiTextMediaRule:21 --><!-- ws:start:WikiTextMediaRule:22:&lt;img src=&quot;/web/20121115140300/http://www.wikispaces.com/site/embedthumbnail/custom/19302988?h=0&amp;w=0&quot; class=&quot;WikiMedia WikiMediaCustom&quot; id=&quot;wikitext@@media@@type=&amp;quot;custom&amp;quot; key=&amp;quot;19302988&amp;quot;&quot; title=&quot;Custom Media&quot;/&gt; --><ul style="list-style-type: none; padding: 0 0 0 16px !important; margin: 0;">
+<li>
+<div style="top: -2px; position: relative; width: 16px; height: 19px; overflow: hidden; display: inline-block; vertical-align: middle;"><img style="padding: 0px;" alt="Grid stone.png" src="./integratedredstone - Forth Dictionary_files/c3.png" width="16" height="19"></div>
+<a href="http://web.archive.org/web/20121115140300/http://www.wikispaces.com/wikitext+media" rel="nofollow">Wikitext Media</a></li>
+</ul><!-- ws:end:WikiTextMediaRule:22 --></div><!-- google_ad_section_end -->      <div class="editNav"></div>
+    </div>
+    <div id="wikiBox">
+      <table id="wikiBoxTable" cellspacing="0">
+        <tbody><tr>
+          <td id="topLeftGradient"></td>
+          <td id="topGradient"></td>
+          <td id="topRightGradient"></td>
+        </tr>
+        <tr>
+          <td id="leftGradient"></td>
+          <td id="centerCell"><div class="contentBox"><div class="innerContentBox">
+<div class="MenuBar WikiControls">
+  
+    <span class="PageTitle"><a href="./integratedredstone - Forth Dictionary_files/integratedredstone - Forth Dictionary.html">Forth Dictionary</a></span>
+      <div>
+    <div class="ButtonPosition">
+      <div class="Buttons">
+        <a class="Button ButtonLeft disabled tipme" title="you do not have permission to edit this page" onclick="return false;" href="http://web.archive.org/web/20121115140300/http://integratedredstone.wikispaces.com/Forth+Dictionary#"><img src="./integratedredstone - Forth Dictionary_files/c(1).gif" width="16px" height="16px" alt="" class="Icon WikispacesSpriteApp edit"> Edit</a><a class="Button ButtonMiddle tipme" title="view 7 discussion posts" onclick="" href="http://web.archive.org/web/20121115140300/http://integratedredstone.wikispaces.com/page/messages/Forth+Dictionary"><img src="./integratedredstone - Forth Dictionary_files/c(1).gif" width="16px" height="16px" alt="" class="Icon WikispacesSpriteApp discussion"> 7</a><a class="Button ButtonMiddle CommentButton disabled tipme" title="no comments" onclick="return false;" href="./integratedredstone - Forth Dictionary_files/integratedredstone - Forth Dictionary.html"><img src="./integratedredstone - Forth Dictionary_files/c(1).gif" width="16px" height="16px" alt="" class="Icon WikispacesSpriteApp comment"> <span class="commentCount">0</span></a><a class="Button ButtonMiddle tipme" title="view 23 revisions" onclick="" href="http://web.archive.org/web/20121115140300/http://integratedredstone.wikispaces.com/page/history/Forth+Dictionary"><img src="./integratedredstone - Forth Dictionary_files/c(1).gif" width="16px" height="16px" alt="" class="Icon WikispacesSpriteApp history"> 23</a><a class="Button ButtonRight ButtonMore tipme" title="more options" onclick="" href="http://web.archive.org/web/20121115140300/http://integratedredstone.wikispaces.com/page/menu/Forth+Dictionary">…</a>      </div>
+    </div>
+    <div class="MoreMenu">
+  <table>
+    <tbody>
+            <tr>
+        <th>Tags</th>
+                <td style="white-space: normal;">
+          
+<form action="http://web.archive.org/web/20121115140300/http://integratedredstone.wikispaces.com/Forth+Dictionary#" name="WikiTagForm" class="WikiTagForm WikiTokenAutocomplete">
+  <div class="WikiTagList medgrey">
+        <ul>
+                          <li><a href="http://web.archive.org/web/20121115140300/http://integratedredstone.wikispaces.com/space/content?tag=Control">Control</a></li>
+                                <li><a href="http://web.archive.org/web/20121115140300/http://integratedredstone.wikispaces.com/space/content?tag=Forth">Forth</a></li>
+              </ul>
+      </div>
+  </form>        </td>
+              </tr>
+            <tr>
+        <th>View As</th>
+                <td>
+          <a href="http://web.archive.org/web/20121115140300/http://integratedredstone.wikispaces.com/Forth+Dictionary?f=print">Print</a>&nbsp;·&nbsp;<a href="http://web.archive.org/web/20121115140300/http://integratedredstone.wikispaces.com/page/pdf/Forth+Dictionary">PDF</a>        </td>
+              </tr>
+            <tr>
+        <th>Other</th>
+                <td>
+          <a class="WikispacesDialogLink" href="http://web.archive.org/web/20121115140300/http://integratedredstone.wikispaces.com/wiki/addmonitor?monitorLink=page%3AForth%20Dictionary">Notify</a>&nbsp;·&nbsp;<a class="WikispacesDialogLink" href="http://web.archive.org/web/20121115140300/http://integratedredstone.wikispaces.com/page/rss/Forth+Dictionary">RSS</a>&nbsp;·&nbsp;<a href="http://web.archive.org/web/20121115140300/http://integratedredstone.wikispaces.com/page/links/Forth+Dictionary">Backlinks</a>&nbsp;·&nbsp;<a href="http://web.archive.org/web/20121115140300/http://integratedredstone.wikispaces.com/page/code/Forth+Dictionary">Source</a>        </td>
+              </tr>
+          </tbody>
+  </table>
+</div>  </div>
+  </div>
+
+
+
+  <textarea id="autosaveContent" style="display:none;" rows="1" cols="1"></textarea>
+  <div id="autosavePrompt" style="display:none;"></div>
+
+  <div class="commentContainer">
+  <div class="wiki wikiPage" id="content_view">
+  <!-- google_ad_section_start -->
+  <!-- ws:start:WikiTextTocRule:96:&lt;img id=&quot;wikitext@@toc@@normal&quot; class=&quot;WikiMedia WikiMediaToc&quot; title=&quot;Table of Contents&quot; src=&quot;/site/embedthumbnail/toc/normal?w=225&amp;h=100&quot;/&gt; --><div id="toc"><h1 class="nopad">Table of Contents</h1><!-- ws:end:WikiTextTocRule:96 --><!-- ws:start:WikiTextTocRule:97: --><div style="margin-left: 2em;"><a href="http://web.archive.org/web/20121115140300/http://integratedredstone.wikispaces.com/Forth+Dictionary#x-Forth Dictionary">Forth Dictionary</a></div>
+<!-- ws:end:WikiTextTocRule:97 --><!-- ws:start:WikiTextTocRule:98: --><div style="margin-left: 3em;"><a href="http://web.archive.org/web/20121115140300/http://integratedredstone.wikispaces.com/Forth+Dictionary#x-Forth Dictionary-Stack notation">Stack notation</a></div>
+<!-- ws:end:WikiTextTocRule:98 --><!-- ws:start:WikiTextTocRule:99: --><div style="margin-left: 3em;"><a href="http://web.archive.org/web/20121115140300/http://integratedredstone.wikispaces.com/Forth+Dictionary#x-Forth Dictionary-Terminal interaction">Terminal interaction</a></div>
+<!-- ws:end:WikiTextTocRule:99 --><!-- ws:start:WikiTextTocRule:100: --><div style="margin-left: 3em;"><a href="http://web.archive.org/web/20121115140300/http://integratedredstone.wikispaces.com/Forth+Dictionary#x-Forth Dictionary-Stack related">Stack related</a></div>
+<!-- ws:end:WikiTextTocRule:100 --><!-- ws:start:WikiTextTocRule:101: --><div style="margin-left: 3em;"><a href="http://web.archive.org/web/20121115140300/http://integratedredstone.wikispaces.com/Forth+Dictionary#x-Forth Dictionary-Control flow">Control flow</a></div>
+<!-- ws:end:WikiTextTocRule:101 --><!-- ws:start:WikiTextTocRule:102: --><div style="margin-left: 3em;"><a href="http://web.archive.org/web/20121115140300/http://integratedredstone.wikispaces.com/Forth+Dictionary#x-Forth Dictionary-Comparison operators">Comparison operators</a></div>
+<!-- ws:end:WikiTextTocRule:102 --><!-- ws:start:WikiTextTocRule:103: --><div style="margin-left: 3em;"><a href="http://web.archive.org/web/20121115140300/http://integratedredstone.wikispaces.com/Forth+Dictionary#x-Forth Dictionary-Arithmetic operators">Arithmetic operators</a></div>
+<!-- ws:end:WikiTextTocRule:103 --><!-- ws:start:WikiTextTocRule:104: --><div style="margin-left: 3em;"><a href="http://web.archive.org/web/20121115140300/http://integratedredstone.wikispaces.com/Forth+Dictionary#x-Forth Dictionary-Binary operators">Binary operators</a></div>
+<!-- ws:end:WikiTextTocRule:104 --><!-- ws:start:WikiTextTocRule:105: --><div style="margin-left: 3em;"><a href="http://web.archive.org/web/20121115140300/http://integratedredstone.wikispaces.com/Forth+Dictionary#x-Forth Dictionary-Variables, constants and alike">Variables, constants and alike</a></div>
+<!-- ws:end:WikiTextTocRule:105 --><!-- ws:start:WikiTextTocRule:106: --><div style="margin-left: 3em;"><a href="http://web.archive.org/web/20121115140300/http://integratedredstone.wikispaces.com/Forth+Dictionary#x-Forth Dictionary-Predefined variables & constants">Predefined variables &amp; constants</a></div>
+<!-- ws:end:WikiTextTocRule:106 --><!-- ws:start:WikiTextTocRule:107: --><div style="margin-left: 3em;"><a href="http://web.archive.org/web/20121115140300/http://integratedredstone.wikispaces.com/Forth+Dictionary#x-Forth Dictionary-Redbus interaction">Redbus interaction</a></div>
+<!-- ws:end:WikiTextTocRule:107 --><!-- ws:start:WikiTextTocRule:108: --><div style="margin-left: 3em;"><a href="http://web.archive.org/web/20121115140300/http://integratedredstone.wikispaces.com/Forth+Dictionary#x-Forth Dictionary-IO expander">IO expander</a></div>
+<!-- ws:end:WikiTextTocRule:108 --><!-- ws:start:WikiTextTocRule:109: --><div style="margin-left: 3em;"><a href="http://web.archive.org/web/20121115140300/http://integratedredstone.wikispaces.com/Forth+Dictionary#x-Forth Dictionary-Disk-related words">Disk-related words</a></div>
+<!-- ws:end:WikiTextTocRule:109 --><!-- ws:start:WikiTextTocRule:110: --><div style="margin-left: 3em;"><a href="http://web.archive.org/web/20121115140300/http://integratedredstone.wikispaces.com/Forth+Dictionary#x-Forth Dictionary-Miscellaneous words">Miscellaneous words</a></div>
+<!-- ws:end:WikiTextTocRule:110 --><!-- ws:start:WikiTextTocRule:111: --><div style="margin-left: 3em;"><a href="http://web.archive.org/web/20121115140300/http://integratedredstone.wikispaces.com/Forth+Dictionary#x-Forth Dictionary-Debugging">Debugging</a></div>
+<!-- ws:end:WikiTextTocRule:111 --><!-- ws:start:WikiTextTocRule:112: --><div style="margin-left: 3em;"><a href="http://web.archive.org/web/20121115140300/http://integratedredstone.wikispaces.com/Forth+Dictionary#x-Forth Dictionary-Internal words">Internal words</a></div>
+<!-- ws:end:WikiTextTocRule:112 --><!-- ws:start:WikiTextTocRule:113: --></div>
+<!-- ws:end:WikiTextTocRule:113 --><!-- ws:start:WikiTextHeadingRule:64:&lt;h2&gt; --><h2 id="toc0"><a name="x-Forth Dictionary"></a><!-- ws:end:WikiTextHeadingRule:64 -->Forth Dictionary</h2>
+ <br>
+Following a comprehensive dictionary on forth words available with MineOS.<br>
+(which was introduced with release RP2pr5b1 as version 1.0 and got upgraded to version 1.1 with current RP2pr5b2).<br>
+<br>
+<strong>Note:</strong> This dictionary is still work-in-progress and can contain bugs or misleading information which can result in unwanted behavior!<br>
+<br>
+<br>
+<!-- ws:start:WikiTextHeadingRule:66:&lt;h3&gt; --><h3 id="toc1"><a name="x-Forth Dictionary-Stack notation"></a><!-- ws:end:WikiTextHeadingRule:66 -->Stack notation</h3>
+ <br>
+To describe the syntax for each word, a stack notation as follows will be used throughout this document:<br>
+<!-- ws:start:WikiTextCodeRule:8:
+&lt;pre class=&quot;text&quot;&gt;( &amp;lt;Input&amp;gt; &amp;#45;- &amp;lt;Output&amp;gt; )&lt;/pre&gt;
+ -->
+<style type="text/css"><!--
+/**
+ * GeSHi (C) 2004 - 2007 Nigel McNie, 2007 - 2008 Benny Baumann
+ * (http://qbnz.com/highlighter/ and http://geshi.org/)
+ */
+.text  {font-family:monospace;}
+.text .imp {font-weight: bold; color: red;}
+.text span.xtra { display:block; }
+
+-->
+</style><pre class="text">( &lt;Input&gt; -- &lt;Output&gt; )</pre>
+
+<!-- ws:end:WikiTextCodeRule:8 -->Left side <tt>&lt;Input&gt;</tt> lists all input parameters a word expects, if any, including the order.<br>
+The <tt>--</tt> is used as a separator and, if not stated else, denotes the word itself (which will, when executed, read, and therefore remove its input parameters from right to left).<br>
+Right side <tt>&lt;Output&gt;</tt> describes all output parameters pushed onto the stack, also optional.<br>
+<br>
+Here are a few examples to get a hold onto it:<br>
+
+
+<table class="wiki_table">
+    <tbody><tr>
+        <th>Syntax<br>
+</th>
+        <th>Description<br>
+</th>
+    </tr>
+    <tr>
+        <td><tt>( -- )</tt><br>
+</td>
+        <td>Indicates no change to stack at all<br>
+</td>
+    </tr>
+    <tr>
+        <td><tt>( n -- )</tt><br>
+</td>
+        <td>would indicate an existing value is removed from stack<br>
+</td>
+    </tr>
+    <tr>
+        <td><tt>( -- n )</tt><br>
+</td>
+        <td>would indicate a new value gets pushed onto stack, without modification of any value currently on stack<br>
+</td>
+    </tr>
+    <tr>
+        <td><tt>( n1 -- n )</tt><br>
+</td>
+        <td>Combination of <tt>( n -- )</tt> and <tt>( -- n )</tt> where an existing value <tt>n1</tt> gets replaced by <tt>n</tt><br>
+</td>
+    </tr>
+    <tr>
+        <td><tt>( n1 n2 -- n )</tt><br>
+</td>
+        <td>Two existing values <tt>n1</tt> and <tt>n2</tt> are replaced by a single value <tt>n</tt><br>
+</td>
+    </tr>
+</tbody></table>
+
+<br>
+Where appropriate, a prefix is used to denote the type expected. If same type is used more than once, a sequence number is added to define parameter ordering:<br>
+
+
+<table class="wiki_table">
+    <tbody><tr>
+        <th>Prefix<br>
+</th>
+        <th>Description<br>
+</th>
+        <th>Example(s)<br>
+</th>
+    </tr>
+    <tr>
+        <td><tt>n</tt><br>
+</td>
+        <td>A signed integer value with normal precision (16 bit)<!-- ws:start:WikiTextRefRule:10:&amp;lt;ref&amp;gt;Stored with low byte first (called &lt;a class=&quot;wiki_link_ext&quot; href=&quot;/web/20121115140300/http://en.wikipedia.org/wiki/Endianness#Little-endian&quot; rel=&quot;nofollow&quot;&gt;little Endian&lt;/a&gt;).&amp;lt;/ref&amp;gt; --><sup id="cite_ref-1" class="reference"><a href="http://web.archive.org/web/20121115140300/http://integratedredstone.wikispaces.com/Forth+Dictionary#cite_note-1">[1]</a></sup><!-- ws:end:WikiTextRefRule:10 --><br>
+</td>
+        <td><tt>+ ( n1 n2 -- n )</tt><br>
+to describe an addition<br>
+</td>
+    </tr>
+    <tr>
+        <td><tt>d</tt><br>
+</td>
+        <td>An signed integer value with double precision (32 bit)<!-- ws:start:WikiTextRefRule:11:&amp;lt;ref&amp;gt;Handled as 2 separate 16 bit values, yet no support to store into or load from memory directly.&amp;lt;/ref&amp;gt; --><sup id="cite_ref-2" class="reference"><a href="http://web.archive.org/web/20121115140300/http://integratedredstone.wikispaces.com/Forth+Dictionary#cite_note-2">[2]</a></sup><!-- ws:end:WikiTextRefRule:11 --><br>
+</td>
+        <td><tt>- ( d1 d2 -- d )</tt><br>
+to describe a subtraction<br>
+</td>
+    </tr>
+    <tr>
+        <td><tt>r</tt><br>
+</td>
+        <td>A floating-point value with <em>? single/double precision ?</em><!-- ws:start:WikiTextRefRule:12:&amp;lt;ref&amp;gt;Floating-point isn't yet supported as with MineOS 1.0+&amp;lt;/ref&amp;gt; --><sup id="cite_ref-3" class="reference"><a href="http://web.archive.org/web/20121115140300/http://integratedredstone.wikispaces.com/Forth+Dictionary#cite_note-3">[3]</a></sup><!-- ws:end:WikiTextRefRule:12 --><br>
+</td>
+        <td><tt><!-- ws:start:WikiTextRawRule:00:``*`` -->*<!-- ws:end:WikiTextRawRule:00 --> ( r1 r2 -- r )</tt><br>
+to describe a multiplication<br>
+</td>
+    </tr>
+    <tr>
+        <td><tt>b</tt><br>
+</td>
+        <td>A byte value (8 bit)<br>
+</td>
+        <td><tt>AND ( b1 b2 -- b )</tt><br>
+to describe a logical AND operation<br>
+</td>
+    </tr>
+    <tr>
+        <td><tt>addr</tt><br>
+</td>
+        <td>A memory address in general<br>
+</td>
+        <td><tt>! ( n addr -- )</tt><br>
+to describe a write operation into memory<!-- ws:start:WikiTextRefRule:13:&amp;lt;ref&amp;gt;May also be a mapped Redbus memory address.&amp;lt;/ref&amp;gt; --><sup id="cite_ref-4" class="reference"><a href="http://web.archive.org/web/20121115140300/http://integratedredstone.wikispaces.com/Forth+Dictionary#cite_note-4">[4]</a></sup><!-- ws:end:WikiTextRefRule:13 --><br>
+</td>
+    </tr>
+    <tr>
+        <td><tt>f</tt><br>
+</td>
+        <td>A boolean flag of either <tt>TRUE</tt> (<tt>&lt;&gt;0)</tt> or <tt>FALSE</tt> (<tt>=0</tt>)<!-- ws:start:WikiTextRefRule:14:&amp;lt;ref&amp;gt;Note that flags are also 16 bit values.&amp;lt;/ref&amp;gt; --><sup id="cite_ref-5" class="reference"><a href="http://web.archive.org/web/20121115140300/http://integratedredstone.wikispaces.com/Forth+Dictionary#cite_note-5">[5]</a></sup><!-- ws:end:WikiTextRefRule:14 --><br>
+</td>
+        <td><tt>= ( n1 n2 -- f )</tt><br>
+to describe the equality comparison operator<br>
+</td>
+    </tr>
+</tbody></table>
+
+<br>
+Besides the prefixes above, a <tt>%</tt> as input indicates an empty stack, if used on output side, it indicates that stack will be erased after current word finishes execution.<br>
+Furthermore, a <tt>...</tt> indicates a sequence of values, so, for example, <tt>( nN...n1 -- )</tt> describes N values to be present on stack.<br>
+<br>
+Further note: Any term <tt>value</tt> denotes a 16 bit signed integer until stated else, and any term <tt>char</tt> (or <tt>character</tt>) equals a single <tt>byte</tt>.<br>
+<br>
+<br>
+<!-- ws:start:WikiTextHeadingRule:68:&lt;h3&gt; --><h3 id="toc2"><a name="x-Forth Dictionary-Terminal interaction"></a><!-- ws:end:WikiTextHeadingRule:68 -->Terminal interaction</h3>
+ <br>
+
+
+<table class="wiki_table">
+    <tbody><tr>
+        <th>Word<br>
+</th>
+        <th>Syntax<br>
+</th>
+        <th>Description<br>
+</th>
+        <th>Example(s)<br>
+</th>
+        <th>Version<br>
+</th>
+    </tr>
+    <tr>
+        <td><tt>PAGE</tt><br>
+</td>
+        <td><tt>( -- )</tt><br>
+</td>
+        <td>Clears screen and repositions cursor into upper left corner<br>
+</td>
+        <td><tt>PAGE</tt><br>
+</td>
+        <td style="text-align: center;">1.0+<br>
+</td>
+    </tr>
+    <tr>
+        <td><tt>SCROLL</tt><br>
+</td>
+        <td><tt>( -- )</tt><br>
+</td>
+        <td>Scrolls terminal content up by one line<br>
+</td>
+        <td><tt>SCROLL</tt><br>
+</td>
+        <td style="text-align: center;">1.0+<br>
+</td>
+    </tr>
+    <tr>
+        <td><tt>AT-XY</tt><br>
+</td>
+        <td><tt>( n1 n2 -- )</tt><br>
+</td>
+        <td>Moves cursor to x=<tt>n1</tt> and y=<tt>n2</tt><br>
+</td>
+        <td><tt>0 0 AT-XY</tt><br>
+will move cursor into upper left corner<br>
+</td>
+        <td style="text-align: center;">1.1+<br>
+</td>
+    </tr>
+    <tr>
+        <td><tt>EMIT</tt><br>
+</td>
+        <td><tt>( b -- )</tt><br>
+</td>
+        <td>Emits given ASCII char <tt>b</tt> at current cursor position and advances cursor position by one<br>
+(will move to next line if eond of line reached, scrolling if needed)<br>
+</td>
+        <td><tt>65 EMIT</tt><br>
+will print an <tt>A</tt><br>
+</td>
+        <td style="text-align: center;">1.0+<br>
+</td>
+    </tr>
+    <tr>
+        <td><tt>CR</tt><br>
+</td>
+        <td><tt>( -- )</tt><br>
+</td>
+        <td>Does a carriage return, will scroll screen by one line if already at bottom line<br>
+</td>
+        <td><tt>CR</tt><br>
+</td>
+        <td style="text-align: center;">1.0+<br>
+</td>
+    </tr>
+    <tr>
+        <td><tt>SPACE</tt><br>
+</td>
+        <td><tt>( -- )</tt><br>
+</td>
+        <td>Emits a space character<br>
+</td>
+        <td><tt>SPACE</tt><br>
+</td>
+        <td style="text-align: center;">1.0+<br>
+</td>
+    </tr>
+    <tr>
+        <td><tt>BS</tt><br>
+</td>
+        <td><tt>( -- )</tt><br>
+</td>
+        <td>Emits a backspace, moving the cursor backward and erasing the character beneath it<br>
+</td>
+        <td><tt>BS</tt><br>
+</td>
+        <td style="text-align: center;">1.0+<br>
+</td>
+    </tr>
+    <tr>
+        <td><tt>KEY?</tt><br>
+</td>
+        <td><tt>( -- f )</tt><br>
+</td>
+        <td>Checks for a key press, will return either <tt>TRUE</tt> or <tt>FALSE</tt><br>
+(bugged with release pr5b1<!-- ws:start:WikiTextRefRule:17:&amp;lt;ref&amp;gt;Workaround, thx to immibis: &lt;tt&gt;: KEY? KEY? -1 = IF -1 THEN ;&lt;/tt&gt;&amp;lt;/ref&amp;gt; --><sup id="cite_ref-6" class="reference"><a href="http://web.archive.org/web/20121115140300/http://integratedredstone.wikispaces.com/Forth+Dictionary#cite_note-6">[6]</a></sup><!-- ws:end:WikiTextRefRule:17 --> , fixed with pr5b2)<br>
+</td>
+        <td><tt>BEGIN <em>&lt;code&gt;</em> KEY? UNTIL</tt><br>
+</td>
+        <td style="text-align: center;">1.0+<br>
+</td>
+    </tr>
+    <tr>
+        <td><tt>KEY</tt><br>
+</td>
+        <td><tt>( -- b )</tt><br>
+</td>
+        <td>Wait for a key press and returns ASCII code of key pressed<br>
+</td>
+        <td><tt>KEY 32 = IF <em>&lt;code&gt;</em> THEN</tt><br>
+</td>
+        <td style="text-align: center;">1.0+<br>
+</td>
+    </tr>
+    <tr>
+        <td>.<br>
+</td>
+        <td><tt>( n -- )</tt><br>
+</td>
+        <td>Pulls last value from stack and print it<br>
+</td>
+        <td><tt>1 2 3 .</tt><br>
+will print <tt>3</tt><br>
+</td>
+        <td style="text-align: center;">1.0+<br>
+</td>
+    </tr>
+    <tr>
+        <td><tt>U.</tt><br>
+</td>
+        <td><tt>( n -- )</tt><br>
+</td>
+        <td>Unsigned version of <tt>.</tt><br>
+</td>
+        <td><tt>-32 U.</tt><br>
+will print <tt>65504</tt><br>
+(which equals FFE0)<br>
+</td>
+        <td style="text-align: center;">1.1+<br>
+</td>
+    </tr>
+    <tr>
+        <td>."<br>
+</td>
+        <td><tt>." <em>&lt;string&gt;</em>"</tt><br>
+</td>
+        <td>Print string given<br>
+(compile mode only, string will be stored within current definition)<br>
+</td>
+        <td><tt>." Hello World"</tt><br>
+will print <tt>Hello World</tt><br>
+</td>
+        <td style="text-align: center;">1.0+<br>
+</td>
+    </tr>
+    <tr>
+        <td><tt>TYPE</tt><br>
+</td>
+        <td><tt>( addr -- )</tt><br>
+</td>
+        <td>Output string starting at <tt>addr</tt> onto terminal<!-- ws:start:WikiTextRefRule:18:&amp;lt;ref&amp;gt;As with all strings in MineOS, this string must be zero-terminated&amp;lt;/ref&amp;gt; --><sup id="cite_ref-7" class="reference"><a href="http://web.archive.org/web/20121115140300/http://integratedredstone.wikispaces.com/Forth+Dictionary#cite_note-7">[7]</a></sup><!-- ws:end:WikiTextRefRule:18 --><br>
+</td>
+        <td><br>
+</td>
+        <td style="text-align: center;">1.0+<br>
+</td>
+    </tr>
+    <tr>
+        <td><tt>ACCEPT</tt><br>
+</td>
+        <td><tt>( addr n -- addr )</tt><br>
+</td>
+        <td>Accepts user input and copies at most <tt>n</tt>-1 chars to a buffer at <tt>addr</tt><!-- ws:start:WikiTextRefRule:21:&amp;lt;ref&amp;gt;&lt;tt&gt;ACCEPT&lt;/tt&gt; will zero-terminate this string automatically&amp;lt;/ref&amp;gt; --><sup id="cite_ref-8" class="reference"><a href="http://web.archive.org/web/20121115140300/http://integratedredstone.wikispaces.com/Forth+Dictionary#cite_note-8">[8]</a></sup><!-- ws:end:WikiTextRefRule:21 --><br>
+</td>
+        <td><br>
+</td>
+        <td style="text-align: center;">1.0+<br>
+</td>
+    </tr>
+</tbody></table>
+
+<br>
+Note that those words will always operate on terminal stored in <tt>TERMADDR</tt>.<br>
+<br>
+<br>
+<!-- ws:start:WikiTextHeadingRule:70:&lt;h3&gt; --><h3 id="toc3"><a name="x-Forth Dictionary-Stack related"></a><!-- ws:end:WikiTextHeadingRule:70 -->Stack related</h3>
+ <br>
+
+
+<table class="wiki_table">
+    <tbody><tr>
+        <th>Word<br>
+</th>
+        <th>Syntax<br>
+</th>
+        <th>Description<br>
+</th>
+        <th>Example(s)<br>
+</th>
+        <th>Version<br>
+</th>
+    </tr>
+    <tr>
+        <td><tt>DEPTH</tt><br>
+</td>
+        <td><tt>( -- n )</tt><br>
+</td>
+        <td>Returns the current number of values on stack<br>
+</td>
+        <td><tt>1 2 3 DEPTH .</tt><br>
+will print <tt>3</tt><br>
+</td>
+        <td style="text-align: center;">1.0+<br>
+</td>
+    </tr>
+    <tr>
+        <td><tt>.S</tt><br>
+</td>
+        <td><tt>( -- )</tt><br>
+</td>
+        <td>Prints all values currently on stack<br>
+(does NOT remove any value)<br>
+</td>
+        <td><tt>1 2 3 .S</tt><br>
+will output <tt>1 2 3</tt><br>
+</td>
+        <td style="text-align: center;">1.0+<br>
+</td>
+    </tr>
+    <tr>
+        <td><tt>DUP</tt><br>
+</td>
+        <td><tt>( n -- n n )</tt><br>
+</td>
+        <td>Duplicates last value on stack<br>
+</td>
+        <td><tt>2 DUP .S</tt><br>
+will print <tt>2 2</tt><br>
+</td>
+        <td style="text-align: center;">1.0+<br>
+</td>
+    </tr>
+    <tr>
+        <td><tt>?DUP</tt><br>
+</td>
+        <td><tt>( n -- n n )</tt><br>
+</td>
+        <td>Same as <tt>DUP</tt>, but duplicates only if last value isn't zero<br>
+</td>
+        <td><tt>0 ?DUP .S</tt><br>
+will print 0<br>
+</td>
+        <td style="text-align: center;">1.0+<br>
+</td>
+    </tr>
+    <tr>
+        <td><tt>2DUP</tt><br>
+</td>
+        <td><tt>( n1 n2 -- n1 n2 n1 n2 )</tt><br>
+</td>
+        <td>Duplicates the last 2 values on stack<br>
+</td>
+        <td><tt>1 2 3 2DUP .S</tt><br>
+will print <tt>1 2 3 2 3</tt><br>
+</td>
+        <td style="text-align: center;">1.0+<br>
+</td>
+    </tr>
+    <tr>
+        <td><tt>DROP</tt><br>
+</td>
+        <td><tt>( n -- )</tt><br>
+</td>
+        <td>Drops last value from stack<br>
+</td>
+        <td><tt>1 2 DROP .S</tt><br>
+will print <tt>1</tt><br>
+</td>
+        <td style="text-align: center;">1.0+<br>
+</td>
+    </tr>
+    <tr>
+        <td><tt>2DROP</tt><br>
+</td>
+        <td><tt>( n1 n2 -- )</tt><br>
+</td>
+        <td>Same as <tt>DROP</tt>, but drops last 2 values<br>
+</td>
+        <td><tt>1 2 3 2DROP .S</tt><br>
+will print <tt>1</tt><br>
+</td>
+        <td style="text-align: center;">1.0+<br>
+</td>
+    </tr>
+    <tr>
+        <td><tt>SWAP</tt><br>
+</td>
+        <td><tt>( n1 n2 -- n2 n1 )</tt><br>
+</td>
+        <td>Swaps the last 2 values<br>
+</td>
+        <td><tt>1 2 3 SWAP .S</tt><br>
+will print <tt>1 3 2</tt><br>
+</td>
+        <td style="text-align: center;">1.0+<br>
+</td>
+    </tr>
+    <tr>
+        <td><tt>2SWAP</tt><br>
+</td>
+        <td><tt>( n1 n2 n3 n4 -- n3 n4 n1 n2 )</tt><br>
+</td>
+        <td>Nearly the same as <tt>SWAP</tt>, but instead, it will swap the last 2 values<br>
+</td>
+        <td><tt>1 2 3 4 2SWAP .S</tt><br>
+will print <tt>3 4 1 2</tt><br>
+</td>
+        <td style="text-align: center;">1.1+<br>
+</td>
+    </tr>
+    <tr>
+        <td><tt>PICK</tt><br>
+</td>
+        <td><tt>( nN...n0 nI -- nN...n0 n )</tt><br>
+</td>
+        <td>Picks given value <tt>nI</tt> from stack and pushes it again.<br>
+(will only remove the pick index <tt>nI</tt>, but NOT the picked value itself)<br>
+(position is counted backwards, so an <tt>nI</tt> of 0 would denotes <tt>n0</tt>, <tt>nI=1</tt> denotes <tt>n1</tt>, ...)<br>
+</td>
+        <td><tt>1 2 3 4 1 PICK .S</tt><br>
+will print <tt>1 2 3 4 3</tt><br>
+</td>
+        <td style="text-align: center;">1.0+<br>
+</td>
+    </tr>
+    <tr>
+        <td><tt>OVER</tt><br>
+</td>
+        <td><tt>( nN...n2 n1 -- nN...n2 n1 n2 )</tt><br>
+</td>
+        <td>Same as <tt>1 PICK</tt><br>
+</td>
+        <td><tt>1 2 3 4 OVER .S</tt><br>
+will print <tt>1 2 3 4 3</tt><br>
+</td>
+        <td style="text-align: center;">1.0+<br>
+</td>
+    </tr>
+    <tr>
+        <td><tt>2OVER</tt><br>
+</td>
+        <td><tt>( nN...n3 n2 n1 -- nN...n3 n2 n1 n3 )</tt><br>
+</td>
+        <td>Same as <tt>2 PICK</tt><br>
+(different to ANS forth where one would expect 2 values being copied over)<br>
+</td>
+        <td><tt>1 2 3 4 2OVER .S</tt><br>
+will print <tt>1 2 3 4 2</tt><br>
+</td>
+        <td style="text-align: center;">1.0+<br>
+</td>
+    </tr>
+    <tr>
+        <td><tt>ROT</tt><br>
+</td>
+        <td><tt>( n1 n2 n3 -- n2 n3 n1 )</tt><br>
+</td>
+        <td>Rotates the three top values of stack leftwise.<br>
+</td>
+        <td><tt>1 2 3 ROT .S</tt><br>
+will print <tt>2 3 1</tt><br>
+</td>
+        <td style="text-align: center;">1.0+<br>
+</td>
+    </tr>
+    <tr>
+        <td><tt>-ROT</tt><br>
+</td>
+        <td><tt>( n1 n2 n3 -- n3 n1 n2 )</tt><br>
+</td>
+        <td>Inverse of <tt>ROT</tt> by rotating rightwise<br>
+</td>
+        <td><tt>1 2 3 -ROT .S</tt><br>
+will print <tt>3 1 2</tt><br>
+</td>
+        <td style="text-align: center;">1.0+<br>
+</td>
+    </tr>
+    <tr>
+        <td><tt>NIP</tt><br>
+</td>
+        <td><tt>( n1 n2 -- n2 )</tt><br>
+</td>
+        <td>Removes the value before last value<br>
+</td>
+        <td><tt>1 2 3 NIP .S</tt><br>
+will print <tt>1 3</tt><br>
+</td>
+        <td style="text-align: center;">1.0+<br>
+</td>
+    </tr>
+    <tr>
+        <td><tt>TUCK</tt><br>
+</td>
+        <td><tt>( n1 n2 -- n2 n1 n2 )</tt><br>
+</td>
+        <td>Duplicate last value and insert it before the last 2 values<br>
+(think of it as a <tt>DUP</tt> followed by a <tt>-ROT</tt>)<br>
+</td>
+        <td><tt>1 2 TUCK .S</tt><br>
+will print <tt>2 1 2</tt><br>
+</td>
+        <td style="text-align: center;">1.0+<br>
+</td>
+    </tr>
+    <tr>
+        <td><tt>&gt;R</tt><br>
+</td>
+        <td><br>
+</td>
+        <td>Pops a value from stack and pushes it onto R-stack<!-- ws:start:WikiTextRefRule:22:&amp;lt;ref&amp;gt;R-stack = Return value stack.&amp;lt;/ref&amp;gt; --><sup id="cite_ref-9" class="reference"><a href="http://web.archive.org/web/20121115140300/http://integratedredstone.wikispaces.com/Forth+Dictionary#cite_note-9">[9]</a></sup><!-- ws:end:WikiTextRefRule:22 --><br>
+</td>
+        <td><br>
+</td>
+        <td style="text-align: center;">1.0+<br>
+</td>
+    </tr>
+    <tr>
+        <td><tt>R&gt;</tt><br>
+</td>
+        <td><br>
+</td>
+        <td>Pops a value from R-stack and pushes it onto stack<br>
+</td>
+        <td><br>
+</td>
+        <td style="text-align: center;">1.0+<br>
+</td>
+    </tr>
+    <tr>
+        <td><tt>SP@</tt><br>
+</td>
+        <td><tt>( -- addr )</tt><br>
+</td>
+        <td>Returns current stack pointer<br>
+</td>
+        <td><tt>ABORT</tt><br>
+<tt>SP@ .</tt><br>
+will print <tt>512</tt> (initial value after bootup)<br>
+</td>
+        <td style="text-align: center;">1.0+<br>
+</td>
+    </tr>
+    <tr>
+        <td><tt>SP!</tt><br>
+</td>
+        <td><tt>( addr -- )</tt><br>
+</td>
+        <td>Set stack pointer<br>
+</td>
+        <td><tt>512 SP!</tt><br>
+will reset stack to its initial value<!-- ws:start:WikiTextRefRule:27:&amp;lt;ref&amp;gt;See &lt;tt&gt;SP0&lt;/tt&gt; for official way to get initial stack pointer, or use newly introduced &lt;tt&gt;0SP&lt;/tt&gt;.&amp;lt;/ref&amp;gt; --><sup id="cite_ref-10" class="reference"><a href="http://web.archive.org/web/20121115140300/http://integratedredstone.wikispaces.com/Forth+Dictionary#cite_note-10">[10]</a></sup><!-- ws:end:WikiTextRefRule:27 --><br>
+</td>
+        <td style="text-align: center;">1.0+<br>
+</td>
+    </tr>
+    <tr>
+        <td><tt>0SP</tt><br>
+</td>
+        <td><tt>( -- % )</tt><br>
+</td>
+        <td>Reset stack pointer<br>
+</td>
+        <td><br>
+</td>
+        <td style="text-align: center;">1.1+<br>
+</td>
+    </tr>
+    <tr>
+        <td><tt>RP@</tt><br>
+</td>
+        <td><tt>( -- addr )</tt><br>
+</td>
+        <td>Same as <tt>SP@</tt>, but interacts with R-stack<br>
+</td>
+        <td><br>
+</td>
+        <td style="text-align: center;">1.0+<br>
+</td>
+    </tr>
+    <tr>
+        <td><tt>RP!</tt><br>
+</td>
+        <td><tt>( addr -- )</tt><br>
+</td>
+        <td>Same as <tt>SP!</tt>, but interacts with R-stack<br>
+</td>
+        <td><br>
+</td>
+        <td style="text-align: center;">1.0+<br>
+</td>
+    </tr>
+</tbody></table>
+
+<br>
+<br>
+<!-- ws:start:WikiTextHeadingRule:72:&lt;h3&gt; --><h3 id="toc4"><a name="x-Forth Dictionary-Control flow"></a><!-- ws:end:WikiTextHeadingRule:72 -->Control flow</h3>
+ <br>
+
+
+<table class="wiki_table">
+    <tbody><tr>
+        <th>Word<br>
+</th>
+        <th>Syntax<br>
+</th>
+        <th>Description<br>
+</th>
+        <th>Example(s)<br>
+</th>
+        <th>Version<br>
+</th>
+    </tr>
+    <tr>
+        <td><tt>EXIT</tt><br>
+</td>
+        <td><tt>( -- )</tt><br>
+</td>
+        <td>To immediately exit a word, continuing execution at previous word (if any)<br>
+</td>
+        <td><tt>KEY? IF EXIT THEN</tt><br>
+</td>
+        <td style="text-align: center;">1.0+<br>
+</td>
+    </tr>
+    <tr>
+        <td><tt>ABORT</tt><br>
+</td>
+        <td><tt>( -- % )</tt><br>
+</td>
+        <td>Will abort execution and clears stack upon return<br>
+</td>
+        <td><tt>KEY? IF ABORT THEN</tt><br>
+</td>
+        <td style="text-align: center;">1.0+<br>
+</td>
+    </tr>
+    <tr>
+        <td><tt>DO</tt><br>
+</td>
+        <td><tt>( n1 n2 -- )</tt><br>
+</td>
+        <td>Loop from n2 up to n1 (excluding)<br>
+(when using with n2=n1, you loop will <strong>execute 65535 times</strong>. See <tt>?DO</tt> below for handling such cases)<br>
+</td>
+        <td><tt>: hello 10 0 DO ." Hello World" CR LOOP ;</tt><br>
+<tt>hello</tt><br>
+will print <tt>Hello World+CR</tt> 10 times<br>
+</td>
+        <td style="text-align: center;">1.0+<br>
+</td>
+    </tr>
+    <tr>
+        <td><tt>?DO</tt><br>
+</td>
+        <td><tt>( n1 n2 -- )</tt><br>
+</td>
+        <td>Nearly the same as <tt>DO</tt>, but checks the condition before entering the loop<br>
+</td>
+        <td><br>
+</td>
+        <td style="text-align: center;">1.0+<br>
+</td>
+    </tr>
+    <tr>
+        <td><tt>LOOP</tt><br>
+</td>
+        <td><tt>( -- )</tt><br>
+</td>
+        <td>Denotes the end of a loop started by <tt>DO</tt> or <tt>?DO</tt><br>
+</td>
+        <td><tt>10 0 DO <em>&lt;code&gt;</em> LOOP</tt><br>
+</td>
+        <td style="text-align: center;">1.0+<br>
+</td>
+    </tr>
+    <tr>
+        <td><tt>+LOOP</tt><br>
+</td>
+        <td><tt>( n -- )</tt><br>
+</td>
+        <td>Same as <tt>LOOP</tt>, but allows for using a user-definable increment/decrement value<br>
+</td>
+        <td><tt>: hello 10 0 DO ." Hello World" CR 2 +LOOP ;</tt><br>
+<tt>hello</tt><br>
+will print <tt>Hello World+CR</tt> 5 times<br>
+</td>
+        <td style="text-align: center;">1.0+<br>
+</td>
+    </tr>
+    <tr>
+        <td><tt>LEAVE</tt><br>
+</td>
+        <td><tt>( -- )</tt><br>
+</td>
+        <td>To exit a loop, will continue execution after the loop end marker.<br>
+(can only be used for counted <tt>DO</tt> loops; for uncounted you may want to use multiple <tt>WHILE</tt>)<br>
+</td>
+        <td><tt>10 0 DO <em>&lt;some loop code&gt;</em> IOX@ 3 AND 3 = IF LEAVE THEN <em>&lt;more loop code&gt;</em> LOOP</tt><br>
+<tt><em>&lt;code executed afterwards&gt;</em></tt><br>
+will execute at most 10 times or until both white+orange cables are active<br>
+</td>
+        <td style="text-align: center;">1.0+<br>
+</td>
+    </tr>
+    <tr>
+        <td><tt>BEGIN</tt><br>
+</td>
+        <td><tt>( -- )</tt><br>
+</td>
+        <td>Denotes the starting point for an <tt>UNTIL</tt>, <tt>WHILE</tt> or <tt>AGAIN</tt> loop<br>
+</td>
+        <td><tt>BEGIN KEY? UNTIL</tt><br>
+will wait until there's a keypress available<br>
+</td>
+        <td style="text-align: center;">1.0+<br>
+</td>
+    </tr>
+    <tr>
+        <td><tt>UNTIL</tt><br>
+</td>
+        <td><tt>( f -- )</tt><br>
+</td>
+        <td>Loops until flag f = <tt>TRUE</tt><br>
+</td>
+        <td><tt>BEGIN IOX@ 32 AND 0= UNTIL</tt><br>
+waits until input on bit 5 is off<br>
+</td>
+        <td style="text-align: center;">1.0+<br>
+</td>
+    </tr>
+    <tr>
+        <td><tt>WHILE</tt><br>
+</td>
+        <td><tt>( f -- )</tt><br>
+</td>
+        <td>Loops while flag f = <tt>TRUE</tt><br>
+</td>
+        <td><tt>BEGIN <em>&lt;code1&gt;</em> WHILE <em>&lt;code2&gt;</em> REPEAT</tt><br>
+executes code1, tests top of stack for truth. If it is true, executes code2 and continues loop; else, continues after REPEAT<br>
+</td>
+        <td style="text-align: center;">1.0+<br>
+</td>
+    </tr>
+    <tr>
+        <td><tt>AGAIN</tt><br>
+</td>
+        <td><tt>( -- )</tt><br>
+</td>
+        <td>Loops forever, one have to use <tt>EXIT</tt> or other means to break this loop<br>
+</td>
+        <td><tt>BEGIN <em>&lt;code&gt;</em> AGAIN</tt><br>
+</td>
+        <td style="text-align: center;">1.0+<br>
+</td>
+    </tr>
+    <tr>
+        <td><tt>REPEAT</tt><br>
+</td>
+        <td><tt>( -- )</tt><br>
+</td>
+        <td>Used in BEGIN ... WHILE ... REPEAT loop, see above<br>
+(Actually, just a shortcut for AGAIN THEN; one can write more funky code with this knowledge,<br>
+such as BEGIN ( code for every iteration ) ( test for WHILE ) WHILE ( test for UNTIL ) UNTIL ( UNTIL closes the loop ) ELSE ( This will be printed only if exited via WHILE ) THEN ).<br>
+</td>
+        <td>\ Another funky example without REPEAT<br>
+<tt>BEGIN ( control: loop )</tt><br>
+<tt>KEY? 0= WHILE ( control: first-exit loop )</tt><br>
+<tt>IOX@ 1 AND 0= WHILE ( control: first-exit second-exit loop )</tt><br>
+<tt>AGAIN</tt><br>
+<tt>ELSE ." White wire is on" THEN</tt><br>
+<tt>ELSE ." Key pressed" THEN</tt><br>
+</td>
+        <td style="text-align: center;">1.0+<br>
+</td>
+    </tr>
+    <tr>
+        <td><tt>UNLOOP</tt><br>
+</td>
+        <td><tt>( -- )</tt><br>
+</td>
+        <td>Cleans up one DO/LOOP<br>
+(one must cancel every DO/LOOP using <tt>UNLOOP</tt> when using <tt>EXIT</tt>)<br>
+</td>
+        <td><tt>10 0 DO <em>&lt;some code&gt;</em> IOX@ 3 AND 3 = IF UNLOOP EXIT THEN <em>&lt;more code&gt;</em> LOOP</tt><br>
+will execute at most 10 times or until both white+orange cables are active<br>
+</td>
+        <td style="text-align: center;">1.0+<br>
+</td>
+    </tr>
+    <tr>
+        <td><tt>IF</tt><br>
+</td>
+        <td><tt>( f -- )</tt><br>
+</td>
+        <td>Executes code following if f = <tt>TRUE</tt>, skips it resp. executes optional <tt>ELSE</tt> branch if f = <tt>FALSE</tt><br>
+</td>
+        <td><tt>KEY? IF ." Key pressed" CR THEN</tt><br>
+</td>
+        <td style="text-align: center;">1.0+<br>
+</td>
+    </tr>
+    <tr>
+        <td><tt>THEN</tt><br>
+</td>
+        <td><tt>( -- )</tt><br>
+</td>
+        <td>Denotes end of an <tt>IF</tt> condition<br>
+</td>
+        <td><br>
+</td>
+        <td style="text-align: center;">1.0+<br>
+</td>
+    </tr>
+    <tr>
+        <td><tt>ELSE</tt><br>
+</td>
+        <td><tt>( -- )</tt><br>
+</td>
+        <td>Denotes an ELSE branch<br>
+</td>
+        <td><tt>KEY 32 = IF <em>&lt;if-block&gt;</em> ELSE <em>&lt;else-block&gt;</em> THEN</tt><br>
+</td>
+        <td style="text-align: center;">1.0+<br>
+</td>
+    </tr>
+</tbody></table>
+
+<br>
+Please note that not all control flow words do work in intermediate mode.<br>
+<br>
+<br>
+<!-- ws:start:WikiTextHeadingRule:74:&lt;h3&gt; --><h3 id="toc5"><a name="x-Forth Dictionary-Comparison operators"></a><!-- ws:end:WikiTextHeadingRule:74 -->Comparison operators</h3>
+ <br>
+
+
+<table class="wiki_table">
+    <tbody><tr>
+        <th>Word<br>
+</th>
+        <th>Syntax<br>
+</th>
+        <th>Description<br>
+</th>
+        <th>Example(s)<br>
+</th>
+        <th>Version<br>
+</th>
+    </tr>
+    <tr>
+        <td><tt>0=</tt><br>
+</td>
+        <td><tt>( n -- f )</tt><br>
+</td>
+        <td>f = <tt>TRUE</tt> if <tt>n = 0</tt><br>
+</td>
+        <td><br>
+</td>
+        <td style="text-align: center;">1.0+<br>
+</td>
+    </tr>
+    <tr>
+        <td><tt>0&lt;&gt;</tt><br>
+</td>
+        <td><tt>( n -- f )</tt><br>
+</td>
+        <td>f = <tt>TRUE</tt> if <tt>n &lt;&gt; 0</tt><br>
+</td>
+        <td><br>
+</td>
+        <td style="text-align: center;">1.0+<br>
+</td>
+    </tr>
+    <tr>
+        <td><tt>0&lt;</tt><br>
+</td>
+        <td><tt>( n -- f )</tt><br>
+</td>
+        <td>f = <tt>TRUE</tt> if <tt>n &lt; 0</tt><br>
+</td>
+        <td><br>
+</td>
+        <td style="text-align: center;">1.0+<br>
+</td>
+    </tr>
+    <tr>
+        <td><tt>&lt;&gt;</tt><br>
+</td>
+        <td><tt>( n1 n2 -- f )</tt><br>
+</td>
+        <td>f = <tt>TRUE</tt> if <tt>n1 &lt;&gt; n2</tt><br>
+</td>
+        <td><br>
+</td>
+        <td style="text-align: center;">1.0+<br>
+</td>
+    </tr>
+    <tr>
+        <td><tt>&lt;</tt><br>
+</td>
+        <td><tt>( n1 n2 -- f )</tt><br>
+</td>
+        <td>f = <tt>TRUE</tt> if <tt>n1 &lt; n2</tt><br>
+</td>
+        <td><br>
+</td>
+        <td style="text-align: center;">1.0+<br>
+</td>
+    </tr>
+    <tr>
+        <td><tt>U&lt;</tt><br>
+</td>
+        <td><tt>( n1 n2 -- f )</tt><br>
+</td>
+        <td>Unsigned version of <tt>&lt;</tt><br>
+</td>
+        <td><br>
+</td>
+        <td style="text-align: center;">1.1+<br>
+</td>
+    </tr>
+    <tr>
+        <td><tt>&gt;</tt><br>
+</td>
+        <td><tt>( n1 n2 -- f )</tt><br>
+</td>
+        <td>f = <tt>TRUE</tt> if <tt>n1 &gt; n2</tt><br>
+</td>
+        <td><br>
+</td>
+        <td style="text-align: center;">1.0+<br>
+</td>
+    </tr>
+    <tr>
+        <td><tt>U&gt;</tt><br>
+</td>
+        <td><tt>( n1 n2 -- f )</tt><br>
+</td>
+        <td>Unsigned version of <tt>&gt;</tt><br>
+</td>
+        <td><br>
+</td>
+        <td style="text-align: center;">1.1+<br>
+</td>
+    </tr>
+    <tr>
+        <td><tt>&lt;=</tt><br>
+</td>
+        <td><tt>( n1 n2 -- f )</tt><br>
+</td>
+        <td>f = <tt>TRUE</tt> if <tt>n1 &lt;= n2</tt><br>
+</td>
+        <td><br>
+</td>
+        <td style="text-align: center;">1.0+<br>
+</td>
+    </tr>
+    <tr>
+        <td><tt>&gt;=</tt><br>
+</td>
+        <td><tt>( n1 n2 -- f )</tt><br>
+</td>
+        <td>f = <tt>TRUE</tt> if <tt>n1 &gt;= n2</tt><br>
+</td>
+        <td><br>
+</td>
+        <td style="text-align: center;">1.0+<br>
+</td>
+    </tr>
+    <tr>
+        <td><tt>=</tt><br>
+</td>
+        <td><tt>( n1 n2 -- f )</tt><br>
+</td>
+        <td>f = <tt>TRUE</tt> if <tt>n1 = n2</tt><br>
+</td>
+        <td><br>
+</td>
+        <td style="text-align: center;">1.0+<br>
+</td>
+    </tr>
+</tbody></table>
+
+<br>
+<br>
+<!-- ws:start:WikiTextHeadingRule:76:&lt;h3&gt; --><h3 id="toc6"><a name="x-Forth Dictionary-Arithmetic operators"></a><!-- ws:end:WikiTextHeadingRule:76 -->Arithmetic operators</h3>
+ <br>
+
+
+<table class="wiki_table">
+    <tbody><tr>
+        <th>Word<br>
+</th>
+        <th>Syntax<br>
+</th>
+        <th>Description<br>
+</th>
+        <th>Example(s)<br>
+</th>
+        <th>Version<br>
+</th>
+    </tr>
+    <tr>
+        <td><tt>+</tt><br>
+</td>
+        <td><tt>( n1 n2 -- n )</tt><br>
+</td>
+        <td>Addition: n = n1 + n2<br>
+</td>
+        <td><br>
+</td>
+        <td style="text-align: center;">1.0+<br>
+</td>
+    </tr>
+    <tr>
+        <td><tt>-</tt><br>
+</td>
+        <td><tt>( n1 n2 -- n )</tt><br>
+</td>
+        <td>Subtraction: n = n1 - n2<br>
+</td>
+        <td><br>
+</td>
+        <td style="text-align: center;">1.0+<br>
+</td>
+    </tr>
+    <tr>
+        <td><tt><!-- ws:start:WikiTextRawRule:01:``*`` -->*<!-- ws:end:WikiTextRawRule:01 --></tt><br>
+</td>
+        <td><tt>( n1 n2 -- n )</tt><br>
+</td>
+        <td>Multiplication: n = n1 * n2<br>
+</td>
+        <td><br>
+</td>
+        <td style="text-align: center;">1.0+<br>
+</td>
+    </tr>
+    <tr>
+        <td><tt>U*</tt><br>
+</td>
+        <td><tt>( n1 n2 -- n )</tt><br>
+</td>
+        <td>Unsigned version of <tt><!-- ws:start:WikiTextRawRule:02:``*`` -->*<!-- ws:end:WikiTextRawRule:02 --></tt><br>
+</td>
+        <td><br>
+</td>
+        <td style="text-align: center;">1.1+<br>
+</td>
+    </tr>
+    <tr>
+        <td><tt>M*</tt><br>
+</td>
+        <td><tt>( n1 n2 -- nL nH )</tt><br>
+</td>
+        <td>Same as <!-- ws:start:WikiTextRawRule:03:``*`` -->*<!-- ws:end:WikiTextRawRule:03 -->, but returns a double precision value with low word as <tt>nL</tt> and high word as <tt>nH</tt><br>
+</td>
+        <td><tt>1234 2345 M* .S</tt><br>
+results in <tt>10146 44</tt><br>
+(10146+65536*44=2893730)<br>
+</td>
+        <td style="text-align: center;">1.0+<br>
+</td>
+    </tr>
+    <tr>
+        <td><tt>UM*</tt><br>
+</td>
+        <td><tt>( n1 n2 -- nL nH )</tt><br>
+</td>
+        <td>Unsigned version of <tt>M*</tt><br>
+</td>
+        <td><br>
+</td>
+        <td style="text-align: center;">1.1+<br>
+</td>
+    </tr>
+    <tr>
+        <td><tt>SM/REM</tt><br>
+</td>
+        <td><tt>( n1L n1H n2 -- nR n )</tt><br>
+</td>
+        <td>Double precision symmetric division: n = n1 / n2 with remainer as <tt>nR</tt><br>
+</td>
+        <td><tt>10146 44 1234 SM/REM .S</tt><br>
+results in <tt>0 2345</tt>, and<br>
+<tt>10147 44 1234 SM/REM .S</tt><br>
+results in <tt>1 2345</tt>, and<br>
+<tt>10145 44 1234 SM/REM .S</tt><br>
+results in <tt>1233 2344</tt><br>
+</td>
+        <td style="text-align: center;">1.0+<br>
+</td>
+    </tr>
+    <tr>
+        <td><tt>FM/MOD</tt><br>
+</td>
+        <td><tt>( n1L n1H n2 -- nR n )</tt><br>
+</td>
+        <td>Same as <tt>SM/REM</tt>, but floored<br>
+</td>
+        <td><br>
+</td>
+        <td style="text-align: center;">1.0+<br>
+</td>
+    </tr>
+    <tr>
+        <td><tt>UM/MOD</tt><br>
+</td>
+        <td><tt>( n1L n1H n2 -- nR n )</tt><br>
+</td>
+        <td>Unsigned version of <tt>SM/REM</tt><br>
+</td>
+        <td><br>
+</td>
+        <td style="text-align: center;">1.1+<br>
+</td>
+    </tr>
+    <tr>
+        <td><tt>/MOD</tt><br>
+</td>
+        <td><tt>( n -- nR nQ )</tt><br>
+</td>
+        <td>Modulo operator, <tt>nR</tt> denotes remainder and <tt>nQ</tt> the quotient<br>
+</td>
+        <td><tt>42 10 /MOD .S</tt><br>
+will print <tt>2 4</tt><br>
+</td>
+        <td style="text-align: center;">1.0+<br>
+</td>
+    </tr>
+    <tr>
+        <td><tt><!-- ws:start:WikiTextRawRule:04:``/`` -->/<!-- ws:end:WikiTextRawRule:04 --></tt><br>
+</td>
+        <td><tt>( n1 n2 -- n )</tt><br>
+</td>
+        <td>Short version of <tt>/MOD</tt> which returns only the remainder<br>
+</td>
+        <td><tt>10 3 / .S</tt><br>
+will print <tt>1</tt><br>
+</td>
+        <td style="text-align: center;">1.1+<br>
+</td>
+    </tr>
+    <tr>
+        <td><tt>MOD</tt><br>
+</td>
+        <td><tt>( n1 n2 -- n )</tt><br>
+</td>
+        <td>Counterpart of <tt>/</tt>, returns quotient instead<br>
+</td>
+        <td><tt>10 3 MOD .S</tt><br>
+returns <tt>3</tt><br>
+</td>
+        <td style="text-align: center;">1.1+<br>
+</td>
+    </tr>
+    <tr>
+        <td><tt>1+</tt><br>
+</td>
+        <td><tt>( n1 -- n )</tt><br>
+</td>
+        <td>Increments value <tt>n1</tt> by 1 and pushed it back onto stack<br>
+</td>
+        <td><tt>41 1+ .</tt><br>
+will print <tt>42</tt><br>
+</td>
+        <td style="text-align: center;">1.0+<br>
+</td>
+    </tr>
+    <tr>
+        <td><tt>1-</tt><br>
+</td>
+        <td><tt>( n1 -- n )</tt><br>
+</td>
+        <td>Decrements value <tt>n1</tt> by 1 and pushed it back onto stack<br>
+</td>
+        <td><tt>43 1- .</tt><br>
+will print <tt>42</tt><br>
+</td>
+        <td style="text-align: center;">1.0+<br>
+</td>
+    </tr>
+    <tr>
+        <td><tt>NEGATE</tt><br>
+</td>
+        <td><tt>( n1 -- n )</tt><br>
+</td>
+        <td>Sign inversion of <tt>n1</tt><br>
+</td>
+        <td><tt>-42 NEGATE .</tt><br>
+will print <tt>42</tt>, and<br>
+<tt>42 NEGATE .</tt><br>
+will print <tt>-42</tt><br>
+</td>
+        <td style="text-align: center;">1.0+<br>
+</td>
+    </tr>
+    <tr>
+        <td><tt>MAX</tt><br>
+</td>
+        <td><tt>( n1 n2 -- n )</tt><br>
+</td>
+        <td>Returns <tt>max( n1, n2 )</tt><br>
+</td>
+        <td><tt>42 33 MAX .</tt><br>
+will print <tt>42</tt><br>
+</td>
+        <td style="text-align: center;">1.0+<br>
+</td>
+    </tr>
+    <tr>
+        <td><tt>MIN</tt><br>
+</td>
+        <td><tt>( n1 n2 -- n )</tt><br>
+</td>
+        <td>Returns <tt>min( n1, n2 )</tt><br>
+</td>
+        <td><tt>42 33 MIN .</tt><br>
+will print <tt>33</tt><br>
+</td>
+        <td style="text-align: center;">1.0+<br>
+</td>
+    </tr>
+    <tr>
+        <td><tt>S&gt;D</tt><br>
+</td>
+        <td><tt>( n -- n1 n2 )</tt><br>
+</td>
+        <td>Extend single-precision value <tt>n</tt> to double-precision, with <tt>n2</tt> 0 or -1, latter reflects that <tt>n</tt> was a negative number<br>
+(missing in pr5b2, maybe a bug)<br>
+</td>
+        <td><tt>42 S&gt;D .S</tt><br>
+will print <tt>42 0</tt>, and<br>
+<tt>-42 S&gt;D .S</tt><br>
+will print <tt>-42 -1</tt><br>
+</td>
+        <td style="text-align: center;"><strong>1.0 only</strong><br>
+</td>
+    </tr>
+</tbody></table>
+
+<br>
+<br>
+<!-- ws:start:WikiTextHeadingRule:78:&lt;h3&gt; --><h3 id="toc7"><a name="x-Forth Dictionary-Binary operators"></a><!-- ws:end:WikiTextHeadingRule:78 -->Binary operators</h3>
+ <br>
+
+
+<table class="wiki_table">
+    <tbody><tr>
+        <th>Word<br>
+</th>
+        <th>Syntax<br>
+</th>
+        <th>Description<br>
+</th>
+        <th>Example(s)<br>
+</th>
+        <th>Version<br>
+</th>
+    </tr>
+    <tr>
+        <td><tt>AND</tt><br>
+</td>
+        <td><tt>( n1 n2 -- n )</tt><br>
+</td>
+        <td>Returns <tt>n1 AND n2</tt><br>
+</td>
+        <td><tt>1 3 AND</tt><br>
+will return <tt>1</tt><br>
+(00000001 &amp; 00000011 = 00000001)<br>
+</td>
+        <td style="text-align: center;">1.0+<br>
+</td>
+    </tr>
+    <tr>
+        <td><tt>OR</tt><br>
+</td>
+        <td><tt>( n1 n2 -- n )</tt><br>
+</td>
+        <td>Returns <tt>n1 OR n2</tt><br>
+</td>
+        <td><tt>1 2 OR</tt><br>
+will return <tt>3</tt><br>
+(00000001 | 00000010 = 00000011)<br>
+</td>
+        <td style="text-align: center;">1.0+<br>
+</td>
+    </tr>
+    <tr>
+        <td><tt>XOR</tt><br>
+</td>
+        <td><tt>( n1 n2 -- n )</tt><br>
+</td>
+        <td>Returns <tt>n1 XOR n2</tt><br>
+</td>
+        <td><tt>1 3 XOR</tt><br>
+will return <tt>2</tt><br>
+(00000001 ^ 00000011 = 00000010)<br>
+</td>
+        <td style="text-align: center;">1.0+<br>
+</td>
+    </tr>
+    <tr>
+        <td><tt>INVERT</tt><br>
+</td>
+        <td><tt>( n1 -- n )</tt><br>
+</td>
+        <td>Returns inverse of <tt>n1</tt><br>
+</td>
+        <td><tt>HEX AA INVERT .</tt><br>
+will print <tt>55</tt><br>
+(10101010 -&gt; 01010101)<br>
+</td>
+        <td style="text-align: center;">1.0+<br>
+</td>
+    </tr>
+    <tr>
+        <td><tt>2*</tt><br>
+</td>
+        <td><tt>( n1 -- n )</tt><br>
+</td>
+        <td>Multiplies value <tt>n1</tt> with 2<br>
+(a so-called left-shift operation)<br>
+</td>
+        <td><tt>1 2*</tt><br>
+will result in <tt>2</tt><br>
+</td>
+        <td style="text-align: center;">1.0+<br>
+</td>
+    </tr>
+    <tr>
+        <td><tt>2/</tt><br>
+</td>
+        <td><tt>( n1 -- n )</tt><br>
+</td>
+        <td>Divides value <tt>n1</tt> by 2<br>
+(a right-shift operation)<br>
+</td>
+        <td><tt>4 2/</tt><br>
+will result in <tt>2</tt><br>
+</td>
+        <td style="text-align: center;">1.0+<br>
+</td>
+    </tr>
+    <tr>
+        <td><tt>&lt;&lt;</tt><br>
+</td>
+        <td><tt>( n1 n2 -- n )</tt><br>
+</td>
+        <td>Multiplies value <tt>n1</tt> with 2 <tt>n2</tt> times<br>
+(a leftwise shift over <tt>n2</tt> bits)<br>
+</td>
+        <td><tt>1 3 &lt;&lt;</tt><br>
+will result in <tt>8</tt><br>
+</td>
+        <td style="text-align: center;">1.0+<br>
+</td>
+    </tr>
+    <tr>
+        <td><tt>U&gt;&gt;</tt><br>
+</td>
+        <td><tt>( n1 n2 -- n )</tt><br>
+</td>
+        <td>Divides value <tt>n1</tt> by 2 <tt>n2</tt> times<br>
+(a rightwise shift over <tt>n2</tt> bits)<br>
+</td>
+        <td><tt>8 3 U&gt;&gt;</tt><br>
+will result in <tt>1</tt><br>
+</td>
+        <td style="text-align: center;">1.0+<br>
+</td>
+    </tr>
+</tbody></table>
+
+<br>
+<br>
+<!-- ws:start:WikiTextHeadingRule:80:&lt;h3&gt; --><h3 id="toc8"><a name="x-Forth Dictionary-Variables, constants and alike"></a><!-- ws:end:WikiTextHeadingRule:80 -->Variables, constants and alike</h3>
+ <br>
+
+
+<table class="wiki_table">
+    <tbody><tr>
+        <th>Word<br>
+</th>
+        <th>Syntax<br>
+</th>
+        <th>Description<br>
+</th>
+        <th>Example(s)<br>
+</th>
+        <th>Version<br>
+</th>
+    </tr>
+    <tr>
+        <td><tt>VARIABLE</tt><br>
+</td>
+        <td><br>
+</td>
+        <td>Allocates a named variable with a default value of 0<br>
+</td>
+        <td><tt>VARIABLE foo</tt><br>
+</td>
+        <td style="text-align: center;">1.0+<br>
+</td>
+    </tr>
+    <tr>
+        <td><tt>CONSTANT</tt><br>
+</td>
+        <td><br>
+</td>
+        <td>Allocates a named constant using value specified <!-- ws:start:WikiTextRefRule:28:&amp;lt;ref&amp;gt;Note that constants can't be changed after creation.&amp;lt;/ref&amp;gt; --><sup id="cite_ref-11" class="reference"><a href="http://web.archive.org/web/20121115140300/http://integratedredstone.wikispaces.com/Forth+Dictionary#cite_note-11">[11]</a></sup><!-- ws:end:WikiTextRefRule:28 --> <!-- ws:start:WikiTextRefRule:29:&amp;lt;ref&amp;gt;Accessing a constant will directly return its value instead of an address as with variables.&amp;lt;/ref&amp;gt; --><sup id="cite_ref-12" class="reference"><a href="http://web.archive.org/web/20121115140300/http://integratedredstone.wikispaces.com/Forth+Dictionary#cite_note-12">[12]</a></sup><!-- ws:end:WikiTextRefRule:29 --><br>
+</td>
+        <td><tt>42 CONSTANT foo</tt><br>
+</td>
+        <td style="text-align: center;">1.0+<br>
+</td>
+    </tr>
+    <tr>
+        <td><tt>CREATE</tt><br>
+</td>
+        <td><br>
+</td>
+        <td>Create a new word with options following<!-- ws:start:WikiTextRefRule:30:&amp;lt;ref&amp;gt;Detailed informations t.b.d.&amp;lt;/ref&amp;gt; --><sup id="cite_ref-13" class="reference"><a href="http://web.archive.org/web/20121115140300/http://integratedredstone.wikispaces.com/Forth+Dictionary#cite_note-13">[13]</a></sup><!-- ws:end:WikiTextRefRule:30 --><br>
+</td>
+        <td><tt>CREATE foo 10 CELLS ALLOT</tt><br>
+creates an array named foo with 10 (un-initialized) values in total<br>
+</td>
+        <td style="text-align: center;">1.0+<br>
+</td>
+    </tr>
+    <tr>
+        <td><tt>@</tt><br>
+</td>
+        <td><tt>( addr -- n )</tt><br>
+</td>
+        <td>Reads a value from given address <tt>addr</tt><!-- ws:start:WikiTextRefRule:31:&amp;lt;ref&amp;gt;Note that when accessing a variable, you'll only get the address of where its stored in memory.&amp;lt;/ref&amp;gt; --><sup id="cite_ref-14" class="reference"><a href="http://web.archive.org/web/20121115140300/http://integratedredstone.wikispaces.com/Forth+Dictionary#cite_note-14">[14]</a></sup><!-- ws:end:WikiTextRefRule:31 --><br>
+</td>
+        <td><tt>foo @ .</tt><br>
+will print value of variable <tt>foo</tt><br>
+</td>
+        <td style="text-align: center;">1.0+<br>
+</td>
+    </tr>
+    <tr>
+        <td><tt>!</tt><br>
+</td>
+        <td><tt>( n addr -- )</tt><br>
+</td>
+        <td>Writes value <tt>n</tt> into address <tt>addr</tt><br>
+</td>
+        <td><tt>42 foo !</tt><br>
+will set variable <tt>foo</tt> to hold <tt>42</tt><br>
+</td>
+        <td style="text-align: center;">1.0+<br>
+</td>
+    </tr>
+    <tr>
+        <td><tt>C@</tt><br>
+</td>
+        <td><tt>( addr -- b )</tt><br>
+</td>
+        <td>Same as <tt>@</tt>, but reads a byte value from given address <tt>addr</tt><br>
+</td>
+        <td><tt>foo C@</tt><br>
+</td>
+        <td style="text-align: center;">1.0+<br>
+</td>
+    </tr>
+    <tr>
+        <td><tt>C!</tt><br>
+</td>
+        <td><tt>( b addr -- )</tt><br>
+</td>
+        <td>Same as <tt>!</tt>, but writes a byte value <tt>b</tt> into address <tt>addr</tt><br>
+</td>
+        <td><tt>42 foo C!</tt><br>
+</td>
+        <td style="text-align: center;">1.0+<br>
+</td>
+    </tr>
+    <tr>
+        <td><tt>+!</tt><br>
+</td>
+        <td><tt>( n addr -- )</tt><br>
+</td>
+        <td>Increments value <tt>addr</tt> points to by <tt>n</tt><br>
+</td>
+        <td><br>
+</td>
+        <td style="text-align: center;">1.0+<br>
+</td>
+    </tr>
+    <tr>
+        <td><tt>-!</tt><br>
+</td>
+        <td><tt>( n addr -- )</tt><br>
+</td>
+        <td>Decrements value <tt>addr</tt> points to by <tt>n</tt><br>
+</td>
+        <td><br>
+</td>
+        <td style="text-align: center;">1.0+<br>
+</td>
+    </tr>
+    <tr>
+        <td><tt>CELL</tt><br>
+</td>
+        <td><tt>( -- n )</tt><br>
+</td>
+        <td>Returns size of a value<!-- ws:start:WikiTextRefRule:34:&amp;lt;ref&amp;gt;As stated near the beginning of this dictionary, default size for values is 16bit, so &lt;tt&gt;CELL&lt;/tt&gt; will always return 2.&amp;lt;/ref&amp;gt; --><sup id="cite_ref-15" class="reference"><a href="http://web.archive.org/web/20121115140300/http://integratedredstone.wikispaces.com/Forth+Dictionary#cite_note-15">[15]</a></sup><!-- ws:end:WikiTextRefRule:34 --><br>
+</td>
+        <td><tt>CELL .</tt><br>
+will print <tt>2</tt><br>
+</td>
+        <td style="text-align: center;">1.0+<br>
+</td>
+    </tr>
+    <tr>
+        <td><tt>CELLS</tt><br>
+</td>
+        <td><tt>( n1 -- n )</tt><br>
+</td>
+        <td>Returns size of <tt>n1</tt> values<br>
+</td>
+        <td><tt>10 CELLS .</tt><br>
+will print <tt>20</tt><br>
+(10 values each 2 bytes wide)<br>
+</td>
+        <td style="text-align: center;">1.0+<br>
+</td>
+    </tr>
+    <tr>
+        <td><tt>ALLOT</tt><br>
+</td>
+        <td><tt>( n -- addr )</tt><br>
+</td>
+        <td>Allocates <tt>n</tt> bytes of memory and returns start of block as <tt>addr</tt><!-- ws:start:WikiTextRefRule:39:&amp;lt;ref&amp;gt;Note that this will just shift end of programm code by &lt;tt&gt;n&lt;/tt&gt; bytes, hence changing &lt;tt&gt;HERE&lt;/tt&gt;.&amp;lt;/ref&amp;gt; --><sup id="cite_ref-16" class="reference"><a href="http://web.archive.org/web/20121115140300/http://integratedredstone.wikispaces.com/Forth+Dictionary#cite_note-16">[16]</a></sup><!-- ws:end:WikiTextRefRule:39 --><br>
+</td>
+        <td><tt>10 CELLS ALLOT</tt><br>
+allocates 10 values (20 bytes), un-initialized<br>
+</td>
+        <td style="text-align: center;">1.0+<br>
+</td>
+    </tr>
+    <tr>
+        <td><tt>,</tt><br>
+</td>
+        <td><tt>( n -- )</tt><br>
+</td>
+        <td>Allocates a value at end of program code and assigns it <tt>n</tt><br>
+(just a short version of <tt>n CELL ALLOT !</tt>)<br>
+</td>
+        <td><br>
+</td>
+        <td style="text-align: center;">1.0+<br>
+</td>
+    </tr>
+    <tr>
+        <td><tt>,C</tt><br>
+</td>
+        <td><tt>( b -- )</tt><br>
+</td>
+        <td>Same as <tt>,</tt> above, but allocates and stores a byte value instead<br>
+(short for <tt>b 1 ALLOT C!</tt>)<br>
+</td>
+        <td><br>
+</td>
+        <td style="text-align: center;">1.0+<br>
+</td>
+    </tr>
+    <tr>
+        <td><tt>,S</tt><br>
+</td>
+        <td><tt>( addr -- )</tt><br>
+</td>
+        <td>Same as <tt>,</tt> above, but allocates and copies a string which source is stored at <tt>addr</tt> (incl. zero-term.)<br>
+</td>
+        <td><br>
+</td>
+        <td style="text-align: center;">1.0+<br>
+</td>
+    </tr>
+</tbody></table>
+
+<br>
+<br>
+<!-- ws:start:WikiTextHeadingRule:82:&lt;h3&gt; --><h3 id="toc9"><a name="x-Forth Dictionary-Predefined variables &amp; constants"></a><!-- ws:end:WikiTextHeadingRule:82 -->Predefined variables &amp; constants</h3>
+ <br>
+
+
+<table class="wiki_table">
+    <tbody><tr>
+        <th>Word<br>
+</th>
+        <th>Type<br>
+</th>
+        <th>Syntax<br>
+</th>
+        <th>Description<br>
+</th>
+        <th>Example(s)<br>
+</th>
+        <th>Version<br>
+</th>
+    </tr>
+    <tr>
+        <td><tt>TRUE</tt><br>
+</td>
+        <td style="text-align: center;">C<br>
+</td>
+        <td><tt>( -- f )</tt><br>
+</td>
+        <td>Will give you the value for a <tt>TRUE</tt> flag<br>
+</td>
+        <td><tt>TRUE .</tt><br>
+will print <tt>-1</tt><br>
+</td>
+        <td style="text-align: center;">1.0+<br>
+</td>
+    </tr>
+    <tr>
+        <td><tt>FALSE</tt><br>
+</td>
+        <td style="text-align: center;">C<br>
+</td>
+        <td><tt>( -- f )</tt><br>
+</td>
+        <td>Will give you the value for a <tt>FALSE</tt> flag<br>
+</td>
+        <td><tt>FALSE .</tt><br>
+will print 0<br>
+</td>
+        <td style="text-align: center;">1.0+<br>
+</td>
+    </tr>
+    <tr>
+        <td><tt>BL</tt><br>
+</td>
+        <td style="text-align: center;">C<br>
+</td>
+        <td><tt>( -- n )</tt><br>
+</td>
+        <td>Will give you the ASCII value for a blankspace<br>
+</td>
+        <td><tt>BL .S</tt><br>
+will print <tt>32</tt><br>
+</td>
+        <td style="text-align: center;">1.0+<br>
+</td>
+    </tr>
+    <tr>
+        <td><tt><!-- ws:start:WikiTextRawRule:05:``I`` -->I<!-- ws:end:WikiTextRawRule:05 --></tt><br>
+</td>
+        <td style="text-align: center;">C<br>
+</td>
+        <td><tt>( -- n )</tt><br>
+</td>
+        <td>Will return current counter for (inner) loop<br>
+</td>
+        <td><tt><em>&lt;do&gt;</em> I . <em>&lt;loop&gt;</em></tt><br>
+</td>
+        <td style="text-align: center;">1.0+<br>
+</td>
+    </tr>
+    <tr>
+        <td><tt>J</tt><br>
+</td>
+        <td style="text-align: center;">C<br>
+</td>
+        <td><tt>( -- n )</tt><br>
+</td>
+        <td>Will return current counter for (outer) loop<br>
+</td>
+        <td><tt><em>&lt;outer DO&gt;</em> <em>&lt;inner DO&gt;</em></tt><br>
+<tt>J 10 * I + .</tt><br>
+<tt><em>&lt;inner LOOP&gt;</em> <em>&lt;outer LOOP&gt;</em></tt><br>
+</td>
+        <td style="text-align: center;">1.0+<br>
+</td>
+    </tr>
+    <tr>
+        <td><tt>RADIX</tt><br>
+</td>
+        <td style="text-align: center;">V<br>
+</td>
+        <td><tt>( -- addr )</tt><br>
+</td>
+        <td>Current radix used to parse and display values<br>
+</td>
+        <td><tt>RADIX @ .</tt> \ will print <tt>10</tt> (default after boot)<br>
+<tt>16 RADIX !</tt> \ will switch to hexadecimal radix<!-- ws:start:WikiTextRefRule:44:&amp;lt;ref&amp;gt;&lt;tt&gt;10 RADIX !&lt;/tt&gt; won't switch you back to decimal mode, we're in hex mode, so that's a hex 10, use &lt;tt&gt;A RADIX !&lt;/tt&gt; for a decimal value of 10&amp;lt;/ref&amp;gt; --><sup id="cite_ref-17" class="reference"><a href="http://web.archive.org/web/20121115140300/http://integratedredstone.wikispaces.com/Forth+Dictionary#cite_note-17">[17]</a></sup><!-- ws:end:WikiTextRefRule:44 --><br>
+</td>
+        <td style="text-align: center;">1.0+<br>
+</td>
+    </tr>
+    <tr>
+        <td><tt>SP0</tt><br>
+</td>
+        <td style="text-align: center;">C<br>
+</td>
+        <td><tt>( -- n )</tt><br>
+</td>
+        <td>Returns stack start address<br>
+</td>
+        <td><tt>SP0 .</tt><br>
+will print <tt>512</tt><br>
+</td>
+        <td style="text-align: center;">1.0+<br>
+</td>
+    </tr>
+    <tr>
+        <td><tt>RP0</tt><br>
+</td>
+        <td style="text-align: center;">C<br>
+</td>
+        <td><tt>( -- n )</tt><br>
+</td>
+        <td>Returns R-stack start address<br>
+</td>
+        <td><tt>RP0 .</tt><br>
+will print <tt>768</tt><br>
+</td>
+        <td style="text-align: center;">1.0+<br>
+</td>
+    </tr>
+    <tr>
+        <td><tt>STATE</tt><br>
+</td>
+        <td style="text-align: center;">V<br>
+</td>
+        <td><tt>( -- addr )</tt><br>
+</td>
+        <td>Current compiler state<br>
+(0=intermediate mode, 1=compile mode)<br>
+</td>
+        <td><br>
+</td>
+        <td style="text-align: center;">1.0+<br>
+</td>
+    </tr>
+    <tr>
+        <td><tt>VOCAB</tt><br>
+</td>
+        <td style="text-align: center;">V<br>
+</td>
+        <td><tt>( -- addr )</tt><br>
+</td>
+        <td>Address of last known word<br>
+</td>
+        <td><br>
+</td>
+        <td style="text-align: center;">1.0+<br>
+</td>
+    </tr>
+    <tr>
+        <td><tt>TOP</tt><br>
+</td>
+        <td style="text-align: center;">V<br>
+</td>
+        <td><tt>( -- addr )</tt><br>
+</td>
+        <td>Top of available memory<br>
+(size of memory installed - 1)<br>
+</td>
+        <td><tt>HEX TOP @ .</tt><br>
+will print <tt>1FFF</tt><!-- ws:start:WikiTextRefRule:45:&amp;lt;ref&amp;gt;Reflecting a memory size of 8kB (base rpc8/e memory size if no additional memory modules are installed).&amp;lt;/ref&amp;gt; --><sup id="cite_ref-18" class="reference"><a href="http://web.archive.org/web/20121115140300/http://integratedredstone.wikispaces.com/Forth+Dictionary#cite_note-18">[18]</a></sup><!-- ws:end:WikiTextRefRule:45 --><br>
+</td>
+        <td style="text-align: center;">1.1+<br>
+</td>
+    </tr>
+    <tr>
+        <td><tt>TERMADDR</tt><br>
+</td>
+        <td style="text-align: center;">V<br>
+</td>
+        <td><tt>( -- addr )</tt><br>
+</td>
+        <td>Current terminal address<br>
+(after boot up this reflects the dip settings on your rpc8/e)<br>
+</td>
+        <td><br>
+</td>
+        <td style="text-align: center;">1.0+<br>
+</td>
+    </tr>
+    <tr>
+        <td><tt>DISKADDR</tt><br>
+</td>
+        <td style="text-align: center;">V<br>
+</td>
+        <td><tt>( -- addr )</tt><br>
+</td>
+        <td>Current disk drive address<br>
+(after boot up this reflects the dip settings on your rpc8/e)<br>
+</td>
+        <td><br>
+</td>
+        <td style="text-align: center;">1.0+<br>
+</td>
+    </tr>
+    <tr>
+        <td><tt>IOXADDR</tt><br>
+</td>
+        <td style="text-align: center;">V<br>
+</td>
+        <td><tt>( -- addr )</tt><br>
+</td>
+        <td>Current IO expander address<br>
+</td>
+        <td><br>
+</td>
+        <td style="text-align: center;">1.0+<br>
+</td>
+    </tr>
+    <tr>
+        <td><tt>SCRATCH</tt><br>
+</td>
+        <td style="text-align: center;">C<br>
+</td>
+        <td><tt>( -- n )</tt><br>
+</td>
+        <td>Position of scratch buffer<br>
+(several uses, for example, UITOA uses it build string representation, DISKID will fetch the id into it, ...)<br>
+</td>
+        <td><br>
+</td>
+        <td style="text-align: center;">1.0+<br>
+</td>
+    </tr>
+    <tr>
+        <td><tt>TIB</tt><br>
+</td>
+        <td style="text-align: center;">C<br>
+</td>
+        <td><tt>( -- n )</tt><br>
+</td>
+        <td>Pointer to terminal input buffer<br>
+</td>
+        <td><br>
+</td>
+        <td style="text-align: center;">1.0+<br>
+</td>
+    </tr>
+    <tr>
+        <td><tt>TIBPTR</tt><br>
+</td>
+        <td style="text-align: center;">V<br>
+</td>
+        <td><tt>( -- addr )</tt><br>
+</td>
+        <td>Pointer to remaining string to interpret in terminal input buffer<br>
+</td>
+        <td><br>
+</td>
+        <td style="text-align: center;">1.0+<br>
+</td>
+    </tr>
+    <tr>
+        <td><tt>(HERE)</tt><br>
+</td>
+        <td style="text-align: center;">V<br>
+</td>
+        <td><tt>( -- addr )</tt><br>
+</td>
+        <td>Address of memory position where new program code gets stored<br>
+</td>
+        <td><br>
+</td>
+        <td style="text-align: center;">1.0+<br>
+</td>
+    </tr>
+    <tr>
+        <td><tt>(blkbuf)</tt><br>
+</td>
+        <td style="text-align: center;">V<br>
+</td>
+        <td><tt>( -- addr )</tt><br>
+</td>
+        <td>Stores the block buffer address<br>
+</td>
+        <td><br>
+</td>
+        <td style="text-align: center;">1.1+<br>
+</td>
+    </tr>
+    <tr>
+        <td><tt>(blkno)</tt><br>
+</td>
+        <td style="text-align: center;">V<br>
+</td>
+        <td><tt>( -- addr )</tt><br>
+</td>
+        <td>Stores the currently active block number<br>
+</td>
+        <td><br>
+</td>
+        <td style="text-align: center;">1.1+<br>
+</td>
+    </tr>
+    <tr>
+        <td><tt>(blkup)</tt><br>
+</td>
+        <td style="text-align: center;">V<br>
+</td>
+        <td><tt>( -- addr )</tt><br>
+</td>
+        <td>Stores the block modified flag<br>
+</td>
+        <td><br>
+</td>
+        <td style="text-align: center;">1.1+<br>
+</td>
+    </tr>
+</tbody></table>
+
+Type: V = Variable (always returns an address, so use <tt>@</tt> to get its value), C = Constant (will return value directly, no need for using <tt>@</tt>)<br>
+<br>
+<br>
+<!-- ws:start:WikiTextHeadingRule:84:&lt;h3&gt; --><h3 id="toc10"><a name="x-Forth Dictionary-Redbus interaction"></a><!-- ws:end:WikiTextHeadingRule:84 -->Redbus interaction</h3>
+ <br>
+
+
+<table class="wiki_table">
+    <tbody><tr>
+        <th>Word<br>
+</th>
+        <th>Syntax<br>
+</th>
+        <th>Description<br>
+</th>
+        <th>Example(s)<br>
+</th>
+        <th>Version<br>
+</th>
+    </tr>
+    <tr>
+        <td><tt>RBP!</tt><br>
+</td>
+        <td><tt>( n -- )</tt><br>
+</td>
+        <td>Used to select your current redbus device<br>
+</td>
+        <td><tt>2 RBP!</tt><br>
+would select, if using default id's, the disk drive<br>
+</td>
+        <td style="text-align: center;">1.0+<br>
+</td>
+    </tr>
+</tbody></table>
+
+<br>
+<br>
+<!-- ws:start:WikiTextHeadingRule:86:&lt;h3&gt; --><h3 id="toc11"><a name="x-Forth Dictionary-IO expander"></a><!-- ws:end:WikiTextHeadingRule:86 -->IO expander</h3>
+ <br>
+
+
+<table class="wiki_table">
+    <tbody><tr>
+        <td><tt>IOX@</tt><br>
+</td>
+        <td><tt>( -- n )</tt><br>
+</td>
+        <td>Used to read current inputs from an I/O-expander, returned as <tt>n</tt><br>
+</td>
+        <td><tt>IOX@ .</tt><br>
+would print current input state<br>
+</td>
+        <td style="text-align: center;">1.0+<br>
+</td>
+    </tr>
+    <tr>
+        <td><tt>IOX!</tt><br>
+</td>
+        <td><tt>( n -- )</tt><br>
+</td>
+        <td>Used to set I/O-expander output pins to bits defined by <tt>n</tt><br>
+</td>
+        <td><tt>1 IOX!</tt><br>
+switches only <tt>white</tt> output to on<br>
+(resp. keeps it on if previously set),<br>
+all other colors are switched off<br>
+</td>
+        <td style="text-align: center;">1.0+<br>
+</td>
+    </tr>
+    <tr>
+        <td><tt>IOXSET</tt><br>
+</td>
+        <td><tt>( n -- )</tt><br>
+</td>
+        <td>Used to set individual bits with I/O-expander, without changing bits not given by <tt>n</tt><br>
+</td>
+        <td><tt>1 IOXSET</tt><br>
+switches only <tt>white</tt> output on,<br>
+other outputs will keep current state<br>
+</td>
+        <td style="text-align: center;">1.0+<br>
+</td>
+    </tr>
+    <tr>
+        <td><tt>IOXRST</tt><br>
+</td>
+        <td><tt>( n -- )</tt><br>
+</td>
+        <td>Used to clear individual bits with I/O-expander, without changing bits not given by <tt>n</tt><br>
+</td>
+        <td><tt>1 IOXRST</tt><br>
+switches only <tt>white</tt> output off,<br>
+other outputs will keep current state<br>
+</td>
+        <td style="text-align: center;">1.0+<br>
+</td>
+    </tr>
+</tbody></table>
+
+<br>
+Note that those words will always operate on IO expander stored in <tt>IOXADDR</tt>.<br>
+<br>
+<br>
+<!-- ws:start:WikiTextHeadingRule:88:&lt;h3&gt; --><h3 id="toc12"><a name="x-Forth Dictionary-Disk-related words"></a><!-- ws:end:WikiTextHeadingRule:88 -->Disk-related words</h3>
+ <br>
+
+
+<table class="wiki_table">
+    <tbody><tr>
+        <th>Word<br>
+</th>
+        <th>Syntax<br>
+</th>
+        <th>Description<br>
+</th>
+        <th>Example(s)<br>
+</th>
+        <th>Version<br>
+</th>
+    </tr>
+    <tr>
+        <td><tt>DISKNAME"</tt><br>
+</td>
+        <td><tt>DISKNAME" <em>&lt;name&gt;</em>"</tt><br>
+</td>
+        <td>Names a disk<br>
+</td>
+        <td><br>
+</td>
+        <td style="text-align: center;">1.0+<br>
+</td>
+    </tr>
+    <tr>
+        <td><tt>DISKID</tt><br>
+</td>
+        <td><br>
+</td>
+        <td>Will print the unique disk-id<!-- ws:start:WikiTextRefRule:48:&amp;lt;ref&amp;gt;Used to find disk image files in redpower/ folder named as &amp;quot;disk_&lt;tt&gt;id&lt;/tt&gt;.img&amp;quot;&amp;lt;/ref&amp;gt; --><sup id="cite_ref-19" class="reference"><a href="http://web.archive.org/web/20121115140300/http://integratedredstone.wikispaces.com/Forth+Dictionary#cite_note-19">[19]</a></sup><!-- ws:end:WikiTextRefRule:48 --><br>
+</td>
+        <td><br>
+</td>
+        <td style="text-align: center;">1.0+<br>
+</td>
+    </tr>
+    <tr>
+        <td><tt>SAVE"</tt><br>
+</td>
+        <td><tt>SAVE" <em>&lt;name&gt;</em>"</tt><br>
+</td>
+        <td>Names your disk and writes memory content onto disk<br>
+(starting at address 0x500 up to current value of <tt>HERE</tt>,<br>
+also rounded upwards to next 128 byte boundary to completely fill a sector)<br>
+</td>
+        <td><br>
+</td>
+        <td style="text-align: center;">1.0+<br>
+</td>
+    </tr>
+    <tr>
+        <td><tt>DISKWS</tt><br>
+</td>
+        <td><tt>( addr n -- )</tt><br>
+</td>
+        <td>Write 128 bytes of memory at <tt>addr</tt> into disk sector <tt>n</tt><br>
+</td>
+        <td><br>
+</td>
+        <td style="text-align: center;">1.0+<br>
+</td>
+    </tr>
+    <tr>
+        <td><tt>DISKRS</tt><br>
+</td>
+        <td><tt>( addr n -- )</tt><br>
+</td>
+        <td>Read 128 bytes from disk sector <tt>n</tt> to memory at <tt>addr</tt><br>
+</td>
+        <td><br>
+</td>
+        <td style="text-align: center;">1.1+<br>
+</td>
+    </tr>
+    <tr>
+        <td><tt>BLOCK</tt><br>
+</td>
+        <td><tt>( n -- addr )</tt><br>
+</td>
+        <td>Load block <tt>n</tt> into memory and make it the currently active block, returning address of first bytes read in <tt>addr</tt><!-- ws:start:WikiTextRefRule:49:&amp;lt;ref&amp;gt;One block can hold 16 lines with 64 chars each.&amp;lt;/ref&amp;gt; --><sup id="cite_ref-20" class="reference"><a href="http://web.archive.org/web/20121115140300/http://integratedredstone.wikispaces.com/Forth+Dictionary#cite_note-20">[20]</a></sup><!-- ws:end:WikiTextRefRule:49 --> <!-- ws:start:WikiTextRefRule:52:&amp;lt;ref&amp;gt;On its first call, &lt;tt&gt;BLOCK&lt;/tt&gt; will allocate a 1k wide buffer using ALLOT.&amp;lt;/ref&amp;gt; --><sup id="cite_ref-21" class="reference"><a href="http://web.archive.org/web/20121115140300/http://integratedredstone.wikispaces.com/Forth+Dictionary#cite_note-21">[21]</a></sup><!-- ws:end:WikiTextRefRule:52 -->(will also flush a previously active block to disk before loading another one)<br>
+</td>
+        <td>example<br>
+</td>
+        <td style="text-align: center;">1.1+<br>
+</td>
+    </tr>
+    <tr>
+        <td><tt>LIST</tt><br>
+</td>
+        <td><tt>( n -- )</tt><br>
+</td>
+        <td>As <tt>BLOCK</tt>, but lists the block contents afterwards<br>
+(note that current implementation of <tt>LIST</tt> will change current radix to decimal)<br>
+</td>
+        <td><tt>1 LIST</tt><br>
+will list content of first block<br>
+</td>
+        <td style="text-align: center;">1.1+<br>
+</td>
+    </tr>
+    <tr>
+        <td><tt>LOAD</tt><br>
+</td>
+        <td><tt>( n -- )</tt><br>
+</td>
+        <td>As <tt>BLOCK</tt>, but executes code contained after loading<br>
+(can be used to compile code stored in blocks)<br>
+</td>
+        <td><br>
+</td>
+        <td style="text-align: center;">1.1+<br>
+</td>
+    </tr>
+    <tr>
+        <td><tt>WIPE</tt><br>
+</td>
+        <td><tt>( -- )</tt><br>
+</td>
+        <td>Wipe all contents in currently active block using blankspaces<br>
+</td>
+        <td><br>
+</td>
+        <td style="text-align: center;">1.1+<br>
+</td>
+    </tr>
+    <tr>
+        <td><tt>FLUSH</tt><br>
+</td>
+        <td><tt>( -- )</tt><br>
+</td>
+        <td>Flushes currently active block to disk<br>
+</td>
+        <td><br>
+</td>
+        <td style="text-align: center;">1.1+<br>
+</td>
+    </tr>
+    <tr>
+        <td><tt>REVERT</tt><br>
+</td>
+        <td><tt>( -- )</tt><br>
+</td>
+        <td>Reverts to data from disk, loosing all changes to currently active block<br>
+</td>
+        <td><br>
+</td>
+        <td style="text-align: center;">1.1+<br>
+</td>
+    </tr>
+    <tr>
+        <td><tt>UPDATE</tt><br>
+</td>
+        <td><tt>( -- )</tt><br>
+</td>
+        <td>Forces current block to be marked as modified<br>
+</td>
+        <td><br>
+</td>
+        <td style="text-align: center;">1.1+<br>
+</td>
+    </tr>
+    <tr>
+        <td><tt>PP</tt><br>
+</td>
+        <td><tt><em>&lt;line&gt;</em> PP <em>&lt;content&gt;</em></tt><br>
+</td>
+        <td>Edit line <tt>&lt;line&gt;</tt><!-- ws:start:WikiTextRefRule:53:&amp;lt;ref&amp;gt;Starting at 0 up to 15, so 16 lines of code available, each 64 chars long.&amp;lt;/ref&amp;gt; --><sup id="cite_ref-22" class="reference"><a href="http://web.archive.org/web/20121115140300/http://integratedredstone.wikispaces.com/Forth+Dictionary#cite_note-22">[22]</a></sup><!-- ws:end:WikiTextRefRule:53 --> , replacing any existing content with <tt><em>&lt;content&gt;</em></tt>(content will be padded using spaces to erase any remain on line)<br>
+</td>
+        <td><tt>0 PP ( Just a comment )</tt><br>
+</td>
+        <td style="text-align: center;">1.1+<br>
+</td>
+    </tr>
+</tbody></table>
+
+<br>
+Note that those words will always operate on disk drive stored in <tt>DISKADDR</tt>.<br>
+<br>
+<br>
+<!-- ws:start:WikiTextHeadingRule:90:&lt;h3&gt; --><h3 id="toc13"><a name="x-Forth Dictionary-Miscellaneous words"></a><!-- ws:end:WikiTextHeadingRule:90 -->Miscellaneous words</h3>
+ <br>
+
+
+<table class="wiki_table">
+    <tbody><tr>
+        <th>Word<br>
+</th>
+        <th>Syntax<br>
+</th>
+        <th>Description<br>
+</th>
+        <th>Example(s)<br>
+</th>
+        <th>Version<br>
+</th>
+    </tr>
+    <tr>
+        <td><tt>EXECUTE</tt><br>
+</td>
+        <td><tt>( addr -- )</tt><br>
+</td>
+        <td>Set program counter to <tt>addr</tt> and executes<br>
+</td>
+        <td><tt>' TEST EXECUTE</tt><br>
+will execute <tt>TEST</tt><br>
+</td>
+        <td style="text-align: center;">1.0+<br>
+</td>
+    </tr>
+    <tr>
+        <td><tt>QUIT</tt><br>
+</td>
+        <td><tt>( -- % )</tt><br>
+</td>
+        <td>Restart forth interpreter, erasing both stack and R-stack<br>
+(this word actually represents the endless command prompt)<br>
+</td>
+        <td><br>
+</td>
+        <td style="text-align: center;">1.0+<br>
+</td>
+    </tr>
+    <tr>
+        <td><tt>WORDS</tt><br>
+</td>
+        <td><tt>( -- )</tt><br>
+</td>
+        <td>Print a list of all words known<br>
+(will start with last one defined)<br>
+</td>
+        <td><br>
+</td>
+        <td style="text-align: center;">1.0+<br>
+</td>
+    </tr>
+    <tr>
+        <td><tt>HIDE</tt><br>
+</td>
+        <td><tt>--</tt><br>
+</td>
+        <td>Will hide last word defined, preventing it's execution<br>
+</td>
+        <td><br>
+</td>
+        <td style="text-align: center;">1.0+<br>
+</td>
+    </tr>
+    <tr>
+        <td><tt>REVEAL</tt><br>
+</td>
+        <td><tt>--</tt><br>
+</td>
+        <td>Will reveal last word defined<br>
+</td>
+        <td><br>
+</td>
+        <td style="text-align: center;">1.0+<br>
+</td>
+    </tr>
+    <tr>
+        <td><tt>ERASE</tt><br>
+</td>
+        <td><tt>ERASE <em>&lt;word&gt;</em></tt><br>
+</td>
+        <td>Delete word given<br>
+(by rewinding both <tt>VOCAB</tt> and <tt>HERE</tt> pointers,<br>
+this will also delete any word defined afterwards)<br>
+</td>
+        <td><tt>: foo1 <em>&lt;code&gt;</em> ;</tt><br>
+<tt>: foo2 <em>&lt;code&gt;</em> ;</tt><br>
+<tt>ERASE foo1</tt><br>
+will erase <strong>both</strong> <tt>foo1</tt> and <tt>foo2</tt><br>
+</td>
+        <td style="text-align: center;"><strong>1.0 only</strong><br>
+(renamed to <tt>FORGET</tt>)<br>
+</td>
+    </tr>
+    <tr>
+        <td><tt>FORGET</tt><br>
+</td>
+        <td><tt>FORGET <em>&lt;word&gt;</em></tt><br>
+</td>
+        <td>Delete word given<br>
+(by rewinding both <tt>VOCAB</tt> and <tt>HERE</tt> pointers,<br>
+this will also delete any word defined afterwards)<br>
+</td>
+        <td><tt>: foo1 <em>&lt;code&gt;</em> ;</tt><br>
+<tt>: foo2 <em>&lt;code&gt;</em> ;</tt><br>
+<tt>FORGET foo1</tt><br>
+will erase <strong>both</strong> <tt>foo1</tt> and <tt>foo2</tt><br>
+</td>
+        <td style="text-align: center;">1.1+<br>
+</td>
+    </tr>
+    <tr>
+        <td><tt>HEX</tt><br>
+</td>
+        <td><tt>( -- )</tt><br>
+</td>
+        <td>Will switch <tt>RADIX</tt> to 16<br>
+</td>
+        <td><br>
+</td>
+        <td style="text-align: center;">1.0+<br>
+</td>
+    </tr>
+    <tr>
+        <td><tt>DECIMAL</tt><br>
+</td>
+        <td><tt>( -- )</tt><br>
+</td>
+        <td>Will switch <tt>RADIX</tt> to 10<br>
+</td>
+        <td><br>
+</td>
+        <td style="text-align: center;">1.0+<br>
+</td>
+    </tr>
+    <tr>
+        <td><tt>TICK</tt><br>
+</td>
+        <td><tt>( -- )</tt><br>
+</td>
+        <td>Wait 1 minecraft tick (1/20 second)<br>
+</td>
+        <td><br>
+</td>
+        <td style="text-align: center;">1.0+<br>
+</td>
+    </tr>
+    <tr>
+        <td><tt>TICKS</tt><br>
+</td>
+        <td><tt>( n -- )</tt><br>
+</td>
+        <td>Wait given amount of ticks<br>
+</td>
+        <td><tt>20 TICKS</tt><br>
+will wait 1 second<br>
+</td>
+        <td style="text-align: center;">1.0+<br>
+</td>
+    </tr>
+    <tr>
+        <td><tt>TIMES</tt><br>
+</td>
+        <td><tt>n TIMES <em>&lt;word&gt;</em></tt><br>
+</td>
+        <td>Repeat given word <tt>n</tt> times<br>
+</td>
+        <td><tt>10 TIMES SPACE</tt><br>
+will print 10 spaces<br>
+</td>
+        <td style="text-align: center;">1.0+<br>
+</td>
+    </tr>
+    <tr>
+        <td><tt>HERE</tt><br>
+</td>
+        <td><tt>( -- n )</tt><br>
+</td>
+        <td>Memory position where new program code gets stored<br>
+</td>
+        <td><br>
+</td>
+        <td style="text-align: center;">1.0+<br>
+</td>
+    </tr>
+    <tr>
+        <td><tt>FREE</tt><br>
+</td>
+        <td><tt>( -- n )</tt><br>
+</td>
+        <td>Returns amount of free memory<br>
+</td>
+        <td><tt>FREE .</tt><br>
+will print <tt>600</tt><!-- ws:start:WikiTextRefRule:54:&amp;lt;ref&amp;gt;After booting a clean forth disk as with MineOS 1.1 and no additional memory modules installed.&amp;lt;/ref&amp;gt; --><sup id="cite_ref-23" class="reference"><a href="http://web.archive.org/web/20121115140300/http://integratedredstone.wikispaces.com/Forth+Dictionary#cite_note-23">[23]</a></sup><!-- ws:end:WikiTextRefRule:54 --><br>
+</td>
+        <td style="text-align: center;">1.1+<br>
+</td>
+    </tr>
+    <tr>
+        <td><tt><!-- ws:start:WikiTextRawRule:06:``[`` -->[<!-- ws:end:WikiTextRawRule:06 --></tt><br>
+</td>
+        <td><br>
+</td>
+        <td>Switches into compile mode<br>
+</td>
+        <td><br>
+</td>
+        <td style="text-align: center;">1.0+<br>
+</td>
+    </tr>
+    <tr>
+        <td><tt><!-- ws:start:WikiTextRawRule:07:``]`` -->]<!-- ws:end:WikiTextRawRule:07 --></tt><br>
+</td>
+        <td><br>
+</td>
+        <td>Switches back into intermediate mode<br>
+</td>
+        <td><br>
+</td>
+        <td style="text-align: center;">1.0+<br>
+</td>
+    </tr>
+    <tr>
+        <td><tt>:</tt><br>
+</td>
+        <td><tt>: <em>&lt;word&gt;</em></tt><br>
+</td>
+        <td>Will start defining a new word, any text after <em>&lt;word&gt;</em> will be compiled instantly<!-- ws:start:WikiTextRefRule:57:&amp;lt;ref&amp;gt;You can also type multiple lines of code up to an ending &lt;tt&gt;;&lt;/tt&gt;&amp;lt;/ref&amp;gt; --><sup id="cite_ref-24" class="reference"><a href="http://web.archive.org/web/20121115140300/http://integratedredstone.wikispaces.com/Forth+Dictionary#cite_note-24">[24]</a></sup><!-- ws:end:WikiTextRefRule:57 --><br>
+</td>
+        <td><tt>: xx DUP * ;</tt><br>
+</td>
+        <td style="text-align: center;">1.0+<br>
+</td>
+    </tr>
+    <tr>
+        <td><tt>;</tt><br>
+</td>
+        <td><br>
+</td>
+        <td>Denotes the end of a word definition<br>
+</td>
+        <td><br>
+</td>
+        <td style="text-align: center;">1.0+<br>
+</td>
+    </tr>
+    <tr>
+        <td><tt>(</tt><br>
+</td>
+        <td><tt>( <em>&lt;comment&gt;</em>)</tt><br>
+</td>
+        <td>Adds a comment up to a closing parenthesis <tt>)</tt> <!-- ws:start:WikiTextRefRule:58:&amp;lt;ref&amp;gt;Not sure if this works over multiple input lines, as usual in Forth.&amp;lt;/ref&amp;gt; --><sup id="cite_ref-25" class="reference"><a href="http://web.archive.org/web/20121115140300/http://integratedredstone.wikispaces.com/Forth+Dictionary#cite_note-25">[25]</a></sup><!-- ws:end:WikiTextRefRule:58 --><br>
+</td>
+        <td><tt>( I'm just a comment )</tt><br>
+</td>
+        <td style="text-align: center;">1.1+<br>
+</td>
+    </tr>
+    <tr>
+        <td><tt>\</tt><br>
+</td>
+        <td><tt>\ <em>&lt;comment&gt;&lt;CR&gt;</em></tt><br>
+</td>
+        <td>Similar to <tt>(</tt>, but ends at first CR encountered<br>
+</td>
+        <td><br>
+</td>
+        <td style="text-align: center;">1.1+<br>
+</td>
+    </tr>
+    <tr>
+        <td><tt>STRLEN</tt><br>
+</td>
+        <td><tt>( addr -- n )</tt><br>
+</td>
+        <td>Returns the length <tt>n</tt> of a string given by <tt>addr</tt><br>
+</td>
+        <td><br>
+</td>
+        <td style="text-align: center;">1.0+<br>
+</td>
+    </tr>
+    <tr>
+        <td><tt>RSTRLEN</tt><br>
+</td>
+        <td><tt>( addr -- n )</tt><br>
+</td>
+        <td>Nearly the same as <tt>STRLEN</tt>, but traverses backwards<br>
+</td>
+        <td><br>
+</td>
+        <td style="text-align: center;">1.0+<br>
+</td>
+    </tr>
+    <tr>
+        <td><tt>STRCMP</tt><br>
+</td>
+        <td><tt>( addr1 addr2 -- n )</tt><br>
+</td>
+        <td>Compares two strings at <tt>addr1</tt> and <tt>addr2</tt>, returning either<br>
+<tt>1</tt> if str1 &lt;&gt; str2 or 0 if str1 = str2<br>
+</td>
+        <td><br>
+</td>
+        <td style="text-align: center;">1.0+<br>
+</td>
+    </tr>
+    <tr>
+        <td><tt>ISNUM</tt><br>
+</td>
+        <td><tt>( addr -- f )</tt><br>
+</td>
+        <td>Confirm that string at <tt>addr</tt> is a parsable, signed value<br>
+</td>
+        <td><br>
+</td>
+        <td style="text-align: center;">1.0+<br>
+</td>
+    </tr>
+    <tr>
+        <td><tt>ISUNUM</tt><br>
+</td>
+        <td><tt>( addr -- f )</tt><br>
+</td>
+        <td>Same as <tt>ISNUM</tt>, but fails with negative values<br>
+</td>
+        <td><br>
+</td>
+        <td style="text-align: center;">1.0+<br>
+</td>
+    </tr>
+    <tr>
+        <td><tt>ATOI</tt><br>
+</td>
+        <td><tt>( addr -- n )</tt><br>
+</td>
+        <td>Convert string at <tt>addr</tt> into a signed value returned as <tt>n</tt><br>
+(using current <tt>RADIX</tt>)<br>
+</td>
+        <td><br>
+</td>
+        <td style="text-align: center;">1.0+<br>
+</td>
+    </tr>
+    <tr>
+        <td><tt>UATOI</tt><br>
+</td>
+        <td><tt>( addr -- n )</tt><br>
+</td>
+        <td>Same as <tt>ATOI</tt>, but only for unsigned values<br>
+(using current <tt>RADIX</tt>)<br>
+</td>
+        <td><br>
+</td>
+        <td style="text-align: center;">1.0+<br>
+</td>
+    </tr>
+    <tr>
+        <td><tt>UITOA</tt><br>
+</td>
+        <td><tt>( n -- addr )</tt><br>
+</td>
+        <td>Converts unsigned value <tt>n</tt> into a string and returns string address<br>
+(using current <tt>RADIX</tt>)<br>
+</td>
+        <td>example<br>
+</td>
+        <td style="text-align: center;">1.0+<br>
+</td>
+    </tr>
+    <tr>
+        <td><tt>MEMCMP</tt><br>
+</td>
+        <td><tt>( addr1 addr2 n1 -- n )</tt><br>
+</td>
+        <td>Compares two memory blocks at <tt>addr1</tt> and <tt>addr2</tt>, both of given length <tt>n1</tt>. Returns either<br>
+<tt>1</tt> if block1 &lt;&gt; block2 or 0 if block1 = block2<br>
+</td>
+        <td><br>
+</td>
+        <td style="text-align: center;">1.0+<br>
+</td>
+    </tr>
+    <tr>
+        <td><tt>FILL</tt><br>
+</td>
+        <td><tt>( addr n b -- )</tt><br>
+</td>
+        <td>Fills memory block at <tt>addr</tt> with length <tt>n1</tt> using a byte value of <tt>b</tt><br>
+</td>
+        <td><tt>CREATE foo 64 ALLOT</tt><br>
+<tt>foo 64 0 FILL</tt><br>
+</td>
+        <td style="text-align: center;">1.0+<br>
+</td>
+    </tr>
+    <tr>
+        <td><tt>MOVE</tt><br>
+</td>
+        <td><tt>( addr1 addr2 n -- )</tt><br>
+</td>
+        <td>Copies <tt>n</tt> bytes of memory from <tt>addr1</tt> to <tt>addr2</tt><br>
+</td>
+        <td><br>
+</td>
+        <td style="text-align: center;">1.0+<br>
+</td>
+    </tr>
+    <tr>
+        <td><tt>SPLIT</tt><br>
+</td>
+        <td><tt>( addr b -- addrN addrS )</tt><br>
+</td>
+        <td>Split string given by <tt>addr</tt> using separator <tt>b</tt> skipping any leading separators automatically.<br>
+Will return any string found as <tt>addrS</tt> (zero-term. by replacing separator found), <tt>addrN</tt> points to end of string + 1 and can be used to call <tt>SPLIT</tt> again<br>
+</td>
+        <td><br>
+</td>
+        <td style="text-align: center;">1.0+<br>
+</td>
+    </tr>
+    <tr>
+        <td><tt>FIND</tt><br>
+</td>
+        <td><tt>( addr1 -- addr )</tt><br>
+</td>
+        <td>Find word definition for string given as <tt>addr1</tt> and returns it in <tt>addr</tt>.<br>
+Will return 0 if no match found, else an address usable with, for example, <tt>EXECUTE</tt><br>
+</td>
+        <td><br>
+</td>
+        <td style="text-align: center;">1.0+<br>
+</td>
+    </tr>
+    <tr>
+        <td><tt>WORD</tt><br>
+</td>
+        <td><tt>addr -- addrN addrS )</tt><br>
+</td>
+        <td>Parse string given by <tt>addr</tt> to find next word, halts on a whitespace (space, tab, CR, LF) but skips leading ones automatically.<br>
+<tt>addrS</tt> will contain start of word (first trailing whitespace encountered is replaced by a zero to term. string properly),<br>
+<tt>addrN</tt> points to end of word (so <tt>addrN-addrS</tt> can be used to compute string length), can be used, for example, to call <tt>WORD</tt> again<br>
+</td>
+        <td><tt>TIB WORD .S</tt><br>
+will return <tt>131 128</tt>, thats our TIB from command line<br>
+</td>
+        <td style="text-align: center;">1.0+<br>
+</td>
+    </tr>
+    <tr>
+        <td><tt>TIBWORD</tt><br>
+</td>
+        <td><tt>( -- addrS )</tt><br>
+</td>
+        <td>Nearly the same as <tt>WORD</tt>, but uses current TIB pointer as <tt>addr</tt> and advances it afterwards,<br>
+returning only start of string in <tt>addrS</tt><br>
+</td>
+        <td><br>
+</td>
+        <td style="text-align: center;">1.0+<br>
+</td>
+    </tr>
+    <tr>
+        <td><tt>TIBSPLIT</tt><br>
+</td>
+        <td><tt>( b -- addrS )</tt><br>
+</td>
+        <td>Split the input stream (at <tt>TIBPTR</tt>) using separator <tt>b</tt>.<br>
+Calls <tt>SPLIT</tt>, returns the first string as <tt>addrS</tt> and updates <tt>TIBPTR</tt> to point behind that.<br>
+</td>
+        <td><br>
+</td>
+        <td style="text-align: center;">1.0+<br>
+</td>
+    </tr>
+    <tr>
+        <td><tt>TIBFIND</tt><br>
+</td>
+        <td><tt>TIBFIND <em>&lt;word&gt;</em></tt><br>
+</td>
+        <td>Searches for given word, returns address of word or prints an error message<!-- ws:start:WikiTextRefRule:59:&amp;lt;ref&amp;gt;This address points to the actual program code of this word, allowing for direct execution.&amp;lt;/ref&amp;gt; --><sup id="cite_ref-26" class="reference"><a href="http://web.archive.org/web/20121115140300/http://integratedredstone.wikispaces.com/Forth+Dictionary#cite_note-26">[26]</a></sup><!-- ws:end:WikiTextRefRule:59 --><br>
+</td>
+        <td><tt>TIBFIND RADIX .</tt><br>
+will print <tt>2660</tt> (as with MineOS 1.0)<br>
+</td>
+        <td style="text-align: center;"><strong>1.0 only</strong><br>
+(renamed to <tt>'</tt>)<br>
+</td>
+    </tr>
+    <tr>
+        <td><tt>'</tt><br>
+</td>
+        <td><tt>' <em>&lt;word&gt;</em></tt><br>
+</td>
+        <td>Searches for given word, returns address of word or prints an error message<!-- ws:start:WikiTextRefRule:60:&amp;lt;ref&amp;gt;This address points to the actual program code of this word, allowing for direct execution.&amp;lt;/ref&amp;gt; --><sup id="cite_ref-27" class="reference"><a href="http://web.archive.org/web/20121115140300/http://integratedredstone.wikispaces.com/Forth+Dictionary#cite_note-27">[27]</a></sup><!-- ws:end:WikiTextRefRule:60 --><br>
+</td>
+        <td><tt>' RADIX .</tt><br>
+will print <tt>2859</tt> (as with MineOS 1.1)<br>
+</td>
+        <td style="text-align: center;">1.1+<br>
+</td>
+    </tr>
+    <tr>
+        <td><tt>"</tt><br>
+</td>
+        <td><tt>" <em>&lt;string&gt;</em>"</tt><br>
+</td>
+        <td>Will inject string following into program code (incl. zero-term.), advancing <tt>HERE</tt><br>
+(in contrast to <tt>."</tt>, this will NOT print the string given when word is executed)<br>
+</td>
+        <td>?<br>
+</td>
+        <td style="text-align: center;">1.1+<br>
+</td>
+    </tr>
+</tbody></table>
+
+<br>
+<br>
+<!-- ws:start:WikiTextHeadingRule:92:&lt;h3&gt; --><h3 id="toc14"><a name="x-Forth Dictionary-Debugging"></a><!-- ws:end:WikiTextHeadingRule:92 -->Debugging</h3>
+ <br>
+
+
+<table class="wiki_table">
+    <tbody><tr>
+        <th>Word<br>
+</th>
+        <th>Syntax<br>
+</th>
+        <th>Description<br>
+</th>
+        <th>Example(s)<br>
+</th>
+        <th>Version<br>
+</th>
+    </tr>
+    <tr>
+        <td><tt>MMUDBG</tt><br>
+</td>
+        <td><tt>( n -- )</tt><br>
+</td>
+        <td>Writes value <tt>n</tt> into minecraft log (debug mode only?)<br>
+</td>
+        <td><br>
+</td>
+        <td style="text-align: center;"><strong>1.0 only</strong><br>
+</td>
+    </tr>
+    <tr>
+        <td><tt>&gt;NAME</tt><br>
+</td>
+        <td><tt>( addr1 -- addr )</tt><br>
+</td>
+        <td>Find name (returned as <tt>addr</tt>) for given subroutine address <tt>addr1</tt><br>
+</td>
+        <td><br>
+</td>
+        <td style="text-align: center;">1.1+<br>
+</td>
+    </tr>
+    <tr>
+        <td><tt>NAME&gt;</tt><br>
+</td>
+        <td><tt>( addr1 -- addr )</tt><br>
+</td>
+        <td>Counterpart of <tt>&gt;NAME</tt>, advances from name at <tt>addr1</tt> to first opcode<!-- ws:start:WikiTextRefRule:63:&amp;lt;ref&amp;gt;Address returned must be adjusted by calling at least 1- when used within forth context, resp. -2 if called from assembler code (to hit first opcode &lt;tt&gt;ENT&lt;/tt&gt;)&amp;lt;/ref&amp;gt; --><sup id="cite_ref-28" class="reference"><a href="http://web.archive.org/web/20121115140300/http://integratedredstone.wikispaces.com/Forth+Dictionary#cite_note-28">[28]</a></sup><!-- ws:end:WikiTextRefRule:63 --><br>
+</td>
+        <td><br>
+</td>
+        <td style="text-align: center;">1.1+<br>
+</td>
+    </tr>
+</tbody></table>
+
+<br>
+<br>
+<!-- ws:start:WikiTextHeadingRule:94:&lt;h3&gt; --><h3 id="toc15"><a name="x-Forth Dictionary-Internal words"></a><!-- ws:end:WikiTextHeadingRule:94 -->Internal words</h3>
+ <br>
+You are advised <strong>not</strong> to use them directly (if you don't know what you're doing, to be precise ^^).<br>
+
+
+<table class="wiki_table">
+    <tbody><tr>
+        <th>Word<br>
+</th>
+        <th>Syntax<br>
+</th>
+        <th>Description<br>
+</th>
+        <th>Example(s)<br>
+</th>
+        <th>Version<br>
+</th>
+    </tr>
+    <tr>
+        <td><tt>DOCON</tt><br>
+</td>
+        <td><br>
+</td>
+        <td>Implementation for constant access, pushes actual value onto stack by automatically dereferencing memory address<br>
+</td>
+        <td><br>
+</td>
+        <td style="text-align: center;">1.0+<br>
+</td>
+    </tr>
+    <tr>
+        <td><tt>DOVAR</tt><br>
+</td>
+        <td><br>
+</td>
+        <td>Implementation for variable access, pushes variable address onto stack<br>
+</td>
+        <td><br>
+</td>
+        <td style="text-align: center;">1.0+<br>
+</td>
+    </tr>
+    <tr>
+        <td><tt>INTERPRET</tt><br>
+</td>
+        <td><br>
+</td>
+        <td>Actual interpreter which executes resp. compiles input given<br>
+</td>
+        <td><br>
+</td>
+        <td style="text-align: center;">1.0+<br>
+</td>
+    </tr>
+    <tr>
+        <td><tt>HEADER</tt><br>
+</td>
+        <td><br>
+</td>
+        <td>Used to inject header data for a forth word, also increments <tt>HERE</tt> and changes <tt>VOCAB</tt> to point to this new word<br>
+</td>
+        <td><br>
+</td>
+        <td style="text-align: center;">1.1+<br>
+</td>
+    </tr>
+    <tr>
+        <td><tt>PROBE</tt><br>
+</td>
+        <td><br>
+</td>
+        <td>Probes RAM to find max. amount installed and returns maximum memory address<br>
+(so 8k of RAM (8192 bytes) will return a value of 8191)<br>
+(will not alter actual memory contents, it probes and writes back any value found)<br>
+</td>
+        <td><br>
+</td>
+        <td style="text-align: center;">1.1+<br>
+</td>
+    </tr>
+    <tr>
+        <td><tt>COLD</tt><br>
+</td>
+        <td><tt>( -- )</tt><br>
+</td>
+        <td>Starts the OS, sets up <tt>DISKADDR</tt> and <tt>TERMADDR</tt>, probes memory size and prints boot message<br>
+</td>
+        <td><br>
+</td>
+        <td style="text-align: center;">1.0+<br>
+</td>
+    </tr>
+    <tr>
+        <td><tt>DOES&gt;</tt><br>
+</td>
+        <td><tt>( -- )</tt><br>
+</td>
+        <td>Updates semantics of CREATEd word.<br>
+The default semantics of <tt>CREATE</tt>d word is to put its allocated address onto the stack, and it cannot be overwritten.<br>
+However, this can be extended with <tt>DOES&gt;</tt> word.<br>
+<tt>DOES&gt;</tt> reads all tokens up to <tt>;</tt> (semicolon) and adds found words to interpretation semantic of the most recently <tt>CREATE</tt>d word.<br>
+When <tt>DOES&gt;</tt> code starts, an address of allocated memory is already on top of the stack; use it wisely!<br>
+</td>
+        <td><tt>: CONSTANT ( redefining built-in CONSTANT)</tt><br>
+<tt>CREATE ( create a word; it will take token next to CONSTANT)</tt><br>
+<tt>, ( takes value from stack and writes it to HERE)</tt><br>
+<tt>DOES&gt; ( definition begins)</tt><br>
+<tt>( address is on top of the stack)</tt><br>
+<tt>@ ( deferefence it)</tt><br>
+<tt>; ( end)</tt><br>
+<tt>42 CONSTANT Answer</tt><br>
+<tt>Answer</tt><br>
+will put <tt>42</tt> onto stack<br>
+</td>
+        <td style="text-align: center;">1.1+<br>
+</td>
+    </tr>
+    <tr>
+        <td><tt>IMMEDIATE</tt><br>
+</td>
+        <td><tt>( -- )</tt><br>
+</td>
+        <td>Makes the most recent <tt>:</tt> definition get executed every time when it's about to be compiled.<br>
+In other words, replaces the most recent definition compilation semantics with its implementation semantics.<br>
+It can also be used with <tt>CREATE</tt>.<br>
+</td>
+        <td><tt>: warning ." WARNING" CR ; IMMEDIATE</tt><br>
+<tt>: test warning 1 2 + . ;</tt><br>
+</td>
+        <td style="text-align: center;">1.1+<br>
+</td>
+    </tr>
+    <tr>
+        <td><tt>LITERAL</tt><br>
+</td>
+        <td>Compile-time: <tt>( n -- )</tt><br>
+Run-time:<br>
+<tt>( -- n )</tt><br>
+</td>
+        <td>Can be used inside <tt>IMMEDIATE</tt> words or inside <tt>[ ]</tt>s. Takes value from stack (yes, when compiling!) and extends currently defining word with the code that puts this value on the stack. Note that it is NOT possible to pass value from outside to inside.<br>
+</td>
+        <td><tt>: put42 \ make a 42-putting word. Useless!</tt><br>
+<tt>[ \ switching to interpreting mode</tt><br>
+<tt>42 \ put 42 onto stack</tt><br>
+<tt>] \ switching to compilation mode</tt><br>
+<tt>LITERAL \ take 42 from stack when compiling</tt><br>
+<tt>\ and put it back when executing</tt><br>
+<tt>;</tt><br>
+<tt>put42</tt><br>
+will put <tt>42</tt> onto stack<br>
+</td>
+        <td style="text-align: center;">1.1+<br>
+</td>
+    </tr>
+    <tr>
+        <td><tt>POSTPONE</tt><br>
+</td>
+        <td>Run-time: As defined by word<br>
+</td>
+        <td>Can be used inside <tt>IMMEDIATE</tt> words. Takes next word and compiles call to it into current word's interpretation semantics.<br>
+</td>
+        <td><tt>: smartword</tt><br>
+<tt>1 1 + LITERAL POSTPONE . ; IMMEDIATE</tt><br>
+<tt>( will compile into 2 . )</tt><br>
+<tt>: test smartword ." Another action" CR ;</tt><br>
+<tt>test</tt><br>
+will print <tt>2 Another action</tt><br>
+</td>
+        <td style="text-align: center;">1.1+<br>
+</td>
+    </tr>
+    <tr>
+        <td><tt>RECURSE</tt><br>
+</td>
+        <td><tt>( -- )</tt><br>
+</td>
+        <td>Compiles self-call into currently defining word.<br>
+</td>
+        <td><tt>: n! \ A classic example</tt><br>
+<tt>DUP 0= IF</tt><br>
+<tt>DROP 0</tt><br>
+<tt>ELSE</tt><br>
+<tt>DUP 1- RECURSE *</tt><br>
+<tt>THEN ;</tt><br>
+</td>
+        <td style="text-align: center;">1.1+<br>
+</td>
+    </tr>
+    <tr>
+        <td><tt>(lit)</tt><br>
+</td>
+        <td><br>
+</td>
+        <td>Value following is pushed onto stack<br>
+Any executable word following is treated as a value, this is used with, for example, <tt>,</tt> to store a subroutine address<br>
+</td>
+        <td><br>
+</td>
+        <td style="text-align: center;">1.0+<br>
+</td>
+    </tr>
+    <tr>
+        <td><tt>(.")</tt><br>
+</td>
+        <td><br>
+</td>
+        <td>Actual implementation of <tt>."</tt> which emits string following (up to its zero-term.)<br>
+</td>
+        <td><br>
+</td>
+        <td style="text-align: center;">1.0+<br>
+</td>
+    </tr>
+    <tr>
+        <td><tt>(branch)</tt><br>
+</td>
+        <td><br>
+</td>
+        <td>Unconditional jump to address value following<br>
+</td>
+        <td><br>
+</td>
+        <td style="text-align: center;">1.0+<br>
+</td>
+    </tr>
+    <tr>
+        <td><tt>(?branch)</tt><br>
+</td>
+        <td><br>
+</td>
+        <td>Conditional jump to address value following, skipping address following if condition value is &lt;&gt;0<br>
+</td>
+        <td><br>
+</td>
+        <td style="text-align: center;">1.0+<br>
+</td>
+    </tr>
+    <tr>
+        <td><tt>(do)</tt><br>
+</td>
+        <td><br>
+</td>
+        <td>Actual implementation of <tt>DO</tt><br>
+</td>
+        <td><br>
+</td>
+        <td style="text-align: center;">1.0+<br>
+</td>
+    </tr>
+    <tr>
+        <td><tt>(?do)</tt><br>
+</td>
+        <td><br>
+</td>
+        <td>Actual implementation of <tt>?DO</tt><br>
+</td>
+        <td><br>
+</td>
+        <td style="text-align: center;">1.0+<br>
+</td>
+    </tr>
+    <tr>
+        <td><tt>(loop)</tt><br>
+</td>
+        <td><br>
+</td>
+        <td>Actual implementation of <tt>LOOP</tt><br>
+</td>
+        <td><br>
+</td>
+        <td style="text-align: center;">1.0+<br>
+</td>
+    </tr>
+    <tr>
+        <td><tt>(+loop)</tt><br>
+</td>
+        <td><br>
+</td>
+        <td>Actual implementation of <tt>+LOOP</tt><br>
+</td>
+        <td><br>
+</td>
+        <td style="text-align: center;">1.0+<br>
+</td>
+    </tr>
+    <tr>
+        <td><tt>(leave)</tt><br>
+</td>
+        <td><br>
+</td>
+        <td>Actual implementation of <tt>LEAVE</tt><br>
+</td>
+        <td><br>
+</td>
+        <td style="text-align: center;">1.0+<br>
+</td>
+    </tr>
+    <tr>
+        <td><tt>(")</tt><br>
+</td>
+        <td><br>
+</td>
+        <td>Actual implementation of <tt>"</tt><br>
+</td>
+        <td><br>
+</td>
+        <td style="text-align: center;">1.1+<br>
+</td>
+    </tr>
+    <tr>
+        <td><tt>(does)</tt><br>
+</td>
+        <td><br>
+</td>
+        <td>Helper word for <tt>DOES&gt;</tt><br>
+</td>
+        <td><br>
+</td>
+        <td style="text-align: center;">1.1+<br>
+</td>
+    </tr>
+    <tr>
+        <td><tt>DODOES</tt><br>
+</td>
+        <td><br>
+</td>
+        <td>Actual implementation for <tt>DOES&gt;</tt><br>
+</td>
+        <td><br>
+</td>
+        <td style="text-align: center;">1.1+<br>
+</td>
+    </tr>
+</tbody></table>
+
+<!-- ws:start:WikiTextReferencesRule:6249: --><hr class="references"><ol class="references">
+<li id="cite_note-1"><a href="http://web.archive.org/web/20121115140300/http://integratedredstone.wikispaces.com/Forth+Dictionary#cite_ref-1">^</a> Stored with low byte first (called <a class="wiki_link_ext" href="http://web.archive.org/web/20121115140300/http://en.wikipedia.org/wiki/Endianness#Little-endian" rel="nofollow">little Endian</a>).</li>
+<li id="cite_note-2"><a href="http://web.archive.org/web/20121115140300/http://integratedredstone.wikispaces.com/Forth+Dictionary#cite_ref-2">^</a> Handled as 2 separate 16 bit values, yet no support to store into or load from memory directly.</li>
+<li id="cite_note-3"><a href="http://web.archive.org/web/20121115140300/http://integratedredstone.wikispaces.com/Forth+Dictionary#cite_ref-3">^</a> Floating-point isn't yet supported as with MineOS 1.0+</li>
+<li id="cite_note-4"><a href="http://web.archive.org/web/20121115140300/http://integratedredstone.wikispaces.com/Forth+Dictionary#cite_ref-4">^</a> May also be a mapped Redbus memory address.</li>
+<li id="cite_note-5"><a href="http://web.archive.org/web/20121115140300/http://integratedredstone.wikispaces.com/Forth+Dictionary#cite_ref-5">^</a> Note that flags are also 16 bit values.</li>
+<li id="cite_note-6"><a href="http://web.archive.org/web/20121115140300/http://integratedredstone.wikispaces.com/Forth+Dictionary#cite_ref-6">^</a> Workaround, thx to immibis: <tt>: KEY? KEY? -1 = IF -1 THEN ;</tt></li>
+<li id="cite_note-7"><a href="http://web.archive.org/web/20121115140300/http://integratedredstone.wikispaces.com/Forth+Dictionary#cite_ref-7">^</a> As with all strings in MineOS, this string must be zero-terminated</li>
+<li id="cite_note-8"><a href="http://web.archive.org/web/20121115140300/http://integratedredstone.wikispaces.com/Forth+Dictionary#cite_ref-8">^</a> <tt>ACCEPT</tt> will zero-terminate this string automatically</li>
+<li id="cite_note-9"><a href="http://web.archive.org/web/20121115140300/http://integratedredstone.wikispaces.com/Forth+Dictionary#cite_ref-9">^</a> R-stack = Return value stack.</li>
+<li id="cite_note-10"><a href="http://web.archive.org/web/20121115140300/http://integratedredstone.wikispaces.com/Forth+Dictionary#cite_ref-10">^</a> See <tt>SP0</tt> for official way to get initial stack pointer, or use newly introduced <tt>0SP</tt>.</li>
+<li id="cite_note-11"><a href="http://web.archive.org/web/20121115140300/http://integratedredstone.wikispaces.com/Forth+Dictionary#cite_ref-11">^</a> Note that constants can't be changed after creation.</li>
+<li id="cite_note-12"><a href="http://web.archive.org/web/20121115140300/http://integratedredstone.wikispaces.com/Forth+Dictionary#cite_ref-12">^</a> Accessing a constant will directly return its value instead of an address as with variables.</li>
+<li id="cite_note-13"><a href="http://web.archive.org/web/20121115140300/http://integratedredstone.wikispaces.com/Forth+Dictionary#cite_ref-13">^</a> Detailed informations t.b.d.</li>
+<li id="cite_note-14"><a href="http://web.archive.org/web/20121115140300/http://integratedredstone.wikispaces.com/Forth+Dictionary#cite_ref-14">^</a> Note that when accessing a variable, you'll only get the address of where its stored in memory.</li>
+<li id="cite_note-15"><a href="http://web.archive.org/web/20121115140300/http://integratedredstone.wikispaces.com/Forth+Dictionary#cite_ref-15">^</a> As stated near the beginning of this dictionary, default size for values is 16bit, so <tt>CELL</tt> will always return 2.</li>
+<li id="cite_note-16"><a href="http://web.archive.org/web/20121115140300/http://integratedredstone.wikispaces.com/Forth+Dictionary#cite_ref-16">^</a> Note that this will just shift end of programm code by <tt>n</tt> bytes, hence changing <tt>HERE</tt>.</li>
+<li id="cite_note-17"><a href="http://web.archive.org/web/20121115140300/http://integratedredstone.wikispaces.com/Forth+Dictionary#cite_ref-17">^</a> <tt>10 RADIX !</tt> won't switch you back to decimal mode, we're in hex mode, so that's a hex 10, use <tt>A RADIX !</tt> for a decimal value of 10</li>
+<li id="cite_note-18"><a href="http://web.archive.org/web/20121115140300/http://integratedredstone.wikispaces.com/Forth+Dictionary#cite_ref-18">^</a> Reflecting a memory size of 8kB (base rpc8/e memory size if no additional memory modules are installed).</li>
+<li id="cite_note-19"><a href="http://web.archive.org/web/20121115140300/http://integratedredstone.wikispaces.com/Forth+Dictionary#cite_ref-19">^</a> Used to find disk image files in redpower/ folder named as "disk_<tt>id</tt>.img"</li>
+<li id="cite_note-20"><a href="http://web.archive.org/web/20121115140300/http://integratedredstone.wikispaces.com/Forth+Dictionary#cite_ref-20">^</a> One block can hold 16 lines with 64 chars each.</li>
+<li id="cite_note-21"><a href="http://web.archive.org/web/20121115140300/http://integratedredstone.wikispaces.com/Forth+Dictionary#cite_ref-21">^</a> On its first call, <tt>BLOCK</tt> will allocate a 1k wide buffer using ALLOT.</li>
+<li id="cite_note-22"><a href="http://web.archive.org/web/20121115140300/http://integratedredstone.wikispaces.com/Forth+Dictionary#cite_ref-22">^</a> Starting at 0 up to 15, so 16 lines of code available, each 64 chars long.</li>
+<li id="cite_note-23"><a href="http://web.archive.org/web/20121115140300/http://integratedredstone.wikispaces.com/Forth+Dictionary#cite_ref-23">^</a> After booting a clean forth disk as with MineOS 1.1 and no additional memory modules installed.</li>
+<li id="cite_note-24"><a href="http://web.archive.org/web/20121115140300/http://integratedredstone.wikispaces.com/Forth+Dictionary#cite_ref-24">^</a> You can also type multiple lines of code up to an ending <tt>;</tt></li>
+<li id="cite_note-25"><a href="http://web.archive.org/web/20121115140300/http://integratedredstone.wikispaces.com/Forth+Dictionary#cite_ref-25">^</a> Not sure if this works over multiple input lines, as usual in Forth.</li>
+<li id="cite_note-26"><a href="http://web.archive.org/web/20121115140300/http://integratedredstone.wikispaces.com/Forth+Dictionary#cite_ref-26">^</a> This address points to the actual program code of this word, allowing for direct execution.</li>
+<li id="cite_note-27"><a href="http://web.archive.org/web/20121115140300/http://integratedredstone.wikispaces.com/Forth+Dictionary#cite_ref-27">^</a> This address points to the actual program code of this word, allowing for direct execution.</li>
+<li id="cite_note-28"><a href="http://web.archive.org/web/20121115140300/http://integratedredstone.wikispaces.com/Forth+Dictionary#cite_ref-28">^</a> Address returned must be adjusted by calling at least 1- when used within forth context, resp. -2 if called from assembler code (to hit first opcode <tt>ENT</tt>)</li>
+</ol><!-- ws:end:WikiTextReferencesRule:6249 -->
+  <!-- google_ad_section_end -->
+  </div>
+  </div>
+
+<div id="pageEditor" class="editorWrapper editorLayer">
+  <iframe id="target_editor" name="target_editor" src="./integratedredstone - Forth Dictionary_files/blank.html" style="width:0px;height:0px;border:0"></iframe>
+    <form action="http://web.archive.org/web/20121115140300/http://integratedredstone.wikispaces.com/page/edit/Forth+Dictionary" method="post" class="editorForm" id="editorForm">
+    <input type="hidden" title="goto" name="goto" value="">
+    <input type="hidden" title="mode" name="mode" autocomplete="off" value="visual">
+    <input type="hidden" title="version" name="version" autocomplete="off" value="356295760">
+    <input type="hidden" title="pageComments" name="pageComments" autocomplete="off" value="">
+    <input type="hidden" title="saveAndContinue" name="saveAndContinue" value="0">
+    <input type="hidden" title="comment" name="comment" value="">
+    <input type="hidden" title="commentsDisabled" name="commentsDisabled" autocomplete="off" value="">
+    <input type="hidden" title="contentPresent" name="contentPresent" autocomplete="off" value="">
+    <input type="hidden" title="editorCleanup" name="editorCleanup" autocomplete="off" value="">
+
+    <textarea id="wsMainEditor" title="content" class="noContentHide" name="WikispacesEditorContent" style="width: 100%; height: 400px; position: absolute; top: -50000px; left: -50000px;" autocomplete="off"></textarea>
+
+  <noscript>
+    &lt;h2&gt;Javascript Required&lt;/h2&gt;
+    &lt;p&gt;You need to enable Javascript in your browser to edit pages.&lt;/p&gt;
+  </noscript>
+
+  </form>
+  
+  
+  <div id="plainTextEditor" style="position:relative;display:none" class="editorLayer">
+    <textarea id="textEditor" class="autogrow" style="height: 450px;"></textarea>
+    <p style="clear:both;" align="right"><a href="http://web.archive.org/web/20121115140300/http://help.wikispaces.com/help.wikitext" class="WikispacesHelpLink" data-help="help.wikitext">help on how to format text</a></p>
+  </div>
+</div>
+
+
+
+</div></div><div id="sentinel" style="clear:both"></div></td>
+          <td id="rightGradient"></td>
+        </tr>
+        <tr>
+          <td id="bottomLeftGradient"></td>
+          <td id="bottomGradient"></td>
+          <td id="bottomRightGradient"></td>
+        </tr>
+        <tr>
+          <td colspan="3" class="footer">
+            <div class="WikiFooterNav WikiElement">
+<a href="http://web.archive.org/web/20121115140300/http://help.wikispaces.com/" rel="nofollow" class="WikispacesHelpTrigger">Help</a> ·
+<a href="http://web.archive.org/web/20121115140300/http://www.wikispaces.com/about">About</a> ·
+<a href="http://web.archive.org/web/20121115140300/http://blog.wikispaces.com/" target="_new">Blog</a> ·
+<a href="http://web.archive.org/web/20121115140300/http://www.wikispaces.com/content/pricing" rel="nofollow">Pricing</a> ·
+<a href="http://web.archive.org/web/20121115140300/http://www.wikispaces.com/privacy" rel="nofollow">Privacy</a> ·
+<a href="http://web.archive.org/web/20121115140300/http://www.wikispaces.com/terms" rel="nofollow">Terms</a> ·
+<a href="http://web.archive.org/web/20121115140300/http://www.wikispaces.com/site/help?url=http%3A%2F%2Fintegratedredstone.wikispaces.com%2FForth%2BDictionary" rel="nofollow"><strong>Support</strong></a> ·
+<a href="http://web.archive.org/web/20121115140300/http://integratedredstone.wikispaces.com/space/subscribe/upgrade"><strong>Upgrade</strong></a>
+</div>            <!-- google_ad_section_start(weight=ignore) --><div class="WikiLicense WikiElement" style="font-size: 90%;">Contributions to http://integratedredstone.wikispaces.com/ are licensed under a <a rel="license" href="http://web.archive.org/web/20121115140300/http://www.creativecommons.org/licenses/by-nc-nd/3.0">Creative Commons Attribution No-Derivative-Works Non-Commercial 3.0 License</a>. <a rel="license" href="http://web.archive.org/web/20121115140300/http://www.creativecommons.org/licenses/by-nc-nd/3.0"><img src="./integratedredstone - Forth Dictionary_files/by-nc-nd_3.0_80x15.png" width="85" height="15" alt="Creative Commons Attribution No-Derivative-Works Non-Commercial 3.0 License"></a><br>Portions not contributed by visitors are Copyright 2012 Tangient LLC.</div><!-- google_ad_section_end -->          </td>
+        </tr>
+      </tbody></table>
+    </div>
+  </div>
+
+</div> <!--end wrapper-->
+
+<div id="WikispacesHelp" style="display:none">
+  <div id="WikispacesHelpControls">
+    <span id="WikispacesHelpBreadcrumbs">
+      <span id="WikispacesHelpBreadcrumbHome" class="WikispacesHelpBreadcrumb WikispacesHelpBreadcrumbCurrent">
+        <a href="http://web.archive.org/web/20121115140300/http://help.wikispaces.com/" onclick="return ws.help.gotoBreadcrumb(0);">Home</a>
+      </span>
+      <span id="WikispacesHelpBreadcrumbsEllipsis" style="display: none;">
+        &gt; ...
+      </span>
+      <span id="WikispacesHelpBreadcrumbSpinner"></span>
+    </span>
+  </div>
+  <div id="WikispacesHelpContent" class="wiki">Loading...</div>
+
+  <div id="WikispacesGettingStartedControls">
+    <span id="WikispacesGettingStartedBreadcrumbs">
+      <span id="WikispacesGettingStartedBreadcrumbHome" class="WikispacesHelpBreadcrumb WikispacesHelpBreadcrumbCurrent">
+        <a href="http://web.archive.org/web/20121115140300/http://integratedredstone.wikispaces.com/Forth+Dictionary#" onclick="return ws.help.showGettingStartedHome();">Home</a>
+      </span>
+      <span id="WikispacesGettingStartedCategory"></span>
+    </span>
+
+    <a href="http://web.archive.org/web/20121115140300/http://www.wikispaces.com/site/gettingstarted/off" style="position: absolute; right: 50px;">Turn Off "Getting Started"</a>
+
+  </div>
+  <div id="WikispacesGettingStartedContent" class="wiki">Loading...</div>
+</div>
+</div>
+<script src="./integratedredstone - Forth Dictionary_files/6qx90810-editorc.min.js" type="text/javascript"></script>
+
+<script type="text/javascript">
+<!--
+
+  (function() {
+    var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+    ga.src = ('https:' == document.location.protocol ? '/web/20121115140300/https://ssl' : '/web/20121115140300/http://www') + '.google-analytics.com/ga.js';
+    var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+  })();
+
+jQuery(document).ready(function() {
+  ws.help.attachHelpWindow();
+});
+
+  jQuery(document).ready(function() {
+    
+    function tipGravity() {
+      return jQuery(this).closest('.Buttons').is('.MoreMenuActive') ? 's' : 'n';
+    }
+
+    
+
+    jQuery('.MenuBar').each(function() {
+      $this = jQuery(this);
+      $this.find('.tipme').tipsy({fade: true, gravity: tipGravity});
+
+      
+      $this.find('.ButtonMore').click(ws.common.makeLinkClickFunction(function(e) {
+        if (jQuery(this).closest('.Buttons').hasClass('MoreMenuActive')) {
+          ws.common.hideMorePageBar();
+        } else {
+          ws.common.showMorePageBar();
+        }
+      }));
+
+      jQuery(document.body).click(function(e) {
+        if (!jQuery(e.target).closest('.MoreMenu').closest('.MenuBar').is($this)) {
+          ws.common.hideMorePageBar();
+        }
+      });
+      
+    });
+  });
+
+var editUrl = '/web/20121115140300/http://integratedredstone.wikispaces.com/page/edit/Forth+Dictionary?goto=http%3A%2F%2Fintegratedredstone.wikispaces.com%2FForth%2BDictionary';
+
+
+jQuery(document).ready(function() {
+  jQuery('#editFromTemplate').change(function() {
+    window.location = ws.common.addUriParams(editUrl, [['template', jQuery(this).val()]]);
+  });
+});
+
+
+jQuery(document).ready(function() {
+  ws.editor.loadEditorLibs('/web/20121115140300/http://www.wikispaces.com/site/editorlibs/en/923vx807.js');
+});
+
+
+ws.editor.startEditor = function (moreCoreOptions, moreMainOptions) {
+
+  var coreOptions = {
+    'content_css': '/web/20121115140300/http://www.wikispaces.com/stylesheet/editori/217420326D.css'
+  };
+
+  var mainOptions = {
+    'wssave_cancel_url': '/Forth+Dictionary',
+    'wsimage_upload_url': '/web/20121115140300/http://integratedredstone.wikispaces.com/file/multiupload',
+    'wsimage_max_file_size_mb': '10',
+    'wsimage_page_view_group': ''
+  };
+
+  ws.editor.loadEditor(jQuery.extend(coreOptions, moreCoreOptions), jQuery.extend(mainOptions, moreMainOptions));
+};
+
+  var wikispaces_page_version = '356295760';
+
+  jQuery(document).ready(function() {
+    ws.editor.enableButtons();
+  });
+
+
+
+--></script><!-- w5 750 wki:506:534(3) tot:750:750(1) mog:61:61(1) mem:7:46(28) -->
+
+
+
+
+
+
+
+
+<!--
+     FILE ARCHIVED ON 14:03:00 Nov 15, 2012 AND RETRIEVED FROM THE
+     INTERNET ARCHIVE ON 21:17:26 Mar 8, 2015.
+     JAVASCRIPT APPENDED BY WAYBACK MACHINE, COPYRIGHT INTERNET ARCHIVE.
+
+     ALL OTHER CONTENT MAY ALSO BE PROTECTED BY COPYRIGHT (17 U.S.C.
+     SECTION 108(a)(3)).
+-->
+<div style="position: absolute; top: -10000px; left: -10000px; width: 100px; font-size: 12.6666669845581px; font-family: monospace; line-height: normal; resize: none;"></div></body></html>
