@@ -36,6 +36,8 @@ public class ClientProxy extends CommonProxy {
                 new ModelResourceLocation("doesnotcompute:itemPunchCard", "inventory"));
         modelRegistry.register(DoesNotCompute.punchCardStack, 0,
                 new ModelResourceLocation("doesnotcompute:itemPunchCardStack", "inventory"));
+        modelRegistry.register(DoesNotCompute.playerSaddle, 0,
+                new ModelResourceLocation("doesnotcompute:itemPlayerSaddle", "inventory"));
 
         ClientRegistry.registerKeyBinding(KeyBindings.punchFeed);
         ClientRegistry.registerKeyBinding(KeyBindings.punchRegister);

@@ -18,6 +18,7 @@ import com.github.blackjak34.compute.entity.tile.client.TileEntityDiskDriveClien
 import com.github.blackjak34.compute.entity.tile.client.TileEntitySIDClient;
 import com.github.blackjak34.compute.entity.tile.client.TileEntityTerminalClient;
 import com.github.blackjak34.compute.item.ItemFloppy;
+import com.github.blackjak34.compute.item.ItemPlayerSaddle;
 import com.github.blackjak34.compute.item.ItemPunchCard;
 import com.github.blackjak34.compute.item.ItemPunchCardStack;
 import com.github.blackjak34.compute.item.ItemScrewdriver;
@@ -32,17 +33,24 @@ import com.github.blackjak34.compute.packet.handler.HandlerKeyTyped;
 import com.github.blackjak34.compute.packet.handler.HandlerUpdateDisplay;
 import com.github.blackjak34.compute.proxy.CommonProxy;
 import com.google.common.io.ByteStreams;
+import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.creativetab.CreativeTabs;
+import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Blocks;
 import net.minecraft.init.Items;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.world.World;
+import net.minecraftforge.client.event.RenderLivingEvent;
+import net.minecraftforge.common.MinecraftForge;
+import net.minecraftforge.event.entity.living.LivingEvent;
+import net.minecraftforge.event.entity.player.EntityInteractEvent;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.SidedProxy;
 import net.minecraftforge.fml.common.event.FMLInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPostInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
+import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.network.NetworkRegistry;
 import net.minecraftforge.fml.common.network.simpleimpl.SimpleNetworkWrapper;
 import net.minecraftforge.fml.common.registry.GameRegistry;
@@ -80,6 +88,7 @@ public class DoesNotCompute {
     public static ItemScrewdriver screwdriver;
     public static ItemPunchCard punchCard;
     public static ItemPunchCardStack punchCardStack;
+    public static ItemPlayerSaddle playerSaddle;
 
     @Mod.Instance(value = DoesNotCompute.MODID)
     public static DoesNotCompute instance;
@@ -207,12 +216,14 @@ public class DoesNotCompute {
         screwdriver = new ItemScrewdriver();
         punchCard = new ItemPunchCard();
         punchCardStack = new ItemPunchCardStack();
+        playerSaddle = new ItemPlayerSaddle();
 
     	GameRegistry.registerItem(floppy, "itemFloppy");
         GameRegistry.registerItem(systemFloppy, "itemSystemFloppy");
         GameRegistry.registerItem(screwdriver, "itemScrewdriver");
         GameRegistry.registerItem(punchCard, "itemPunchCard");
         GameRegistry.registerItem(punchCardStack, "itemPunchCardStack");
+        GameRegistry.registerItem(playerSaddle, "itemPlayerSaddle");
 
         ItemStack floppyStack = new ItemStack(floppy);
 
@@ -267,6 +278,8 @@ public class DoesNotCompute {
         networkWrapper.registerMessage(HandlerChangeAddress.class, MessageChangeAddress.class, 2, Side.SERVER);
 
         networkWrapper.registerMessage(HandlerUpdateDisplay.class, MessageUpdateDisplay.class, 3, Side.CLIENT);
+
+        MinecraftForge.EVENT_BUS.register(this);
     }
 
     @SuppressWarnings("unused")
@@ -279,6 +292,50 @@ public class DoesNotCompute {
     @SuppressWarnings("unused")
 	@Mod.EventHandler
     public void postInit(FMLPostInitializationEvent event) {}
+
+    @SubscribeEvent
+    public void onEntityInteractEvent(EntityInteractEvent event) {
+        if(event.target instanceof EntityPlayer) {
+            EntityPlayer targetPlayer = (EntityPlayer) event.target;
+
+            ItemStack headArmor = targetPlayer.getEquipmentInSlot(4);
+            if(headArmor != null && headArmor.getItem() == DoesNotCompute.playerSaddle) {
+                event.entityPlayer.mountEntity(targetPlayer);
+            }
+        } else {
+            ItemStack headArmor = event.entityPlayer.getEquipmentInSlot(4);
+            if(headArmor != null && headArmor.getItem() == DoesNotCompute.playerSaddle && event.entityPlayer.riddenByEntity == null) {
+                event.target.mountEntity(event.entityPlayer);
+            }
+        }
+    }
+
+    @SubscribeEvent
+    public void onLivingUpdateEvent(LivingEvent.LivingUpdateEvent event) {
+        if(event.entityLiving instanceof EntityPlayer &&
+           event.entityLiving.ridingEntity instanceof EntityPlayer) {
+            EntityPlayer ridingPlayer = (EntityPlayer) event.entityLiving.ridingEntity;
+
+            ItemStack headArmor = ridingPlayer.getEquipmentInSlot(4);
+            if(headArmor == null || headArmor.getItem() != DoesNotCompute.playerSaddle) {
+                event.entityLiving.mountEntity(null);
+            }
+        }
+    }
+
+    @SubscribeEvent
+    public void onRenderLivingEvent(RenderLivingEvent.Pre event) {
+        if(event.entity.ridingEntity instanceof EntityPlayer) {
+            GlStateManager.translate(0.0, 0.5, 0.0);
+        }
+    }
+
+    @SubscribeEvent
+    public void onRenderLivingEvent(RenderLivingEvent.Post event) {
+        if(event.entity.ridingEntity instanceof EntityPlayer) {
+            GlStateManager.translate(0.0, -0.5, 0.0);
+        }
+    }
 
     public InputStream getResourceFromAssetsDirectory(String filePath) {
         return getClass().getResourceAsStream("/assets/doesnotcompute/" + filePath);
