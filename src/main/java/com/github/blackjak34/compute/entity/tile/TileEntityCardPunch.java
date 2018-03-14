@@ -17,27 +17,36 @@ import net.minecraft.util.IChatComponent;
 
 public class TileEntityCardPunch extends TileEntity implements ISidedInventory, IUpdatePlayerListBox {
 
-    private boolean interpretMode;
-    private boolean autoSkipDupMode;
-    private boolean programSelect;
-    private boolean autoFeedMode;
-    private boolean printMode;
-    private boolean leftZeroMode;
-    private boolean multiPunchMode;
-    private boolean numericMode;
-    private boolean programEnabled;
+    public boolean interpretMode;
+    public boolean autoSkipDupMode;
+    public boolean programSelect;
+    public boolean autoFeedMode;
+    public boolean printMode;
+    public boolean leftZeroMode;
+    public boolean multiPunchMode;
+    public boolean numericMode;
+    public boolean programEnabled;
 
-    private int cardStackerNum;
+    public int cardStackerNum;
+    public int punchPos;
 
-    private ItemStack programCard;
-    private ItemStack masterCard;
-    private ItemStack inkRibbon;
+    public double lastXPreReg;
+    public double lastYPreReg;
+    public double lastXPunch;
+    public double lastXPreRead;
+    public double lastXReadStation;
+    public double lastXPostReg;
+    public double lastYPostReg;
 
-    private ItemStack cardPreRegister;
-    private ItemStack cardPunchStation;
-    private ItemStack cardPreRead;
-    private ItemStack cardReadStation;
-    private ItemStack cardPostRegister;
+    public ItemStack programCard;
+    public ItemStack masterCard;
+    public ItemStack inkRibbon;
+
+    public ItemStack cardPreRegister;
+    public ItemStack cardPunchStation;
+    public ItemStack cardPreRead;
+    public ItemStack cardReadStation;
+    public ItemStack cardPostRegister;
 
     private ItemStack[] cardHopper = new ItemStack[8];
     private ItemStack[] cardStacker = new ItemStack[8];
@@ -51,60 +60,8 @@ public class TileEntityCardPunch extends TileEntity implements ISidedInventory, 
 
     }
 
-    public boolean isInInterpretMode() {
-        return interpretMode;
-    }
-
-    public boolean isInAutoSkipDupMode() {
-        return autoSkipDupMode;
-    }
-
-    public boolean isProgramOneSelected() {
-        return programSelect;
-    }
-
-    public boolean isInAutoFeedMode() {
-        return autoFeedMode;
-    }
-
-    public boolean isInPrintMode() {
-        return printMode;
-    }
-
-    public boolean isInLeftZeroMode() {
-        return leftZeroMode;
-    }
-
-    public boolean isProgramEnabled() {
-        return programEnabled;
-    }
-
     public int getNumCardsInStacker() {
         return cardStackerNum;
-    }
-
-    public ItemStack getProgramCard() {
-        return programCard;
-    }
-
-    public ItemStack getPreRegisterPos() {
-        return cardPreRegister;
-    }
-
-    public ItemStack getPunchStationPos() {
-        return cardPunchStation;
-    }
-
-    public ItemStack getPreReadPos() {
-        return cardPreRead;
-    }
-
-    public ItemStack getReadStationPos() {
-        return cardReadStation;
-    }
-
-    public ItemStack getPostRegisterPos() {
-        return cardPostRegister;
     }
 
     private static void addStackToNBT(ItemStack stack, NBTTagCompound tagCompound, String key) {

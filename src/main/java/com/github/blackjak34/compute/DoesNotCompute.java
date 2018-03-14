@@ -13,13 +13,10 @@ import com.github.blackjak34.compute.entity.tile.TileEntityDiskDrive;
 import com.github.blackjak34.compute.entity.tile.TileEntitySID;
 import com.github.blackjak34.compute.entity.tile.TileEntityTerminal;
 import com.github.blackjak34.compute.entity.tile.client.TileEntityCPUClient;
-import com.github.blackjak34.compute.entity.tile.client
-        .TileEntityCableRibbonClient;
-import com.github.blackjak34.compute.entity.tile.client
-        .TileEntityDiskDriveClient;
+import com.github.blackjak34.compute.entity.tile.client.TileEntityCableRibbonClient;
+import com.github.blackjak34.compute.entity.tile.client.TileEntityDiskDriveClient;
 import com.github.blackjak34.compute.entity.tile.client.TileEntitySIDClient;
-import com.github.blackjak34.compute.entity.tile.client
-        .TileEntityTerminalClient;
+import com.github.blackjak34.compute.entity.tile.client.TileEntityTerminalClient;
 import com.github.blackjak34.compute.item.ItemFloppy;
 import com.github.blackjak34.compute.item.ItemPunchCard;
 import com.github.blackjak34.compute.item.ItemPunchCardStack;
